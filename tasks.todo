@@ -1,0 +1,14 @@
+#   TASKS
+
+1.  [ ] Reorganize Code Structure (models, handlers, etc.).
+2.  [ ] Implement user registration and login functionality.
+   -    [ ] Validate and store user credentials in the database.
+   -    [ ] Implement login sessions using cookies with expiration dates.
+   -    [ ] Optionally, use UUID for session management (Bonus task).
+   -    [ ] Implement logout
+3.  [ ] Implement post and comment creation functionality.
+   -    [ ] Associate categories with posts.
+   -    [ ] Allow non-registered users to view posts and comments.
+4.  [ ] Implement the filtering mechanism for posts:
+   -    [ ] Filtering by created posts (for registered users).
+5.  [ ] Handle website errors and HTTP status.
