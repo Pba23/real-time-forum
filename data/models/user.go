@@ -12,6 +12,10 @@ import (
 type User struct {
 	ID         string
 	Username   string
+	Fistname   string
+	Lastname   string
+	Age 	   string
+	Gender     string
 	IsLoggedIn string
 	Email      string
 	Password   string
@@ -53,7 +57,7 @@ func (ur *UserRepository) CreateUser(user *User) error {
 		log.Fatalf("❌ Failed to generate UUID: %v", err)
 	}
 	user.ID = ID.String()
-	_, err = ur.db.Exec("INSERT INTO user (id, username, email, password, avatarURL, role) VALUES (?, ?, ?, ?, ?, ?)",
+	_, err = ur.db.Exec("INSERT INTO user (id, username, firstname,lastname,age,gender, email, password, avatarURL, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		user.ID, user.Username, user.Email, user.Password, user.AvatarURL, user.Role)
 	return err
 }
@@ -61,7 +65,7 @@ func (ur *UserRepository) CreateUser(user *User) error {
 // Get a user by ID from the database
 func (ur *UserRepository) GetUserByID(userID string) (*User, error) {
 	var user User
-	row := ur.db.QueryRow("SELECT id, username, email, password, avatarURL, role FROM user WHERE id = ?", userID)
+	row := ur.db.QueryRow("SELECT id, username,firstname,lastname,age,gender, email, password, avatarURL, role FROM user WHERE id = ?", userID)
 	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.AvatarURL, &user.Role)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -75,7 +79,7 @@ func (ur *UserRepository) GetUserByID(userID string) (*User, error) {
 // Get a user by email from the database
 func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
 	var user User
-	row := ur.db.QueryRow("SELECT id, username, email, password, avatarURL, role FROM user WHERE email = ?", email)
+	row := ur.db.QueryRow("SELECT id, username,firstname,lastname,age,gender, email, password, avatarURL, role FROM user WHERE email = ?", email)
 	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.AvatarURL, &user.Role)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -89,7 +93,7 @@ func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
 // Get a user by email from the database
 func (ur *UserRepository) GetUserByUsername(username string) (*User, error) {
 	var user User
-	row := ur.db.QueryRow("SELECT id, username, email, password, avatarURL, role FROM user WHERE username = ?", username)
+	row := ur.db.QueryRow("SELECT id, username, firstname,lastname,age,gender, email, password, avatarURL, role FROM user WHERE username = ?", username)
 	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.AvatarURL, &user.Role)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -111,11 +115,15 @@ func (ur *UserRepository) SelectAllUsers() ([]User, error) {
 		var ID string
 		var Email string
 		var Username string
+		var Fistname   string
+		var Lastname   string
+		var Age 	   string
+		var Gender     string
 		var Password string
 		var AvatarUrl string
 		var Role ROLE
 
-		err = row.Scan(&ID, &Username, &Email, &Password, &AvatarUrl, &Role)
+		err = row.Scan(&ID, &Username, &Fistname, &Lastname, &Age, &Gender, &Email, &Password, &AvatarUrl, &Role)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -124,6 +132,10 @@ func (ur *UserRepository) SelectAllUsers() ([]User, error) {
 			ID:        ID,
 			Email:     Email,
 			Username:  Username,
+			Fistname : Fistname
+			Lastname :Lastname
+			Age :Age 	
+			Gender  :Gender  
 			Password:  Password,
 			AvatarURL: AvatarUrl,
 			Role:      Role,
@@ -178,6 +190,10 @@ func (ur *UserRepository) SelectRandomUsers(count int) ([]User, error) {
 		err := rows.Scan(
 			&user.ID,
 			&user.Username,
+			&user.firstname,
+			&user.lastname,
+			&user.age,
+			&user.gender;
 			&user.Email,
 			&user.Password,
 			&user.AvatarURL,
@@ -207,8 +223,8 @@ func (ur *UserRepository) SelectRandomUsers(count int) ([]User, error) {
 
 // Update a user in the database
 func (ur *UserRepository) UpdateUser(user *User) error {
-	_, err := ur.db.Exec("UPDATE user SET username = ?, email = ?, password = ?, avatarURL = ?, role = ? WHERE id = ?",
-		user.Username, user.Email, user.Password, user.AvatarURL, user.Role, user.ID)
+	_, err := ur.db.Exec("UPDATE user SET username = ?, firstname = ?,lastname = ?,age = ?,gender = ?, email = ?, password = ?, avatarURL = ?, role = ? WHERE id = ?",
+		user.Username, user.firstname,user.lastname,user.age,user.gender, user.Email, user.Password, user.AvatarURL, user.Role, user.ID)
 	return err
 }
 

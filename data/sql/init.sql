@@ -3,6 +3,10 @@
 CREATE TABLE IF NOT EXISTS "user" (
     id VARCHAR PRIMARY KEY,
     username VARCHAR,
+    firstname VARCHAR,
+    lastname VARCHAR,
+    age VARCHAR,
+    gender VARCHAR,
     email VARCHAR,
     password TEXT,
     avatarURL VARCHAR,
@@ -118,4 +122,14 @@ CREATE TABLE IF NOT EXISTS "request"(
     imageurl VARCHAR,
     role VARCHAR,
     FOREIGN KEY (authorID) REFERENCES user(id)
+);
+CREATE TABLE IF NOT EXISTS "message" (
+    id VARCHAR PRIMARY KEY,
+    senderID VARCHAR,
+    receiverID VARCHAR,
+    content TEXT,
+    createDate DATE,
+    modifiedDate DATE,
+    FOREIGN KEY (authorID) REFERENCES user(id),
+    FOREIGN KEY (reportID) REFERENCES report(id)
 );
