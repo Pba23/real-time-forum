@@ -1,0 +1,136 @@
+:root {
+    --blue: #0368D9;
+    --grey: #333333;
+    --light-grey: #E4E6EB;
+    --white: #FFFFFF;
+    --black: #17191C;
+    --bg-color: var(--white);
+    --outgoing-bg: var(--light-grey);
+    --outgoing-txt: var(--black);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: var(--black);
+        --outgoing-bg: var(--grey);
+        --outgoing-txt: var(--white);
+    }
+}
+
+@keyframes pop-up {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* body {
+    background-color: var(--bg-color);
+    font-size: 16px;
+    font-family: 'Helvetica', Helvetica, sans-serif;
+    font-weight: 500;
+} */
+
+.wrap+.wrap {
+    margin-top: 20px;
+}
+
+.message {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 5px;
+    visibility: hidden;
+}
+
+.message.outgoing {
+    flex-direction: row-reverse;
+}
+
+.message.active {
+    visibility: visible;
+    animation-name: pop-up;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+}
+
+.message .speech-bubble {
+    background-color: var(--blue);
+    color: var(--white);
+    padding: 1.5rem;
+    border-radius: 40px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+}
+
+.message.outgoing .speech-bubble {
+    background-color: var(--outgoing-bg);
+    color: var(--outgoing-txt);
+}
+
+.message+.message .speech-bubble {
+    border-radius: 5px 40px 40px 5px;
+}
+
+.message.outgoing+.message.outgoing .speech-bubble {
+    border-radius: 40px 5px 5px 40px;
+}
+
+.message:first-child .speech-bubble {
+    border-radius: 40px 40px 40px 5px;
+}
+
+.message.outgoing:first-child .speech-bubble {
+    border-radius: 40px 40px 5px 40px;
+}
+
+.message:last-child .speech-bubble {
+    border-radius: 5px 40px 40px 40px;
+}
+
+.message.outgoing:last-child .speech-bubble {
+    border-radius: 40px 5px 40px 40px !important;
+}
+
+.message:only-child .speech-bubble {
+    border-radius: 40px 40px 40px 40px;
+}
+
+.message.outgoing:only-child .speech-bubble {
+    border-radius: 40px 40px 40px 40px;
+}
+
+.message .speech-bubble:first-child,
+.message .image-wrap:first-child {
+    margin-left: 60px;
+}
+
+.message.outgoing .speech-bubble:first-child,
+.message.outgoing .image-wrap:first-child {
+    margin-right: 60px;
+}
+
+.profile-picture {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    min-width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.message.outgoing .profile-picture {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
