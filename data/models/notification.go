@@ -91,6 +91,7 @@ func (nr *NotificationRepository) CreateNotification(notification *Notification)
 		notification.ID, notification.AuthorID, notification.AuthorName, notification.PostID, notification.OwnerID, notification.Notif_type, notification.Slug, notification.Time, notification.Read)
 	return err
 }
+
 func FormatNotifications(Notifications []Notification) []string {
 	var FormatedNotif []string
 	for _, notification := range Notifications {
@@ -118,6 +119,7 @@ func FormatNotifications(Notifications []Notification) []string {
 	}
 	return FormatedNotif
 }
+
 func ListNotifications(notifications []string) (s string) {
 	for i := len(notifications) - 1; i >= 0; i-- {
 		s += notifications[i]
