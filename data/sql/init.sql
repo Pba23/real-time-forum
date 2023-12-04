@@ -26,32 +26,6 @@ CREATE TABLE IF NOT EXISTS "post" (
     validate BOOLEAN,
     FOREIGN KEY (authorID) REFERENCES user(id)
 );
--- Table for 'report'
-CREATE TABLE IF NOT EXISTS "report" (
-    id VARCHAR PRIMARY KEY,
-    authorID VARCHAR,
-    reportedID VARCHAR,
-    reportedName VARCHAR,
-    cause VARCHAR,
-    type VARCHAR,
-    createDate DATE,
-    modifiedDate DATE,
-    reported BOOLEAN,
-    imageURL VARCHAR,
-    FOREIGN KEY (authorID) REFERENCES user(id),
-    FOREIGN KEY (reportedID) REFERENCES user(id)
-);
--- Table for 'response'
-CREATE TABLE IF NOT EXISTS "response" (
-    id VARCHAR PRIMARY KEY,
-    authorID VARCHAR,
-    reportID VARCHAR,
-    content TEXT,
-    createDate DATE,
-    modifiedDate DATE,
-    FOREIGN KEY (authorID) REFERENCES user(id),
-    FOREIGN KEY (reportID) REFERENCES report(id)
-);
 -- Table for 'view'
 CREATE TABLE IF NOT EXISTS "view" (
     id VARCHAR PRIMARY KEY,
@@ -111,17 +85,6 @@ CREATE TABLE IF NOT EXISTS "notification" (
     time VARCHAR,
     Readed BOOLEAN,
     FOREIGN KEY (postID) REFERENCES post(id)
-);
--- Table for 'request'
--- TODO: REMOVE DUPLICATED INFOS REQUEST
-CREATE TABLE IF NOT EXISTS "request"(
-    id VARCHAR PRIMARY KEY,
-    authorID VARCHAR,
-    time DATE,
-    username VARCHAR,
-    imageurl VARCHAR,
-    role VARCHAR,
-    FOREIGN KEY (authorID) REFERENCES user(id)
 );
 CREATE TABLE IF NOT EXISTS "message" (
     id VARCHAR PRIMARY KEY,
