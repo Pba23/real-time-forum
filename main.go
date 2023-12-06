@@ -2,8 +2,7 @@ package main
 
 import (
 	"real-time-forum/data/models"
-	"real-time-forum/handler"
-	"real-time-forum/handler/auth"
+	"real-time-forum/handlers"
 	"real-time-forum/lib"
 	"log"
 	"net/http"
@@ -23,28 +22,9 @@ func main() {
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/"))))
 
 	// Login/authentication rate limiting
-	http.Handle("/sign-up", rateLimiter.Wrap("auth", auth.SignUp))
-	http.Handle("/sign-in", rateLimiter.Wrap("auth", auth.SignIn))
-	http.Handle("/logout", rateLimiter.Wrap("auth", auth.Logout))
-
-	// API endpoint rate limiting
-	http.Handle("/", rateLimiter.Wrap("api", handler.Index))
-	http.Handle("/bookmark/", rateLimiter.Wrap("api", handler.Bookmark))
-	http.Handle("/edit-user", rateLimiter.Wrap("api", handler.EditUser))
-	http.Handle("/post", rateLimiter.Wrap("api", handler.CreatePost))
-	http.Handle("/delete-post/", rateLimiter.Wrap("api", handler.DeletePost))
-	http.Handle("/delete-comment/", rateLimiter.Wrap("api", handler.DeleteComment))
-	http.Handle("/edit-post/", rateLimiter.Wrap("api", handler.EditPost))
-	http.Handle("/edit-comment/", rateLimiter.Wrap("api", handler.EditComment))
-	http.Handle("/comment/", rateLimiter.Wrap("api", handler.Comment))
-	http.Handle("/posts/", rateLimiter.Wrap("api", handler.GetPost))
-	http.Handle("/like/", rateLimiter.Wrap("api", handler.LikePost))
-	http.Handle("/dislike/", rateLimiter.Wrap("api", handler.DislikePost))
-	http.Handle("/like-comment/", rateLimiter.Wrap("api", handler.LikeComment))
-	http.Handle("/dislike-comment/", rateLimiter.Wrap("api", handler.DislikeComment))
-	http.Handle("/category/", rateLimiter.Wrap("api", handler.GetPostOfCategory))
-	http.Handle("/notification/", rateLimiter.Wrap("api", handler.GetNotifs))
-	http.Handle("/posts", rateLimiter.Wrap("api", handler.SeePosts))
+	http.Handle("/sign-up", rateLimiter.Wrap("auth", handler.SignUp))
+	http.Handle("/sign-in", rateLimiter.Wrap("auth", handler.SignIn))
+	http.Handle("/logout", rateLimiter.Wrap("auth", handler.Logout))
 
 	go models.DeleteExpiredSessions()
 
