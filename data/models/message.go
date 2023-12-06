@@ -16,6 +16,7 @@ type Message struct {
 	CreateDate   string
 	ModifiedDate string
 }
+
 type MessageRepository struct {
 	db *sql.DB
 }
@@ -25,6 +26,7 @@ func NewMessageRepository(db *sql.DB) *MessageRepository {
 		db: db,
 	}
 }
+
 // Create a new message in the database
 func (rr *MessageRepository) CreateMessage(message *Message) error {
 	ID, err := uuid.NewV4()
@@ -36,6 +38,7 @@ func (rr *MessageRepository) CreateMessage(message *Message) error {
 		message.ID, message.SenderID, message.ReceiverID, message.Text, message.CreateDate, message.ModifiedDate)
 	return err
 }
+
 func (rr *MessageRepository) GetAllMessage() ([]Message, error) {
 	var Messagetab []Message
 	rows, err := rr.db.Query("SELECT id, senderID, receiverID, content, createDate, modifiedDate FROM message ORDER BY modifiedDate DESC")

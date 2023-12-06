@@ -2,7 +2,7 @@
 -- Table for 'user'
 CREATE TABLE IF NOT EXISTS "user" (
     id VARCHAR PRIMARY KEY,
-    username VARCHAR,
+    nickname VARCHAR,
     firstname VARCHAR,
     lastname VARCHAR,
     age VARCHAR,
@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS "user" (
     email VARCHAR,
     password TEXT,
     avatarURL VARCHAR,
-    role VARCHAR
 );
 -- Table for 'post'
 CREATE TABLE IF NOT EXISTS "post" (
@@ -23,13 +22,11 @@ CREATE TABLE IF NOT EXISTS "post" (
     isEdited BOOLEAN,
     createDate DATE,
     modifiedDate DATE,
-    validate BOOLEAN,
     FOREIGN KEY (authorID) REFERENCES user(id)
 );
 -- Table for 'view'
 CREATE TABLE IF NOT EXISTS "view" (
     id VARCHAR PRIMARY KEY,
-    isBookmarked BOOLEAN,
     rate INT,
     authorID VARCHAR,
     postID VARCHAR,
@@ -72,19 +69,6 @@ CREATE TABLE IF NOT EXISTS "category" (
     name VARCHAR,
     createDate DATE,
     modifiedDate DATE
-);
--- Table for 'notification'
-CREATE TABLE IF NOT EXISTS "notification" (
-    id VARCHAR PRIMARY KEY,
-    authorID VARCHAR,
-    author_name VARCHAR,
-    postID VARCHAR,
-    ownerID VARCHAR,
-    notif_type VARCHAR,
-    slug VARCHAR,
-    time VARCHAR,
-    Readed BOOLEAN,
-    FOREIGN KEY (postID) REFERENCES post(id)
 );
 CREATE TABLE IF NOT EXISTS "message" (
     id VARCHAR PRIMARY KEY,

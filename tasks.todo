@@ -1,6 +1,6 @@
 #   TASKS
 
-1.  [ ] Reorganize Code Structure (models, handlers, etc.).
+1.  [x] Reorganize Code Structure (models, handlers, etc.).
 2.  [ ] Implement user registration and login functionality.
    -    [ ] Validate and store user credentials in the database.
    -    [ ] Implement login sessions using cookies with expiration dates.

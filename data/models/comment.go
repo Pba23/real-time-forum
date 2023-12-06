@@ -19,7 +19,6 @@ type Comment struct {
 	ParentID      string
 	CreateDate    string
 	ModifiedDate  string
-	Notifications []*Notification
 }
 
 type CommentItem struct {
