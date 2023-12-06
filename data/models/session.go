@@ -9,72 +9,97 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// SessionExpiry represents the duration until a session expires.
+const SessionExpiry = 2 * time.Hour
+
+// AllSessions is a concurrent map to store active sessions.
 var AllSessions sync.Map
 
+// Session represents a user session.
 type Session struct {
 	UserID   string    `json:"user_id"`
 	Username string    `json:"username"`
 	ExpireAt time.Time `json:"exp"`
 }
 
+// isExpired checks if the session has expired.
 func (s Session) isExpired() bool {
 	return s.ExpireAt.Before(time.Now())
 }
 
+// ValidSession checks if a valid session exists in the request.
 func ValidSession(req *http.Request) bool {
 	cookie, err := req.Cookie("auth_session")
-	if err == nil {
-		if _, ok := AllSessions.Load(cookie.Value); ok {
-			return ok
-		}
-	}
-	return false
+	return err == nil && isValidSession(cookie.Value)
 }
 
+// GetUserFromSession retrieves the user associated with the session.
 func GetUserFromSession(req *http.Request) *User {
 	user := User{}
 	cookie, err := req.Cookie("auth_session")
 	if err == nil {
 		if session, ok := AllSessions.Load(cookie.Value); ok {
 			_user, err := UserRepo.GetUserByID(session.(Session).UserID)
-			if err != nil {
-				log.Println("❌ ", err)
+			if err == nil {
+				user = *_user
+			} else {
+				log.Println("❌ Failed to retrieve user:", err)
 			}
-			user = *_user
 		}
 	}
 	return &user
 }
 
+// NewSessionToken creates a new session token and sets it as a cookie.
 func NewSessionToken(res http.ResponseWriter, UserID, Username string) {
-	sessionToken, err := uuid.NewV4()
-	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
-	}
+	sessionToken := generateSessionToken()
+
 	deleteSessionIfExist(Username)
-	ExpireAt := time.Now().Add(2 * time.Hour)
-	AllSessions.Store(sessionToken.String(), Session{UserID, Username, ExpireAt})
+
+	ExpireAt := time.Now().Add(SessionExpiry)
+	AllSessions.Store(sessionToken, Session{UserID, Username, ExpireAt})
+
 	http.SetCookie(res, &http.Cookie{
 		Name:     "auth_session",
-		Value:    sessionToken.String(),
+		Value:    sessionToken,
 		HttpOnly: true,
 		Expires:  ExpireAt,
+		Secure:   true, // Set to true if served over HTTPS
 	})
 }
 
+// deleteSessionIfExist deletes existing sessions for a given username.
 func deleteSessionIfExist(username string) {
 	AllSessions.Range(func(key, value interface{}) bool {
-		if username == value.(Session).Username {
+		if value.(Session).Username == username {
 			AllSessions.Delete(key)
 		}
 		return true
 	})
 }
 
+// isValidSession checks if a session is valid.
+func isValidSession(sessionToken string) bool {
+	if session, ok := AllSessions.Load(sessionToken); ok {
+		return !session.(Session).isExpired()
+	}
+	return false
+}
+
+// generateSessionToken generates a new session token.
+func generateSessionToken() string {
+	sessionToken, err := uuid.NewV4()
+	if err != nil {
+		log.Fatalf("❌ Failed to generate UUID: %v", err)
+	}
+	return sessionToken.String()
+}
+
+// CheckIfSessionExist checks if a session exists for a given username.
 func CheckIfSessionExist(username string) bool {
 	exist := false
-	AllSessions.Range(func(key, value interface{}) bool {
-		if username == value.(Session).Username {
+	AllSessions.Range(func(_, value interface{}) bool {
+		if value.(Session).Username == username {
 			exist = true
 		}
 		return true
@@ -82,23 +107,24 @@ func CheckIfSessionExist(username string) bool {
 	return exist
 }
 
+// DeleteExpiredSessions periodically deletes expired sessions.
 func DeleteExpiredSessions() {
-	for {
+	for range time.Tick(10 * time.Second) {
 		AllSessions.Range(func(key, value interface{}) bool {
 			if value.(Session).isExpired() {
 				AllSessions.Delete(key)
 			}
 			return true
 		})
-		time.Sleep(10 * time.Second)
 	}
 }
 
+// DeleteSession deletes a session associated with a given request.
 func DeleteSession(req *http.Request) bool {
 	cookie, err := req.Cookie("auth_session")
-	if err != nil {
-		return false
+	if err == nil {
+		AllSessions.Delete(cookie.Value)
+		return true
 	}
-	AllSessions.Delete(cookie.Value)
-	return true
+	return false
 }

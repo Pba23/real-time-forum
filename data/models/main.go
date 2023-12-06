@@ -8,7 +8,6 @@ import (
 )
 
 var (
-	db               *sql.DB
 	ViewRepo         *ViewRepository
 	CommentRateRepo  *CommentRateRepository
 	UserRepo         *UserRepository
@@ -16,29 +15,38 @@ var (
 	CommentRepo      *CommentRepository
 	CategoryRepo     *CategoryRepository
 	PostCategoryRepo *PostCategoryRepository
-	ResponseRepo     *ResponseRepository
 )
 
 func init() {
 	lib.LoadEnv(".env")
-	d, err := sql.Open("sqlite3", os.Getenv("DATABASE"))
+
+	// Check if the required environment variable is set
+	databaseURL := os.Getenv("DATABASE")
+	if databaseURL == "" {
+		log.Fatal("❌ DATABASE environment variable is not set")
+	}
+
+	// Open database connection
+	db, err := sql.Open("sqlite3", databaseURL)
 	if err != nil {
-		log.Fatal("❌ Couldn't open the database")
+		log.Fatalf("❌ Couldn't open the database: %v", err)
 	}
-	db = d
 
+	// Check the viability of the database connection
 	if err = db.Ping(); err != nil {
-		log.Fatal("❌ Connection to the database is dead")
+		log.Fatalf("❌ Connection to the database is dead: %v", err)
 	}
 
+	// Read and execute the SQL initialization script
 	query, err := os.ReadFile("./data/sql/init.sql")
 	if err != nil {
-		log.Fatal("couldn't read setup.sql")
+		log.Fatal("❌ Couldn't read init.sql:", err)
 	}
 	if _, err = db.Exec(string(query)); err != nil {
-		log.Fatal("database setup wasn't successful", err)
+		log.Fatal("❌ Database setup wasn't successful:", err)
 	}
 
+	// Set up repository instances
 	UserRepo = NewUserRepository(db)
 	CommentRateRepo = NewCommentRateRepository(db)
 	ViewRepo = NewViewRepository(db)
@@ -46,7 +54,6 @@ func init() {
 	CommentRepo = NewCommentRepository(db)
 	CategoryRepo = NewCategoryRepository(db)
 	PostCategoryRepo = NewPostCategoryRepository(db)
-	ResponseRepo = NewResponseRepository(db)
 
-	log.Println("✅ Database init with success")
+	log.Println("✅ Database initialized successfully")
 }

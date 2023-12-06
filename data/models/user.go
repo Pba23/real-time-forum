@@ -16,7 +16,7 @@ type User struct {
 	Lastname   string
 	Age        string
 	Gender     string
-	IsLoggedIn string
+	IsLoggedIn bool
 	Email      string
 	Password   string
 	AvatarURL  string
