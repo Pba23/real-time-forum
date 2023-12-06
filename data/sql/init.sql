@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     gender VARCHAR,
     email VARCHAR,
     password TEXT,
-    avatarURL VARCHAR,
+    avatarURL VARCHAR
 );
 -- Table for 'post'
 CREATE TABLE IF NOT EXISTS "post" (
@@ -77,6 +77,6 @@ CREATE TABLE IF NOT EXISTS "message" (
     content TEXT,
     createDate DATE,
     modifiedDate DATE,
-    FOREIGN KEY (authorID) REFERENCES user(id),
-    FOREIGN KEY (reportID) REFERENCES report(id)
+    FOREIGN KEY (senderID) REFERENCES user(id),
+    FOREIGN KEY (receiverID) REFERENCES user(id)
 );

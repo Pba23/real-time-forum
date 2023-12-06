@@ -8,10 +8,7 @@ import (
 
 func Index(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/", http.MethodGet) {
-		basePath := "base"
-		pagePath := "index"
-
-		lib.RenderPage(basePath, pagePath, nil, res)
+		res.Write([]byte("Hello World"))
 		log.Println("✅ Home page get with success")
 	}
 }

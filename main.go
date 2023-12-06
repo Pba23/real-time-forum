@@ -1,36 +1,43 @@
 package main
 
 import (
-	"real-time-forum/data/models"
-	"real-time-forum/handlers"
-	"real-time-forum/lib"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"real-time-forum/data/models"
+	"real-time-forum/handler"
+	"real-time-forum/lib"
+
+	"github.com/gorilla/mux"
 )
 
-//! TODO: CHANGE ROUTES WITH GORILLA MUX
 func main() {
 	PORT := ":" + os.Getenv("PORT")
 	ADDRESS := os.Getenv("ADDRESS")
 
 	rateLimiter := lib.NewRateLimiter(time.Minute)
 
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./assets/styles/"))))
-	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./assets/img/"))))
-	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/"))))
+	r := mux.NewRouter()
+
+	// Static file serving
+	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("./assets/styles/"))))
+	r.PathPrefix("/img/").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("./assets/img/"))))
+	r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/"))))
 
 	// Login/authentication rate limiting
-	http.Handle("/sign-up", rateLimiter.Wrap("auth", handler.SignUp))
-	http.Handle("/sign-in", rateLimiter.Wrap("auth", handler.SignIn))
-	http.Handle("/logout", rateLimiter.Wrap("auth", handler.Logout))
+	r.Handle("/", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Index)))
+	r.Handle("/sign-up", rateLimiter.Wrap("auth", http.HandlerFunc(handler.SignUp)))
+	r.Handle("/sign-in", rateLimiter.Wrap("auth", http.HandlerFunc(handler.SignIn)))
+	r.Handle("/logout", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Logout)))
 
 	go models.DeleteExpiredSessions()
 
+	// Start the server with the Gorilla Mux router
 	log.Print("Server started and running on ")
 	log.Println(ADDRESS + PORT)
-	if err := http.ListenAndServe(PORT, nil); err != nil {
+	if err := http.ListenAndServe(PORT, r); err != nil {
 		log.Fatal(err)
 	}
 }
