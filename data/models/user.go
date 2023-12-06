@@ -12,7 +12,7 @@ import (
 type User struct {
 	ID         string
 	Username   string
-	Fistname   string
+	Firstname   string
 	Lastname   string
 	Age 	   string
 	Gender     string
@@ -132,10 +132,10 @@ func (ur *UserRepository) SelectAllUsers() ([]User, error) {
 			ID:        ID,
 			Email:     Email,
 			Username:  Username,
-			Fistname : Fistname
-			Lastname :Lastname
-			Age :Age 	
-			Gender  :Gender  
+			Firstname : Fistname,
+			Lastname :Lastname,
+			Age :Age,
+			Gender  :Gender,
 			Password:  Password,
 			AvatarURL: AvatarUrl,
 			Role:      Role,
@@ -190,10 +190,10 @@ func (ur *UserRepository) SelectRandomUsers(count int) ([]User, error) {
 		err := rows.Scan(
 			&user.ID,
 			&user.Username,
-			&user.firstname,
-			&user.lastname,
-			&user.age,
-			&user.gender;
+			&user.Firstname,
+			&user.Lastname,
+			&user.Age,
+			&user.Gender,
 			&user.Email,
 			&user.Password,
 			&user.AvatarURL,
@@ -224,7 +224,7 @@ func (ur *UserRepository) SelectRandomUsers(count int) ([]User, error) {
 // Update a user in the database
 func (ur *UserRepository) UpdateUser(user *User) error {
 	_, err := ur.db.Exec("UPDATE user SET username = ?, firstname = ?,lastname = ?,age = ?,gender = ?, email = ?, password = ?, avatarURL = ?, role = ? WHERE id = ?",
-		user.Username, user.firstname,user.lastname,user.age,user.gender, user.Email, user.Password, user.AvatarURL, user.Role, user.ID)
+		user.Username, user.Firstname,user.Lastname,user.Age,user.Gender, user.Email, user.Password, user.AvatarURL, user.Role, user.ID)
 	return err
 }
 

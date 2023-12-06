@@ -33,7 +33,7 @@ func (rr *MessageRepository) CreateMessage(message *Message) error {
 	}
 	message.ID = ID.String()
 	_, err = rr.db.Exec("INSERT INTO message (id, senderID, receiverID, content, createDate, modifiedDate) VALUES (?, ?, ?, ?, ?, ?)",
-		message.ID, message.SenderIDID, message.ReceiverID, message.Text, message.CreateDate, message.ModifiedDate)
+		message.ID, message.SenderID, message.ReceiverID, message.Text, message.CreateDate, message.ModifiedDate)
 	return err
 }
 func (rr *MessageRepository) GetAllMessage() ([]Message, error) {

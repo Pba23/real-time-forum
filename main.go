@@ -45,19 +45,6 @@ func main() {
 	http.Handle("/category/", rateLimiter.Wrap("api", handler.GetPostOfCategory))
 	http.Handle("/notification/", rateLimiter.Wrap("api", handler.GetNotifs))
 	http.Handle("/posts", rateLimiter.Wrap("api", handler.SeePosts))
-	
-	/* httpsServer := http.Server{
-		Addr: PORT,
-		TLSConfig: &tls.Config{
-			MinVersion:               tls.VersionTLS12, // Minimum TLS version supported
-			PreferServerCipherSuites: true,             // Prefer the server's cipher suite order
-			CipherSuites: []uint16{
-				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-				// Add more cipher suites as needed
-			},
-		},
-	} */
 
 	go models.DeleteExpiredSessions()
 
