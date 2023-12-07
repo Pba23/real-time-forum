@@ -51,8 +51,8 @@ func (pr *PostRepository) CreatePost(post *Post) error {
 		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	post.ID = ID.String()
-	_, err = pr.db.Exec("INSERT INTO post (id, title, slug, description, imageURL, authorID, isEdited, createDate, modifiedDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		post.ID, post.Title, post.Slug, post.Description, post.ImageURL, post.AuthorID, post.IsEdited, post.CreateDate, post.ModifiedDate)
+	_, err = pr.db.Exec("INSERT INTO post (id, title, slug, description, imageURL, authorID, createDate, modifiedDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		post.ID, post.Title, post.Slug, post.Description, post.ImageURL, post.AuthorID, post.CreateDate, post.ModifiedDate)
 	return err
 }
 
@@ -214,8 +214,8 @@ func (pr *PostRepository) GetNumberOfPosts() int {
 
 // Update a post in the database
 func (pr *PostRepository) UpdatePost(post *Post) error {
-	_, err := pr.db.Exec("UPDATE post SET title = ?, slug = ?, description = ?, imageURL = ?, authorID = ?, isEdited = ?, createDate = ?, modifiedDate = ? = ? WHERE id = ?",
-		post.Title, post.Slug, post.Description, post.ImageURL, post.AuthorID, post.IsEdited, post.CreateDate, post.ModifiedDate, post.ID)
+	_, err := pr.db.Exec("UPDATE post SET title = ?, slug = ?, description = ?, imageURL = ?, authorID = ?, createDate = ?, modifiedDate = ? = ? WHERE id = ?",
+		post.Title, post.Slug, post.Description, post.ImageURL, post.AuthorID, post.CreateDate, post.ModifiedDate, post.ID)
 	return err
 }
 

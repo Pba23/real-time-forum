@@ -31,7 +31,8 @@ func main() {
 	r.Handle("/sign-up", rateLimiter.Wrap("auth", http.HandlerFunc(handler.SignUp)))
 	r.Handle("/sign-in", rateLimiter.Wrap("auth", http.HandlerFunc(handler.SignIn)))
 	r.Handle("/logout", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Logout)))
-
+	r.Handle("/post", rateLimiter.Wrap("api", http.HandlerFunc(handler.CreatePost)))
+	r.Handle("/edit-post/{postID}", rateLimiter.Wrap("api", http.HandlerFunc(handler.EditPost)))
 	go models.DeleteExpiredSessions()
 
 	// Start the server with the Gorilla Mux router
