@@ -17,6 +17,28 @@ html {
     --bg: var(--darkest);
     --color: var(--lightest);
     --surface: var(--darker);
+    --f-height: calc(100vh - (5rem + 10vh));
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+    margin-left: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
 }
 
 html {
@@ -41,9 +63,9 @@ body {
 body {
     font-size: 16px;
     width: 100%;
-    max-width: 1126px;
+    max-width: 1240px;
     margin: auto;
-    padding: 1.6rem 1.6rem 3.2rem;
+    padding: 1rem 1.6rem 3rem;
     background: var(--bg);
     color: var(--color);
     font-size: 1.6rem;
@@ -102,9 +124,19 @@ select {
     cursor: pointer;
 }
 
+textarea {
+    resize: none;
+    width: calc(100% - 2rem);
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 40px;
+    border: none;
+    background-color: var(--darkest);
+}
+
 main {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 3fr;
     grid-column-gap: 1.6rem;
     grid-row-gap: 1.6rem;
     position: relative;
@@ -121,7 +153,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2.4rem;
+    margin-bottom: 1.8rem;
     position: relative;
 }
 
@@ -135,7 +167,52 @@ header:before {
     background: var(--primary-trans);
 }
 
+footer {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    width: 100%;
+    bottom: 0;
+}
+
+@-webkit-keyframes beat {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes beat {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+footer span.heart {
+    margin: 0rem 0.25rem;
+    transform-origin: center;
+    animation: beat 1s infinite alternate;
+}
+
 .card {
+    position: relative;
     border-radius: 0.8rem;
     background: var(--surface);
     width: 100%;
@@ -143,16 +220,32 @@ header:before {
     box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.12);
 }
 
+.card__footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+
 .card__body,
 .card__header {
-    padding: 2.4rem;
+    padding: 2rem;
+}
+
+.card.item .card__body,
+.card.item .card__header {
+    padding: 1rem;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 700px) {
-
     .card__body,
     .card__header {
-        padding: 1.2rem;
+        padding: 1rem;
+    }
+
+    .card.item .card__body,
+    .card.item .card__header {
+        padding: .75rem;
     }
 }
 
@@ -247,8 +340,8 @@ header:before {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 4.8rem;
-    height: 4.8rem;
+    width: 4rem;
+    height: 4rem;
     box-shadow: inset 0px 0px 0px 1px currentColor;
     border-radius: 50%;
     background: var(--lightest);
@@ -267,7 +360,7 @@ header:before {
     height: 9.6rem;
 }
 
-.button {
+button {
     display: inline-block;
     background: var(--dark);
     border: 0;
@@ -279,6 +372,10 @@ header:before {
 .button--block {
     display: block;
     width: 100%;
+}
+
+.button--small {
+    padding: .75rem;
 }
 
 .button:hover,
@@ -326,6 +423,22 @@ header:before {
         width: 2.4rem;
         height: 2.4rem;
     }
+}
+
+.send {
+    position: relative;
+}
+
+.send button {
+    position: absolute;
+    right: 1.9rem;
+    bottom: 1.9rem;
+    padding: 1rem;
+    border-radius: 2rem;
+}
+
+.send textarea {
+    padding-right: 5rem;
 }
 
 .button--light {
@@ -492,194 +605,307 @@ header:before {
     font-size: 1.4rem;
 }
 
+.f-height {
+    overflow-y: auto;
+    height: var(--f-height);
+}
+
+.f-width {
+    width: 100%;
+}
+
+.online {
+    display: block;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: .8rem;
+    background-color: var(--teal);
+}
+
+.p--2,
+.px--2,
 .pl--2 {
     padding-left: 0.2rem;
 }
 
+.m--2,
+.mx--2,
 .ml--2 {
     margin-left: 0.2rem;
 }
 
+.p--2,
+.px--2,
 .pr--2 {
     padding-right: 0.2rem;
 }
 
+.m--2,
+.mx--2,
 .mr--2 {
     margin-right: 0.2rem;
 }
 
+.p--2,
+.py--2,
 .pb--2 {
     padding-bottom: 0.2rem;
 }
 
+.m--2,
+.my--2,
 .mb--2 {
     margin-bottom: 0.2rem;
 }
 
+.p--2,
+.py--2,
 .pt--2 {
     padding-top: 0.2rem;
 }
 
+.m--2,
+.my--2,
 .mt--2 {
     margin-top: 0.2rem;
 }
 
+.p--4,
+.px--4,
 .pl--4 {
     padding-left: 0.4rem;
 }
 
+.m--4,
+.mx--4,
 .ml--4 {
     margin-left: 0.4rem;
 }
 
+.p--4,
+.px--4,
 .pr--4 {
     padding-right: 0.4rem;
 }
 
+.m--4,
+.mx--4,
 .mr--4 {
     margin-right: 0.4rem;
 }
 
+.p--4,
+.py--4,
 .pb--4 {
     padding-bottom: 0.4rem;
 }
 
+.m--4,
+.my--4,
 .mb--4 {
     margin-bottom: 0.4rem;
 }
 
+.p--4,
+.py--4,
 .pt--4 {
     padding-top: 0.4rem;
 }
 
+.m--4,
+.my--4,
 .mt--4 {
     margin-top: 0.4rem;
 }
 
+.p--8,
+.px--8,
 .pl--8 {
     padding-left: 0.8rem;
 }
 
+.m--8,
+.mx--8,
 .ml--8 {
     margin-left: 0.8rem;
 }
 
+.p--8,
+.px--8,
 .pr--8 {
     padding-right: 0.8rem;
 }
 
+.m--8,
+.mx--8,
 .mr--8 {
     margin-right: 0.8rem;
 }
 
+.p--8,
+.py--8,
 .pb--8 {
     padding-bottom: 0.8rem;
 }
 
+.m--8,
+.my--8,
 .mb--8 {
     margin-bottom: 0.8rem;
 }
 
+.p--8,
+.py--8,
 .pt--8 {
     padding-top: 0.8rem;
 }
 
+.m--8,
+.my--8,
 .mt--8 {
     margin-top: 0.8rem;
 }
 
+.p--16,
+.px--16,
 .pl--16 {
     padding-left: 1.6rem;
 }
 
+.m--16,
+.mx--16,
 .ml--16 {
     margin-left: 1.6rem;
 }
 
+.p--16,
+.px--16,
 .pr--16 {
     padding-right: 1.6rem;
 }
 
+.m--16,
+.mx--16,
 .mr--16 {
     margin-right: 1.6rem;
 }
 
+.p--16,
+.py--16,
 .pb--16 {
     padding-bottom: 1.6rem;
 }
 
+.m--16,
+.my--16,
 .mb--16 {
     margin-bottom: 1.6rem;
 }
 
+.p--16,
+.py--16,
 .pt--16 {
     padding-top: 1.6rem;
 }
 
+.m--16,
+.my--16,
 .mt--16 {
     margin-top: 1.6rem;
 }
 
+.p--24,
+.px--24,
 .pl--24 {
     padding-left: 2.4rem;
 }
 
+.m--24,
+.mx--24,
 .ml--24 {
     margin-left: 2.4rem;
 }
 
+.p--24,
+.px--24,
 .pr--24 {
     padding-right: 2.4rem;
 }
 
+.m--24,
+.mx--24,
 .mr--24 {
     margin-right: 2.4rem;
 }
 
+.p--24,
+.py--24,
 .pb--24 {
     padding-bottom: 2.4rem;
 }
 
+.m--24,
+.my--24,
 .mb--24 {
     margin-bottom: 2.4rem;
 }
 
+.p--24,
+.py--24,
 .pt--24 {
     padding-top: 2.4rem;
 }
 
+.m--24,
+.my--24,
 .mt--24 {
     margin-top: 2.4rem;
 }
 
+.p--32,
+.px--32,
 .pl--32 {
     padding-left: 3.2rem;
 }
 
+.m--32,
+.mx--32,
 .ml--32 {
     margin-left: 3.2rem;
 }
 
+.p--32,
+.px--32,
 .pr--32 {
     padding-right: 3.2rem;
 }
 
+.m--32,
+.mx--32,
 .mr--32 {
     margin-right: 3.2rem;
 }
 
+.p--32,
+.py--32,
 .pb--32 {
     padding-bottom: 3.2rem;
 }
 
+.m--32,
+.my--32,
 .mb--32 {
     margin-bottom: 3.2rem;
 }
 
+.p--32,
+.py--32,
 .pt--32 {
     padding-top: 3.2rem;
 }
 
+.m--32,
+.my--32,
 .mt--32 {
     margin-top: 3.2rem;
 }

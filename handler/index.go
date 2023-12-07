@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"html/template"
 	"log"
 	"net/http"
 	"real-time-forum/lib"
@@ -8,7 +9,14 @@ import (
 
 func Index(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/", http.MethodGet) {
-		res.Write([]byte("Hello World"))
+		files := []string{"public/index.html",}
+		tpl, err := template.ParseFiles(files...)
+		if err != nil {
+			res.WriteHeader(http.StatusInternalServerError)
+			log.Println("🚨 " + err.Error())
+		} else {
+			tpl.Execute(res, nil)
+		}
 		log.Println("✅ Home page get with success")
 	}
 }
