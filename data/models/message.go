@@ -11,7 +11,7 @@ import (
 type Message struct {
 	ID           string
 	SenderID     string
-	ReceiverID     string
+	ReceiverID   string
 	Text         string
 	CreateDate   string
 	ModifiedDate string
@@ -31,7 +31,7 @@ func NewMessageRepository(db *sql.DB) *MessageRepository {
 func (rr *MessageRepository) CreateMessage(message *Message) error {
 	ID, err := uuid.NewV4()
 	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
+		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	message.ID = ID.String()
 	_, err = rr.db.Exec("INSERT INTO message (id, senderID, receiverID, content, createDate, modifiedDate) VALUES (?, ?, ?, ?, ?, ?)",

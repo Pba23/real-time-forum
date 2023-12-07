@@ -38,7 +38,7 @@ func NewViewRepository(db *sql.DB) *ViewRepository {
 func (vr *ViewRepository) CreateView(view *View) error {
 	ID, err := uuid.NewV4()
 	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
+		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	view.ID = ID.String()
 	_, err = vr.db.Exec("INSERT INTO view (id, rate, authorID, postID) VALUES (?, ?, ?, ?, ?)",

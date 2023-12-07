@@ -48,7 +48,7 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 func (pr *PostRepository) CreatePost(post *Post) error {
 	ID, err := uuid.NewV4()
 	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
+		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	post.ID = ID.String()
 	_, err = pr.db.Exec("INSERT INTO post (id, title, slug, description, imageURL, authorID, isEdited, createDate, modifiedDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -224,5 +224,3 @@ func (pr *PostRepository) DeletePost(postID string) error {
 	_, err := pr.db.Exec("DELETE FROM post WHERE id = ?", postID)
 	return err
 }
-
-

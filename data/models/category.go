@@ -29,7 +29,7 @@ func NewCategoryRepository(db *sql.DB) *CategoryRepository {
 func (cr *CategoryRepository) CreateCategory(category *Category) error {
 	ID, err := uuid.NewV4()
 	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
+		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	category.ID = ID.String()
 	_, err = cr.db.Exec("INSERT INTO category (id, name, createDate, modifiedDate) VALUES (?, ?, ?, ?)",

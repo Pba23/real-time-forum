@@ -34,7 +34,7 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 
 		// Save the user to the database
 		if err := models.UserRepo.CreateUser(&user); err != nil {
-			log.Fatalf(err.Error())
+			log.Printf(err.Error())
 			lib.HandleError(res, http.StatusInternalServerError, "Error creating user")
 			return
 		}

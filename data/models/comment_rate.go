@@ -29,7 +29,7 @@ func NewCommentRateRepository(db *sql.DB) *CommentRateRepository {
 func (vr *CommentRateRepository) CreateCommentRate(Comment_Rate *CommentRate) error {
 	ID, err := uuid.NewV4()
 	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
+		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	Comment_Rate.ID = ID.String()
 	_, err = vr.db.Exec("INSERT INTO comment_rate (id, rate, authorID, commentID) VALUES (?, ?, ?, ?)",

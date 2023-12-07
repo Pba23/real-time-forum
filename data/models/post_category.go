@@ -30,7 +30,7 @@ func NewPostCategoryRepository(db *sql.DB) *PostCategoryRepository {
 func (pcr *PostCategoryRepository) CreatePostCategory(categoryID, postID string) error {
 	ID, err := uuid.NewV4()
 	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
+		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	postCategory := PostCategory{
 		ID:         ID.String(),

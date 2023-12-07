@@ -90,7 +90,7 @@ func isValidSession(sessionToken string) bool {
 func generateSessionToken() string {
 	sessionToken, err := uuid.NewV4()
 	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
+		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	return sessionToken.String()
 }

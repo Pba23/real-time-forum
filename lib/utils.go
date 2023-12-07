@@ -159,7 +159,7 @@ func generateUniqueFilename(filename string) string {
 	ext := filepath.Ext(filename)
 	randomName, err := uuid.NewV4()
 	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
+		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	newFilename := randomName.String() + ext
 	return newFilename

@@ -29,12 +29,12 @@ func init() {
 	// Open database connection
 	db, err := sql.Open("sqlite3", databaseURL)
 	if err != nil {
-		log.Fatalf("❌ Couldn't open the database: %v", err)
+		log.Printf("❌ Couldn't open the database: %v", err)
 	}
 
 	// Check the viability of the database connection
 	if err = db.Ping(); err != nil {
-		log.Fatalf("❌ Connection to the database is dead: %v", err)
+		log.Printf("❌ Connection to the database is dead: %v", err)
 	}
 
 	// Read and execute the SQL initialization script
