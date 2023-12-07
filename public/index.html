@@ -6,18 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="css/chat.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 
 <body>
-    <header>
-        <img class="logo" src="./img/logo.svg" draggable="false">
-        <div>
-            <button class="button--primary mr--8">Login</button>
-            <button class="button--primary">Register</button>
-        </div>
-    </header>
+    <l-header></l-header>
     <main>
         <div class="l-grid__item l-grid__item--sticky f-height px--8">
             <div class="card bg--light-gradient text--dark">
@@ -25,107 +19,9 @@
                     <div class="display--flex justify--space-between">
                         <div class="text--left f-width">
                             <div class="display--flex align--center justify--space-between f-width">
-                                <img class="avatar mr--6"
-                                    src="https://www.formula1.com/content/dam/fom-website/drivers/D/DANRIC01_Daniel_Ricciardo/danric01.png.transform/2col-retina/image.png">
-                                <span class="mr--6">Daniel Ric</span>
-                                <div>
-                                    <button class="button--primary button--small">✏️</button>
-                                    <button class="button--primary button--small">🚨</button>
-                                </div>
+
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <img class="avatar mr--8"
-                            src="https://www.formula1.com/content/dam/fom-website/drivers/D/DANRIC01_Daniel_Ricciardo/danric01.png.transform/2col-retina/image.png">
-                        <span class="mr--16">Daniel Ricciardo</span>
-                        <span class="online"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <span class="mr--16">Aut voluptatem sunt consectetur recusandae atque et et sint.</span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <img class="avatar mr--8"
-                            src="https://www.formula1.com/content/dam/fom-website/drivers/D/DANRIC01_Daniel_Ricciardo/danric01.png.transform/2col-retina/image.png">
-                        <span class="mr--16">Daniel Ricciardo</span>
-                        <span class="online"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <img class="avatar mr--8"
-                            src="https://www.formula1.com/content/dam/fom-website/drivers/D/DANRIC01_Daniel_Ricciardo/danric01.png.transform/2col-retina/image.png">
-                        <span class="mr--16">Daniel Ricciardo</span>
-                        <span class="online"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <span class="mr--16">Velit explicabo vitae labore sed et.</span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <span class="mr--16">Eos mollitia dolores libero est eaque ut eaque cupiditate nobis.</span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <img class="avatar mr--8"
-                            src="https://www.formula1.com/content/dam/fom-website/drivers/D/DANRIC01_Daniel_Ricciardo/danric01.png.transform/2col-retina/image.png">
-                        <span class="mr--16">Daniel Ricciardo</span>
-                        <span class="online"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <span class="mr--16">Eos mollitia dolores libero est eaque ut eaque cupiditate nobis.</span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <span class="mr--16">Velit explicabo vitae labore sed et.</span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <span class="mr--16">Velit explicabo vitae labore sed et.</span>
-                    </div>
-                </div>
-            </div>
-            <div class="card item">
-                <div class="card__body">
-                    <div class="display--flex align--center f-width">
-                        <img class="avatar mr--8"
-                            src="https://www.formula1.com/content/dam/fom-website/drivers/D/DANRIC01_Daniel_Ricciardo/danric01.png.transform/2col-retina/image.png">
-                        <span class="mr--16">Daniel Ricciardo</span>
-                        <span class="online"></span>
                     </div>
                 </div>
             </div>
@@ -133,59 +29,7 @@
         <div class="l-grid__item">
             <div class="card f-height">
                 <div class="card__header">
-                    <h3>Chat with <span class="bg--primary">@Daniel Ricciardo</span></h3>
-                </div>
-                <div class="card__body">
-                    <div class="outer-wrap">
-                        <div class="wrap">
-                            <div class="message active">
-                                <div class="profile-picture">
-                                    <img src="https://images.unsplash.com/photo-1562695914-1970cc32ef52?crop=entropy&cs=srgb&fm=jpg&ixid=M3wzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2ODQ1MjMyMDV8&ixlib=rb-4.0.3&q=85"
-                                        alt="Profile Picture" />
-                                </div>
-                                <div class="speech-bubble">
-                                    <p>Why don't scientists trust atoms?</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="wrap">
-                            <div class="message active outgoing">
-                                <div class="profile-picture">
-                                    <img src="https://images.unsplash.com/photo-1548655820-aaef3a7db508?crop=entropy&cs=srgb&fm=jpg&ixid=M3wzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2ODQ1MjMyMDV8&ixlib=rb-4.0.3&q=85"
-                                        alt="Profile Picture">
-                                </div>
-                                <div class="speech-bubble">
-                                    <p>I don't know</p>
-                                </div>
-                            </div>
-                            <div class="message active outgoing">
-                                <div class="speech-bubble">
-                                    <p>Why?</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="wrap">
-                            <div class="message active">
-                                <div class="profile-picture">
-                                    <img src="https://images.unsplash.com/photo-1562695914-1970cc32ef52?crop=entropy&cs=srgb&fm=jpg&ixid=M3wzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2ODQ1MjMyMDV8&ixlib=rb-4.0.3&q=85"
-                                        alt="Profile Picture" />
-                                </div>
-                                <div class="speech-bubble">
-                                    <p>Because they make everything up!</p>
-                                </div>
-                            </div>
-                            <div class="message active">
-                                <div class="speech-bubble">
-                                    <p>😂😂😂😂😂😂</p>
-                                </div>
-                            </div>
-                            <div class="message active">
-                                <div class="speech-bubble">
-                                    <p>😂</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <h3></h3>
                 </div>
                 <div class="card__footer">
                     <div class="send">
@@ -196,6 +40,19 @@
             </div>
         </div>
     </main>
+    <l-footer></l-footer>
+
+    <script rel=preload type=module>
+        // Load all components
+        Promise.all([
+            // Components which are not effected by routing
+            import('/js/layouts/header.js').then(module => ['l-header', module.default]),
+            import('/js/layouts/footer.js').then(module => ['l-footer', module.default])
+        ]).then(elements => elements.forEach(element => {
+            // don't define already existing customElements
+            if (element && !customElements.get(element[0])) customElements.define(...element)
+        }))
+      </script>
 </body>
 
 </html>
