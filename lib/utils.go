@@ -2,6 +2,7 @@ package lib
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"unicode"
 
@@ -14,10 +15,10 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"text/template"
 	"time"
 
 	"github.com/gofrs/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var maxSize int64 = 20 * 1024 * 1024 // 20 MB
@@ -84,7 +85,7 @@ func ValidateRequest(req *http.Request, res http.ResponseWriter, url, method str
 	}
 	if req.URL.Path != url {
 		res.WriteHeader(http.StatusNotFound)
-		RenderPage("base", "404", nil, res)
+		HandleError(res, http.StatusNotFound, "Page not found")
 		log.Println("404 ❌ - Page not found ", url)
 		return false
 	}
@@ -98,14 +99,20 @@ func ValidateRequest(req *http.Request, res http.ResponseWriter, url, method str
 	return true
 }
 
-func RenderPage(basePath, pagePath string, data any, res http.ResponseWriter) {
-	files := []string{"templates/common/" + basePath + ".html", "templates/" + pagePath + ".html"}
-	tpl, err := template.ParseFiles(files...)
-	if err != nil {
-		res.WriteHeader(http.StatusInternalServerError)
-		log.Println("🚨 " + err.Error())
-	} else {
-		tpl.Execute(res, data)
+// HandleError writes an error response in JSON format with the given status code and message.
+func HandleError(res http.ResponseWriter, statusCode int, message string) {
+	errorResponse := map[string]string{"error": message}
+	SendJSONResponse(res, statusCode, errorResponse)
+}
+
+// SendJSONResponse writes a JSON response with the given status code and data.
+func SendJSONResponse(res http.ResponseWriter, statusCode int, data interface{}) {
+	res.Header().Set("Content-Type", "application/json")
+	res.WriteHeader(statusCode)
+
+	if err := json.NewEncoder(res).Encode(data); err != nil {
+		// If encoding fails, log the error (you might want to handle this differently)
+		log.Println("Error encoding JSON response:", err)
 	}
 }
 
@@ -252,4 +259,10 @@ func VerifyPassword(password string) bool {
 		}
 	}
 	return num >= 8
+}
+
+// CheckPasswordHash checks if the given plain text password matches the hashed password.
+func CheckPasswordHash(password, hashedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
 }

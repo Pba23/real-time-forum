@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"real-time-forum/lib"
-	"strings"
 	"testing"
 )
 
@@ -36,27 +35,5 @@ func TestValidateRequest(t *testing.T) {
 	valid := lib.ValidateRequest(req, res, "/path/to/page", "GET")
 	if !valid {
 		t.Errorf("Expected request to be valid, but it wasn't")
-	}
-}
-
-func TestRenderPage(t *testing.T) {
-	res := httptest.NewRecorder()
-	data := struct {
-		Title string
-	}{
-		Title: "Test Page",
-	}
-
-	lib.RenderPage("common", "base", data, res)
-
-	// Check response status code, content type, etc.
-	if res.Code != http.StatusOK {
-		t.Errorf("Expected status code %d, but got %d", http.StatusOK, res.Code)
-	}
-
-	// Check if the rendered content contains the expected data
-	expectedContent := "Test Page"
-	if !strings.Contains(res.Body.String(), expectedContent) {
-		t.Errorf("Expected response body to contain '%s', but it didn't", expectedContent)
 	}
 }

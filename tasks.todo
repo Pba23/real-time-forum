@@ -12,11 +12,14 @@
    -    [ ] Implement sending and receiving messages.
    -    [ ] Implement notifications.
    -    [ ] Implement  user online/offline status.
-6.  [ ] Implement user registration and login functionality.
-   -    [ ] Validate and store user credentials in the database.
-   -    [ ] Implement login sessions using cookies with expiration dates.
-   -    [ ] Optionally, use UUID for session management (Bonus task).
-   -    [ ] Implement logout
+6.  [x] Implement user registration and login functionality.
+   -    [x] Validate and store user credentials in the database.
+   -    [x] Implement login sessions using cookies with expiration dates.
+   -    [x] Optionally, use UUID for session management (Bonus task).
+   -    [x] Implement logout
+   -    [ ] UI Login
+   -    [ ] UI Register
+   -    [ ] UI Logout
 7.  [ ] Implement post and comment creation functionality.
    -    [ ] Create post with categories and image.
    -    [ ] Allow non-registered users to view posts.

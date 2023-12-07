@@ -122,6 +122,7 @@ func DeleteExpiredSessions() {
 // DeleteSession deletes a session associated with a given request.
 func DeleteSession(req *http.Request) bool {
 	cookie, err := req.Cookie("auth_session")
+	log.Println("❌ Deleting session:", cookie.Value)
 	if err == nil {
 		AllSessions.Delete(cookie.Value)
 		return true

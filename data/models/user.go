@@ -22,6 +22,11 @@ type User struct {
 	AvatarURL  string
 }
 
+type UserSignIn struct {
+	Identifiant string
+	Password    string
+}
+
 var DEFAULT_AVATAR = "/uploads/avatar.1.jpeg"
 
 type UserRepository struct {
@@ -38,11 +43,22 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 func (ur *UserRepository) CreateUser(user *User) error {
 	ID, err := uuid.NewV4()
 	if err != nil {
-		log.Fatalf("❌ Failed to generate UUID: %v", err)
+		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	user.ID = ID.String()
-	_, err = ur.db.Exec("INSERT INTO user (id, nickname, firstname, lastname, age, gender, email, password, avatarURL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		user.ID, user.Nickname, user.Email, user.Password, user.AvatarURL)
+	user.Email = strings.ToLower(user.Email)
+	user.Nickname = strings.ToLower(user.Nickname)
+	_, err = ur.db.Exec("INSERT INTO user (id, nickname, firstname, lastname, age, gender, email, password, avatarURL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		user.ID,
+		user.Nickname,
+		user.Firstname,
+		user.Lastname,
+		user.Age,
+		user.Gender,
+		user.Email,
+		user.Password,
+		user.AvatarURL,
+	)
 	return err
 }
 
@@ -171,11 +187,10 @@ func (ur *UserRepository) DeleteUser(userID string) error {
 }
 
 // Check if user exists
-func (ur *UserRepository) IsExistedByEmailOrNickname(email, nickname string) (*User, bool) {
+func (ur *UserRepository) IsExistedByIdentifiant(identifiant string) (*User, bool) {
 	var user User
-	email = strings.ToLower(email)
-	nickname = strings.ToLower(nickname)
-	row := ur.db.QueryRow("SELECT password FROM user WHERE email = ? OR nickname = ?", email, nickname)
+	identifiant = strings.ToLower(identifiant)
+	row := ur.db.QueryRow("SELECT password FROM user WHERE email = ? OR nickname = ?", identifiant, identifiant)
 	err := row.Scan(&user.Password)
 	if err != nil {
 		log.Println("❌ ", err)
@@ -201,4 +216,3 @@ func (ur *UserRepository) IsExistedByID(ID string) (*User, bool) {
 	}
 	return &user, true
 }
-
