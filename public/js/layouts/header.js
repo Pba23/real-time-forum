@@ -30,10 +30,12 @@ export default class Header extends HTMLElement {
     render() {
         this.innerHTML = /* html */`
         <header>
-            <img class="logo" src="./img/logo.svg" draggable="false">
+            <a href="#/">
+                <img class="logo" src="./img/logo.svg" draggable="false">
+            </a>
             <div>
-                <button class="primary mr--8">Login</button>
-                <button class="primary">Register</button>
+                <a href="#/login" class="btn primary not mr--8">Login</a>
+                <a href="#/register" class="btn primary not">Register</a>
             </div>
         </header>`
     }

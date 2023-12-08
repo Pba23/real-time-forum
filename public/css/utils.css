@@ -5,11 +5,13 @@ button.light {
 
 .btn.primary,
 button.primary {
+    color: var(--white);
     background: var(--primary) !important;
 }
 
 .btn.dark,
 button.dark {
+    color: var(--white);
     background: var(--darkest) !important;
 }
 
