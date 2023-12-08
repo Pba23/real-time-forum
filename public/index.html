@@ -13,17 +13,20 @@
 </head>
 
 <body>
-    <l-header></l-header>
-    <main>
+    <c-user>
+        <l-header></l-header>
         <l-router></l-router>
-    </main>
-    <l-footer></l-footer>
+        <l-footer></l-footer>
+    </c-user>
 
     <script rel=preload type=module>
         // Load all components
         Promise.all([
-            // Components which are not effected by routing
+            // Router
             import('/js/lib/router.js').then(module => ['l-router', module.default]),
+            // Controllers
+            import('/js/controllers/user.js').then(module => ['c-user', module.default]),
+            // Components which are not effected by routing
             import('/js/layouts/header.js').then(module => ['l-header', module.default]),
             import('/js/layouts/footer.js').then(module => ['l-footer', module.default])
         ]).then(elements => elements.forEach(element => {

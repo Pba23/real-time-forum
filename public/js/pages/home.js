@@ -30,7 +30,9 @@ export default class Home extends HTMLElement {
      */
     render() {
         this.innerHTML = /* html */`
-        <h1>Welcome</h1>
+        <main>
+            <h1>Welcome</h1>
+        </main>
       `
     }
 }

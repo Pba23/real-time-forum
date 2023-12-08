@@ -48,14 +48,11 @@ export default class Router extends HTMLElement {
      * Listens to hash changes and forwards the new hash to route
      */
     this.hashChangeListener = event => {
-      console.log("Change route");
-      console.log(event);
       this.route(location.hash, false, event.newURL === event.oldURL)
     }
   }
 
   connectedCallback() {
-    console.log("Router connected");
     self.addEventListener('hashchange', this.hashChangeListener)
     this.route(this.routes.some(route => route.regExp.test(location.hash)) ? location.hash : '#/', true)
   }

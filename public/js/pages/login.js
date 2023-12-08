@@ -30,7 +30,9 @@ export default class Login extends HTMLElement {
      */
     render() {
         this.innerHTML = /* html */`
-        <h1>Login</h1>
+        <main>
+            <h1>Login</h1>
+        </main>
       `
     }
 }

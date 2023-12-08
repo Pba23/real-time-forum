@@ -100,8 +100,28 @@ a:not(.not):hover {
 }
 
 form>button,
+form>.group>.item>label,
 form>label {
     margin-left: 1.5rem;
+}
+
+form>.group {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+form>.group>.item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+form>.group>.item.radio {
+    width: 30%;
 }
 
 button,
@@ -121,6 +141,14 @@ input:focus,
 select:active,
 select:focus {
     outline: 0;
+    box-shadow: 0px 0px 0px 0.4rem var(--primary-trans);
+}
+
+button:hover,
+textarea:hover,
+input:hover,
+select:hover {
+    filter: brightness(.5);
 }
 
 button,
@@ -129,6 +157,7 @@ select {
 }
 
 input[type="text"],
+input[type="number"],
 input[type="email"],
 input[type="password"],
 textarea {
@@ -141,8 +170,54 @@ textarea {
     background-color: var(--darkest);
 }
 
+form>.group,
 form>input {
-    margin-bottom: 2rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.radio {
+    margin-top: 2rem;
+}
+
+.radio input[type=radio] {
+    position: absolute;
+    opacity: 0;
+}
+
+.radio input[type=radio]+label:before {
+    content: "";
+    background: #f4f4f4;
+    border-radius: 100%;
+    border: 1px solid #b4b4b4;
+    display: inline-block;
+    width: 2em;
+    height: 2em;
+    position: relative;
+    margin-right: 1em;
+    vertical-align: top;
+    cursor: pointer;
+    text-align: center;
+    transition: all 250ms ease;
+}
+
+.radio input[type=radio]:checked+label:before {
+    background-color: var(--primary);
+    box-shadow: inset 0 0 0 4px #f4f4f4;
+}
+
+.radio input[type=radio]:focus+label:before {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.radio input[type=radio]:disabled+label:before {
+    box-shadow: inset 0 0 0 4px #f4f4f4;
+    border-color: #b4b4b4;
+    background: #b4b4b4;
+}
+
+.radio input[type=radio]+label:empty:before {
+    margin-right: 0;
 }
 
 main {
