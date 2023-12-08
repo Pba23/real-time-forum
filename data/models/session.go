@@ -18,7 +18,7 @@ var AllSessions sync.Map
 // Session represents a user session.
 type Session struct {
 	UserID   string    `json:"user_id"`
-	Username string    `json:"username"`
+	Nickname string    `json:"username"`
 	ExpireAt time.Time `json:"exp"`
 }
 
@@ -51,13 +51,13 @@ func GetUserFromSession(req *http.Request) *User {
 }
 
 // NewSessionToken creates a new session token and sets it as a cookie.
-func NewSessionToken(res http.ResponseWriter, UserID, Username string) {
+func NewSessionToken(res http.ResponseWriter, UserID, Nickname string) {
 	sessionToken := generateSessionToken()
 
-	deleteSessionIfExist(Username)
+	deleteSessionIfExist(Nickname)
 
 	ExpireAt := time.Now().Add(SessionExpiry)
-	AllSessions.Store(sessionToken, Session{UserID, Username, ExpireAt})
+	AllSessions.Store(sessionToken, Session{UserID, Nickname, ExpireAt})
 
 	http.SetCookie(res, &http.Cookie{
 		Name:     "auth_session",
@@ -71,7 +71,7 @@ func NewSessionToken(res http.ResponseWriter, UserID, Username string) {
 // deleteSessionIfExist deletes existing sessions for a given username.
 func deleteSessionIfExist(username string) {
 	AllSessions.Range(func(key, value interface{}) bool {
-		if value.(Session).Username == username {
+		if value.(Session).Nickname == username {
 			AllSessions.Delete(key)
 		}
 		return true
@@ -99,7 +99,7 @@ func generateSessionToken() string {
 func CheckIfSessionExist(username string) bool {
 	exist := false
 	AllSessions.Range(func(_, value interface{}) bool {
-		if value.(Session).Username == username {
+		if value.(Session).Nickname == username {
 			exist = true
 		}
 		return true

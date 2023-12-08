@@ -65,11 +65,11 @@ func (ur *UserRepository) CreateUser(user *User) error {
 // Get a user by ID from the database
 func (ur *UserRepository) GetUserByID(userID string) (*User, error) {
 	var user User
-	row := ur.db.QueryRow("SELECT id, nickname,firstname,lastname,age,gender, email, password, avatarURL FROM user WHERE id = ?", userID)
-	err := row.Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.AvatarURL)
+	row := ur.db.QueryRow("SELECT id, nickname, firstname, lastname, age, gender, email, avatarURL FROM user WHERE id = ?", userID)
+	err := row.Scan(&user.ID, &user.Nickname, &user.Firstname, &user.Lastname, &user.Age, &user.Gender, &user.Email, &user.AvatarURL)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // User not found
+			return nil, err // User not found
 		}
 		return nil, err
 	}
@@ -190,8 +190,8 @@ func (ur *UserRepository) DeleteUser(userID string) error {
 func (ur *UserRepository) IsExistedByIdentifiant(identifiant string) (*User, bool) {
 	var user User
 	identifiant = strings.ToLower(identifiant)
-	row := ur.db.QueryRow("SELECT password FROM user WHERE email = ? OR nickname = ?", identifiant, identifiant)
-	err := row.Scan(&user.Password)
+	row := ur.db.QueryRow("SELECT ID, nickname, password FROM user WHERE email = ? OR nickname = ?", identifiant, identifiant)
+	err := row.Scan(&user.ID, &user.Nickname, &user.Password)
 	if err != nil {
 		log.Println("❌ ", err)
 		if err == sql.ErrNoRows {

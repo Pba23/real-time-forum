@@ -63,7 +63,7 @@ func (pr *PostRepository) GetPostByID(postID string) (*Post, error) {
 	err := row.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.ImageURL, &post.AuthorID, &post.IsEdited, &post.CreateDate, &post.ModifiedDate)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // Post not found
+			return nil, err // Post not found
 		}
 		return nil, err
 	}
@@ -214,7 +214,7 @@ func (pr *PostRepository) GetNumberOfPosts() int {
 
 // Update a post in the database
 func (pr *PostRepository) UpdatePost(post *Post) error {
-	_, err := pr.db.Exec("UPDATE post SET title = ?, slug = ?, description = ?, imageURL = ?, authorID = ?, createDate = ?, modifiedDate = ? = ? WHERE id = ?",
+	_, err := pr.db.Exec("UPDATE post SET title = ?, slug = ?, description = ?, imageURL = ?, authorID = ?, createDate = ?, modifiedDate = ? WHERE id = ?",
 		post.Title, post.Slug, post.Description, post.ImageURL, post.AuthorID, post.CreateDate, post.ModifiedDate, post.ID)
 	return err
 }

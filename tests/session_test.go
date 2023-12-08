@@ -13,7 +13,7 @@ func TestValidSession_Valid(t *testing.T) {
 	sessionToken := "valid_token"
 	models.AllSessions.Store(sessionToken, models.Session{
 		UserID:   "user123",
-		Username: "testuser",
+		Nickname: "testuser",
 		ExpireAt: time.Now().Add(1 * time.Hour),
 	})
 
@@ -35,7 +35,7 @@ func TestValidSession_Expired(t *testing.T) {
 	sessionToken := "expired_token"
 	models.AllSessions.Store(sessionToken, models.Session{
 		UserID:   "user123",
-		Username: "testuser",
+		Nickname: "testuser",
 		ExpireAt: time.Now().Add(-1 * time.Hour), // Expired
 	})
 
@@ -76,7 +76,7 @@ func TestDeleteSession(t *testing.T) {
 	sessionToken := "session_to_delete"
 	models.AllSessions.Store(sessionToken, models.Session{
 		UserID:   "user123",
-		Username: "testuser",
+		Nickname: "testuser",
 		ExpireAt: time.Now().Add(1 * time.Hour),
 	})
 
@@ -104,7 +104,7 @@ func TestDeleteExpiredSessions(t *testing.T) {
 	expiredSessionToken := "expired_session"
 	models.AllSessions.Store(expiredSessionToken, models.Session{
 		UserID:   "user123",
-		Username: "testuser",
+		Nickname: "testuser",
 		ExpireAt: time.Now().Add(-1 * time.Hour), // Expired
 	})
 
@@ -112,7 +112,7 @@ func TestDeleteExpiredSessions(t *testing.T) {
 	validSessionToken := "valid_session"
 	models.AllSessions.Store(validSessionToken, models.Session{
 		UserID:   "user456",
-		Username: "anotheruser",
+		Nickname: "anotheruser",
 		ExpireAt: time.Now().Add(1 * time.Second),
 	})
 

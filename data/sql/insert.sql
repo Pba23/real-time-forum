@@ -1,15 +1,3 @@
-DELETE FROM user;
-DELETE FROM post;
-DELETE FROM report;
-DELETE FROM response;
-DELETE FROM view;
-DELETE FROM comment_rate;
-DELETE FROM comment;
-DELETE FROM post_category;
-DELETE FROM category;
-
-
-
 -- Insert 5 categories
 INSERT INTO "user" (id, username, email, password, avatarURL, role)
 VALUES

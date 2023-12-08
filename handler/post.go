@@ -2,8 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+
 	// "errors"
-	"fmt"
+
 	"net/http"
 	"real-time-forum/data/models"
 	"real-time-forum/lib"
@@ -16,6 +17,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/post", http.MethodPost) {
 		isLogin := models.ValidSession(req)
 		if isLogin {
+			userInSession := models.GetUserFromSession(req)
 			var postInfo models.Post
 			if err := json.NewDecoder(req.Body).Decode(&postInfo); err != nil {
 				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
@@ -27,7 +29,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 			}
 			postInfo.Slug = lib.Slugify(postInfo.Title)
 			categories := strings.Split(req.FormValue("categories"), "#")
-
+			postInfo.AuthorID = userInSession.ID
 			if err := models.PostRepo.CreatePost(&postInfo); err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error creating post : "+err.Error())
 				return
@@ -58,8 +60,8 @@ func EditPost(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/edit-post/*", http.MethodPost) {
 		isLogin := models.ValidSession(req)
 		postID := mux.Vars(req)["postID"]
-		post, err := models.PostRepo.GetPostByID(postID)
 		userInSession := models.GetUserFromSession(req)
+		post, err := models.PostRepo.GetPostByID(postID)
 		if err != nil {
 			lib.HandleError(res, http.StatusNotFound, "post not found")
 			return
@@ -76,7 +78,20 @@ func EditPost(res http.ResponseWriter, req *http.Request) {
 						lib.HandleError(res, http.StatusBadRequest, err.Error())
 						return
 					}
-					fmt.Printf(postInfo.ID)
+
+					if postInfo.Title != "" {
+						postInfo.Slug = lib.Slugify(postInfo.Title)
+					} else {
+						postInfo.Title = post.Title
+					}
+
+					if postInfo.Description == "" {
+						postInfo.Description = post.Description
+					}
+
+					if postInfo.ImageURL == "" {
+						postInfo.ImageURL = post.ImageURL
+					}
 
 					EditedPost := models.Post{
 						ID:          postID,
@@ -87,7 +102,7 @@ func EditPost(res http.ResponseWriter, req *http.Request) {
 					}
 					err := models.PostRepo.UpdatePost(&EditedPost)
 					if err != nil {
-						return
+						lib.HandleError(res, http.StatusInternalServerError, "Error updating post : "+err.Error())
 					}
 					lib.SendJSONResponse(res, http.StatusOK, map[string]string{"message": "post edited successfully"})
 				} else {
@@ -134,7 +149,6 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 }
 
 func validatePostInput(post models.Post) error {
-	// Add any validation rules as needed
 	if post.Title == "" || post.ImageURL == "" || post.Description == "" {
 		return ErrMissingRequiredFields
 	}
