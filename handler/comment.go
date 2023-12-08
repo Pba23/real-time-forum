@@ -5,7 +5,7 @@ import (
 	// "errors"
 	"strings"
 	"github.com/gorilla/mux"
-	// "fmt"
+	"fmt"
 	"sort"
 	"net/http"
 	"real-time-forum/data/models"
@@ -39,6 +39,7 @@ func SortComments(comments []*models.CommentItem) []*models.CommentItem {
 }
 func CreateComment(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/comment/*", http.MethodPost) {
+		userInSession := models.GetUserFromSession(req)
 		isLogin :=  models.ValidSession(req)
 		// isLogin = true
 		postID := mux.Vars(req)["postID"]
@@ -47,7 +48,7 @@ func CreateComment(res http.ResponseWriter, req *http.Request) {
             lib.HandleError(res, http.StatusNotFound, "post not found")
             return
         }
-		userInSession := models.GetUserFromSession(req)
+		fmt.Println("================================\n\n",req,"\n================================")
 		if isLogin {
 			var commentInfo models.Comment
 			if err := json.NewDecoder(req.Body).Decode(&commentInfo); err != nil {
@@ -62,7 +63,7 @@ func CreateComment(res http.ResponseWriter, req *http.Request) {
 			models.CommentRepo.CreateComment(&commentInfo)
 			lib.SendJSONResponse(res, http.StatusOK,map[string]string{
 				"message":"post created successfully",
-				"id":commentInfo.ID ,
+				// "id":commentInfo.ID ,
 			})
 
 		}else {
