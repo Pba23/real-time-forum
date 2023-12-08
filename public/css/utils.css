@@ -1,36 +1,45 @@
-.button--light {
+.btn.light,
+button.light {
     background: var(--lightest) !important;
 }
 
-.button--primary {
+.btn.primary,
+button.primary {
     background: var(--primary) !important;
 }
 
-.button--dark {
+.btn.dark,
+button.dark {
     background: var(--darkest) !important;
 }
 
-.button--transparent {
+.btn.transparent,
+button.transparent {
     background: transparent !important;
 }
 
-.button--medium {
+.btn.medium,
+button.medium {
     background: var(--medium) !important;
 }
 
-.button--yellow {
+.btn.yellow,
+button.yellow {
     background: var(--yellow) !important;
 }
 
-.button--orange {
+.btn.orange,
+button.orange {
     background: var(--orange) !important;
 }
 
-.button--teal {
+.btn.teal,
+button.teal {
     background: var(--teal) !important;
 }
 
-.button--light-gradient {
+.btn.light-gradient,
+button.light-gradient {
     background: linear-gradient(to top, var(--light), var(--lightest)) !important;
 }
 

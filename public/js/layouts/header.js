@@ -32,8 +32,8 @@ export default class Header extends HTMLElement {
         <header>
             <img class="logo" src="./img/logo.svg" draggable="false">
             <div>
-                <button class="button--primary mr--8">Login</button>
-                <button class="button--primary">Register</button>
+                <button class="primary mr--8">Login</button>
+                <button class="primary">Register</button>
             </div>
         </header>`
     }
