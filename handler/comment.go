@@ -3,13 +3,13 @@ package handler
 import (
 	"encoding/json"
 	// "errors"
-	"strings"
-	"github.com/gorilla/mux"
-	"fmt"
-	"sort"
 	"net/http"
 	"real-time-forum/data/models"
 	"real-time-forum/lib"
+	"sort"
+	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 func SortComments(comments []*models.CommentItem) []*models.CommentItem {
@@ -40,33 +40,32 @@ func SortComments(comments []*models.CommentItem) []*models.CommentItem {
 func CreateComment(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/comment/*", http.MethodPost) {
 		userInSession := models.GetUserFromSession(req)
-		isLogin :=  models.ValidSession(req)
-		// isLogin = true
+		isLogin := models.ValidSession(req)
 		postID := mux.Vars(req)["postID"]
-		_,err := models.PostRepo.GetPostByID(postID)
-		if err!= nil {
-            lib.HandleError(res, http.StatusNotFound, "post not found")
-            return
-        }
-		fmt.Println("================================\n\n",req,"\n================================")
+		_, err := models.PostRepo.GetPostByID(postID)
+		if err != nil {
+			lib.HandleError(res, http.StatusNotFound, "post not found")
+			return
+		}
 		if isLogin {
 			var commentInfo models.Comment
 			if err := json.NewDecoder(req.Body).Decode(&commentInfo); err != nil {
 				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
 				return
 			}
-			if err :=validateCommentInput(commentInfo);err !=nil{
+			if err := validateCommentInput(commentInfo); err != nil {
 				lib.HandleError(res, http.StatusBadRequest, err.Error())
-                return
+				return
 			}
-			commentInfo.AuthorID=userInSession.ID
+			commentInfo.AuthorID = userInSession.ID
+			commentInfo.PostID = postID
 			models.CommentRepo.CreateComment(&commentInfo)
-			lib.SendJSONResponse(res, http.StatusOK,map[string]string{
-				"message":"post created successfully",
+			lib.SendJSONResponse(res, http.StatusOK, map[string]string{
+				"message": "comment created successfully",
 				// "id":commentInfo.ID ,
 			})
 
-		}else {
+		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "not connected")
 		}
 	}
@@ -98,12 +97,12 @@ func LikeComment(res http.ResponseWriter, req *http.Request) {
 
 func DislikeComment(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/dislike-comment/*", http.MethodGet) {
-		
+
 	}
 }
 func validateCommentInput(comment models.Comment) error {
 	// Add any validation rules as needed
-	if comment.Text == ""{
+	if comment.Text == "" {
 		return ErrMissingRequiredFields
 	}
 	return nil

@@ -33,7 +33,7 @@ export default class Register extends HTMLElement {
                     bubbles: true,
                     cancelable: true,
                     composed: true
-                }))
+                }));
             }
         }
 
@@ -46,7 +46,10 @@ export default class Register extends HTMLElement {
             console.log("User", event.detail);
             // @ts-ignore
             event.detail.fetch
-                .then(user => (self.location.hash = '#/'))
+                .then(user => {
+                    console.log(user);
+                    self.location.hash = '#/';
+                })
                 .catch(error => (this.errorMessages = error))
         }
 
@@ -127,7 +130,7 @@ export default class Register extends HTMLElement {
                             </div>
                             <div class="item">
                                 <label for="email">Email:</label>
-                                <input placeholder="Enter your email" type="email" id="email" name="email"
+                                <input placeholder="Enter your email" type="email" id="email" name="email" autocomplete="username"
                                     required>
                             </div>
                         </div>
@@ -147,12 +150,12 @@ export default class Register extends HTMLElement {
                             </div>
                         </div>
                         <label for="password">Password:</label>
-                        <input placeholder="Enter your password" type="password" id="password" name="password" required>
+                        <input placeholder="Enter your password" type="password" id="password" name="password" autocomplete="new-password" required>
 
-                        <button class="primary my--16" type="submit">Login</button>
+                        <button class="primary my--16" type="submit">Register</button>
                     </form>
 
-                    <p class="ml--16">Don't have an account? <a href="#/register">Sign up here</a></p>
+                    <p class="ml--16">Don't have an account? <a href="#/login">Sign up here</a></p>
                 </div>
             </div>
         </div>

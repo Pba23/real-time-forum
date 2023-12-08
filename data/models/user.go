@@ -16,7 +16,6 @@ type User struct {
 	Lastname   string `json:"lastname"`
 	Age        int    `json:"age"`
 	Gender     string `json:"gender"`
-	IsLoggedIn bool   `json:"is_logged_in"`
 	Email      string `json:"email"`
 	Password   string `json:"password"`
 	AvatarURL  string `json:"avatar_url"`
@@ -25,6 +24,18 @@ type User struct {
 type UserSignIn struct {
 	Identifiant string
 	Password    string
+}
+
+type AuthUser struct {
+	ID         string `json:"id"`
+	Nickname   string `json:"nickname"`
+	Firstname  string `json:"firstname"`
+	Lastname   string `json:"lastname"`
+	Age        int    `json:"age"`
+	Gender     string `json:"gender"`
+	IsLoggedIn bool   `json:"is_logged_in"`
+	Email      string `json:"email"`
+	AvatarURL  string `json:"avatar_url"`
 }
 
 var DEFAULT_AVATAR = "/uploads/avatar.1.jpeg"

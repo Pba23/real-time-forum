@@ -6,6 +6,7 @@ import (
 	"real-time-forum/lib"
 	"strconv"
 	"strings"
+	"time"
 
 	uuid "github.com/gofrs/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -52,6 +53,7 @@ func (cr *CommentRepository) CreateComment(comment *Comment) error {
 		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	comment.ID = ID.String()
+	comment.CreateDate = time.Now().Format("2006-01-02 15:04:05")
 	_, err = cr.db.Exec("INSERT INTO comment (id, text, authorID, postID, parentID, createDate, modifiedDate) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		comment.ID, comment.Text, comment.AuthorID, comment.PostID, comment.ParentID, comment.CreateDate, comment.ModifiedDate)
 	return err

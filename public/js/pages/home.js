@@ -1,5 +1,4 @@
 // @ts-check
-
 /* global HTMLElement */
 /* global customElements */
 

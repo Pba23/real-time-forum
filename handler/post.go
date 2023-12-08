@@ -148,6 +148,13 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func GetAllPosts(res http.ResponseWriter, req *http.Request) {
+	if lib.ValidateRequest(req, res, "/posts", http.MethodGet) {
+		// _, _ := models.PostRepo.GetAllPosts()
+
+    }
+}
+
 func validatePostInput(post models.Post) error {
 	if post.Title == "" || post.ImageURL == "" || post.Description == "" {
 		return ErrMissingRequiredFields
@@ -162,10 +169,3 @@ func validateUpdatePostInput(post models.Post) error {
 	}
 	return nil
 }
-
-// func GetAllPosts(res http.ResponseWriter, req *http.Request) {
-// 	posts := models.PostRepository.GetAllPosts()
-// 	if lib.ValidateRequest(req, res, "/posts", http.MethodGet) {
-
-//     }
-// }

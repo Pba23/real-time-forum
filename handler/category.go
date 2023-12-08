@@ -7,6 +7,6 @@ import (
 
 func GetPostOfCategory(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/category/*", http.MethodGet) {
-
+		
 	}
 }
