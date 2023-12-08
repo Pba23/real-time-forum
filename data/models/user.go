@@ -10,16 +10,16 @@ import (
 )
 
 type User struct {
-	ID         string
-	Nickname   string
-	Firstname  string
-	Lastname   string
-	Age        string
-	Gender     string
-	IsLoggedIn bool
-	Email      string
-	Password   string
-	AvatarURL  string
+	ID         string `json:"id"`
+	Nickname   string `json:"nickname"`
+	Firstname  string `json:"firstname"`
+	Lastname   string `json:"lastname"`
+	Age        int    `json:"age"`
+	Gender     string `json:"gender"`
+	IsLoggedIn bool   `json:"is_logged_in"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+	AvatarURL  string `json:"avatar_url"`
 }
 
 type UserSignIn struct {
@@ -117,7 +117,7 @@ func (ur *UserRepository) SelectAllUsers() ([]User, error) {
 		var nickname string
 		var firstname string
 		var lastname string
-		var age string
+		var age int
 		var gender string
 		var password string
 		var avatarUrl string

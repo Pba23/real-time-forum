@@ -101,7 +101,8 @@ func ValidateRequest(req *http.Request, res http.ResponseWriter, url, method str
 
 // HandleError writes an error response in JSON format with the given status code and message.
 func HandleError(res http.ResponseWriter, statusCode int, message string) {
-	errorResponse := map[string]string{"error": message}
+	log.Println("❌ " + message)
+	errorResponse := map[string]string{"errors": message}
 	SendJSONResponse(res, statusCode, errorResponse)
 }
 

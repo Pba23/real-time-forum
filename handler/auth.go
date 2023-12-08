@@ -41,7 +41,9 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 
 		// Respond with success
 		models.NewSessionToken(res, user.ID, user.Nickname)
-		lib.SendJSONResponse(res, http.StatusOK, map[string]string{"message": "User created successfully"})
+
+		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "User created successfully", "user": user})
+
 	}
 }
 
