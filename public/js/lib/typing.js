@@ -11,6 +11,14 @@
       password: string
     }} Registration
 */
+/**
+ * Login
+ *
+ * @typedef {{
+      identifiant: string,
+      password: string
+    }} Login
+*/
 
 /**
  * User

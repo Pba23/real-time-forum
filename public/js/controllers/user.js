@@ -81,13 +81,53 @@ export default class User extends HTMLElement {
                 composed: true
             }))
         }
+
+        this.loginUserListener = event => {
+            if (!event.detail.user) return
+
+            if (this.abortController) this.abortController.abort()
+            this.abortController = new AbortController()
+
+            const url = `${Environment.fetchBaseUrl}/sign-in`
+            // answer with event
+            this.dispatchEvent(new CustomEvent('user', {
+                /** @type {UserEventDetail} */
+                detail: {
+                    fetch: fetch(url,
+                        {
+                            method: 'POST',
+                            ...Environment.fetchHeaders,
+                            body: JSON.stringify(event.detail.user),
+                            signal: this.abortController.signal
+                        })
+                        .then(response => {
+                            if (response.status >= 200 && response.status <= 299) return response.json()
+                            throw new Error(response.statusText)
+                        })
+                        .then(data => {
+                            if (data.errors) throw data.errors
+                            if (data.user) {
+                                this.user = data.user
+                                console.log(this.user);
+                                // Environment.token = data.user.token
+                            }
+                            return data.user
+                        })
+                },
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            }))
+        }
     }
 
     connectedCallback() {
         this.addEventListener('registerUser', this.registerUserListener)
+        this.addEventListener('loginUser', this.loginUserListener)
     }
 
     disconnectedCallback() {
         this.removeEventListener('registerUser', this.registerUserListener)
+        this.removeEventListener('loginUser', this.loginUserListener)
     }
 }

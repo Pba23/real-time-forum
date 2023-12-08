@@ -152,7 +152,7 @@ export default class Register extends HTMLElement {
                         <button class="primary my--16" type="submit">Login</button>
                     </form>
 
-                    <p class="ml--16">Don't have an account? <a href="#/register">Sign up here</a></p>
+                    <p class="ml--16">Already have an account? <a href="#/login">Sign in here</a></p>
                 </div>
             </div>
         </div>
