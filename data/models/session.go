@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
-	"fmt"
+
 	"github.com/gofrs/uuid"
 )
 
@@ -30,7 +30,6 @@ func (s Session) isExpired() bool {
 // ValidSession checks if a valid session exists in the request.
 func ValidSession(req *http.Request) bool {
 	cookie, err := req.Cookie("auth_session")
-	fmt.Println("\n\n-----------------------\n", cookie.Value)
 	return err == nil && isValidSession(cookie.Value)
 }
 

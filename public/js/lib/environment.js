@@ -48,6 +48,29 @@ class EnvironmentClass {
     }
   }
 
+
+  /**
+   * get JWT token
+   *
+   * @return {string | null}
+   */
+  get auth() {
+    return self.localStorage.getItem('auth')
+  }
+
+  /**
+   * set JWT token
+   *
+   * @param {string} auth
+   */
+  set auth(auth) {
+    if (auth && auth !== '') {
+      self.localStorage.setItem('auth', auth)
+    } else {
+      self.localStorage.removeItem('auth')
+    }
+  }
+
   /**
    * get page slug
    */

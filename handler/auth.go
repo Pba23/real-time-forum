@@ -42,13 +42,13 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 		// Respond with success
 		models.NewSessionToken(res, user.ID, user.Nickname)
 		authUser := models.AuthUser{
-			ID: user.ID,
-			Nickname: user.Nickname,
+			ID:        user.ID,
+			Nickname:  user.Nickname,
 			Firstname: user.Firstname,
-			Lastname: user.Lastname,
-			Age: user.Age,
-			Gender: user.Gender,
-			Email: user.Email,
+			Lastname:  user.Lastname,
+			Age:       user.Age,
+			Gender:    user.Gender,
+			Email:     user.Email,
 			AvatarURL: user.AvatarURL,
 		}
 		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "User created successfully", "user": authUser})
@@ -82,7 +82,18 @@ func SignIn(res http.ResponseWriter, req *http.Request) {
 		if user != nil && lib.CheckPasswordHash(loginInfo.Password, user.Password) {
 			// Create a new session for the authenticated user
 			models.NewSessionToken(res, user.ID, user.Nickname)
-			lib.SendJSONResponse(res, http.StatusOK, map[string]string{"message": "Login successful"})
+			authUser := models.AuthUser{
+				ID:         user.ID,
+				Nickname:   user.Nickname,
+				Firstname:  user.Firstname,
+				Lastname:   user.Lastname,
+				Age:        user.Age,
+				IsLoggedIn: true,
+				Gender:     user.Gender,
+				Email:      user.Email,
+				AvatarURL:  user.AvatarURL,
+			}
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "Login successful", "user": authUser})
 			return
 		}
 
@@ -98,6 +109,30 @@ func Logout(res http.ResponseWriter, req *http.Request) {
 			// Delete the session
 			models.DeleteSession(req)
 			lib.SendJSONResponse(res, http.StatusOK, map[string]string{"message": "Logout successful"})
+		} else {
+			lib.HandleError(res, http.StatusUnauthorized, "No active session")
+		}
+	}
+}
+
+// Get me
+func Me(res http.ResponseWriter, req *http.Request) {
+	if lib.ValidateRequest(req, res, "/me", http.MethodGet) {
+		// Check if there is an active session
+		if models.ValidSession(req) {
+			user := models.GetUserFromSession(req)
+			authUser := models.AuthUser{
+				ID:         user.ID,
+				Nickname:   user.Nickname,
+				Firstname:  user.Firstname,
+				Lastname:   user.Lastname,
+				Age:        user.Age,
+				IsLoggedIn: true,
+				Gender:     user.Gender,
+				Email:      user.Email,
+				AvatarURL:  user.AvatarURL,
+			}
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "Get me successful", "user": authUser})
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "No active session")
 		}

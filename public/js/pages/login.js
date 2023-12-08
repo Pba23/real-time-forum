@@ -1,5 +1,7 @@
 // @ts-check
 
+import { Environment } from "../lib/environment.js";
+
 /* global HTMLElement */
 /* global customElements */
 
@@ -31,16 +33,19 @@ export default class Login extends HTMLElement {
                 }))
             }
         }
-         /**
-         * Listens to the event name/typeArg: 'user'
-         *
-         * @param {CustomEvent & {detail: import("../controllers/user.js").UserEventDetail}} event
-         */
-         this.userListener = event => {
-             // @ts-ignore
-             event.detail.fetch
-             .then(user => {
+        /**
+        * Listens to the event name/typeArg: 'user'
+        *
+        * @param {CustomEvent & {detail: import("../controllers/user.js").UserEventDetail}} event
+        */
+        this.userListener = event => {
+            // @ts-ignore
+            event.detail.fetch
+                .then(user => {
                     console.log("User", user);
+                    console.log(user);
+                    const _auth = JSON.stringify(user);
+                    Environment.auth = _auth;
                     (self.location.hash = '#/')
                 })
                 .catch(error => (this.errorMessages = error))
@@ -121,15 +126,15 @@ export default class Login extends HTMLElement {
     get loginForm() {
         return this.querySelector('form')
     }
-     /**
-     * @return {HTMLInputElement | null}
-     */
+    /**
+    * @return {HTMLInputElement | null}
+    */
     get identifiantField() {
         return this.querySelector('input[name="identifiant"]')
     }
-     /**
-     * @return {HTMLInputElement | null}
-     */
+    /**
+    * @return {HTMLInputElement | null}
+    */
     get passwordField() {
         return document.querySelector('input[name="password"]')
     }

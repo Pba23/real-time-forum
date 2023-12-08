@@ -31,6 +31,7 @@ func main() {
 	r.Handle("/", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Index)))
 
 	// Authentication
+	r.Handle("/me", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Me)))
 	r.Handle("/sign-up", rateLimiter.Wrap("auth", http.HandlerFunc(handler.SignUp)))
 	r.Handle("/sign-in", rateLimiter.Wrap("auth", http.HandlerFunc(handler.SignIn)))
 	r.Handle("/logout", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Logout)))

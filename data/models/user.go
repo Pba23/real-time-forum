@@ -90,8 +90,8 @@ func (ur *UserRepository) GetUserByID(userID string) (*User, error) {
 // Get a user by email from the database
 func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
 	var user User
-	row := ur.db.QueryRow("SELECT id, nickname,firstname,lastname,age,gender, email, password, avatarURL FROM user WHERE email = ?", email)
-	err := row.Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.AvatarURL)
+	row := ur.db.QueryRow("SELECT id, nickname,firstname,lastname,age,gender, email, avatarURL FROM user WHERE email = ?", email)
+	err := row.Scan(&user.ID, &user.Nickname, &user.Email, &user.AvatarURL)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // User not found
@@ -104,8 +104,8 @@ func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
 // Get a user by email from the database
 func (ur *UserRepository) GetUserByNickname(nickname string) (*User, error) {
 	var user User
-	row := ur.db.QueryRow("SELECT id, nickname, firstname, lastname, age, gender, email, password, avatarURL FROM user WHERE nickname = ?", nickname)
-	err := row.Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.AvatarURL)
+	row := ur.db.QueryRow("SELECT id, nickname, firstname, lastname, age, gender, email, avatarURL FROM user WHERE nickname = ?", nickname)
+	err := row.Scan(&user.ID, &user.Nickname, &user.Email, &user.AvatarURL)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // User not found
@@ -201,8 +201,8 @@ func (ur *UserRepository) DeleteUser(userID string) error {
 func (ur *UserRepository) IsExistedByIdentifiant(identifiant string) (*User, bool) {
 	var user User
 	identifiant = strings.ToLower(identifiant)
-	row := ur.db.QueryRow("SELECT ID, nickname, password FROM user WHERE email = ? OR nickname = ?", identifiant, identifiant)
-	err := row.Scan(&user.ID, &user.Nickname, &user.Password)
+	row := ur.db.QueryRow("SELECT id, nickname, firstname, lastname, age, gender, email, avatarURL, password FROM user WHERE email = ? OR nickname = ?", identifiant, identifiant)
+	err := row.Scan(&user.ID, &user.Nickname, &user.Firstname, &user.Lastname, &user.Age, &user.Gender, &user.Email, &user.AvatarURL, &user.Password)
 	if err != nil {
 		log.Println("❌ ", err)
 		if err == sql.ErrNoRows {

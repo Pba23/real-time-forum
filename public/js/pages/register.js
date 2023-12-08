@@ -1,5 +1,7 @@
 // @ts-check
 
+import { Environment } from "../lib/environment.js";
+
 /* global HTMLElement */
 /* global customElements */
 
@@ -48,6 +50,8 @@ export default class Register extends HTMLElement {
             event.detail.fetch
                 .then(user => {
                     console.log(user);
+                    const _auth = JSON.stringify(user);
+                    Environment.auth = _auth;
                     self.location.hash = '#/';
                 })
                 .catch(error => (this.errorMessages = error))
