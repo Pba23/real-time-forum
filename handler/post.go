@@ -68,7 +68,7 @@ func EditPost(res http.ResponseWriter, req *http.Request) {
 		}
 		if postID != "" {
 			if isLogin {
-				if post.AuthorID == userInSession.ID {
+				if post.AuthorID !=userInSession.ID {
 					var postInfo models.Post
 					if err := json.NewDecoder(req.Body).Decode(&postInfo); err != nil {
 						lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")

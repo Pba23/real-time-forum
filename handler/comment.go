@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"encoding/json"
+	// "errors"
+	"strings"
+	"github.com/gorilla/mux"
+	"fmt"
+	"sort"
 	"net/http"
 	"real-time-forum/data/models"
 	"real-time-forum/lib"
-	"sort"
-	"strings"
 )
 
 func SortComments(comments []*models.CommentItem) []*models.CommentItem {
@@ -32,6 +36,40 @@ func SortComments(comments []*models.CommentItem) []*models.CommentItem {
 
 	dfs("", 0)
 	return sortedComments
+}
+func CreateComment(res http.ResponseWriter, req *http.Request) {
+	if lib.ValidateRequest(req, res, "/comment/*", http.MethodPost) {
+		userInSession := models.GetUserFromSession(req)
+		isLogin :=  models.ValidSession(req)
+		// isLogin = true
+		postID := mux.Vars(req)["postID"]
+		_,err := models.PostRepo.GetPostByID(postID)
+		if err!= nil {
+            lib.HandleError(res, http.StatusNotFound, "post not found")
+            return
+        }
+		fmt.Println("================================\n\n",req,"\n================================")
+		if isLogin {
+			var commentInfo models.Comment
+			if err := json.NewDecoder(req.Body).Decode(&commentInfo); err != nil {
+				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
+				return
+			}
+			if err :=validateCommentInput(commentInfo);err !=nil{
+				lib.HandleError(res, http.StatusBadRequest, err.Error())
+                return
+			}
+			commentInfo.AuthorID=userInSession.ID
+			models.CommentRepo.CreateComment(&commentInfo)
+			lib.SendJSONResponse(res, http.StatusOK,map[string]string{
+				"message":"post created successfully",
+				// "id":commentInfo.ID ,
+			})
+
+		}else {
+			lib.HandleError(res, http.StatusUnauthorized, "not connected")
+		}
+	}
 }
 
 func GetComments(res http.ResponseWriter, req *http.Request) {
@@ -62,4 +100,18 @@ func DislikeComment(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/dislike-comment/*", http.MethodGet) {
 		
 	}
+}
+func validateCommentInput(comment models.Comment) error {
+	// Add any validation rules as needed
+	if comment.Text == ""{
+		return ErrMissingRequiredFields
+	}
+	return nil
+}
+func validateUpdateCommentInput(comment models.Comment) error {
+	// Add any validation rules as needed
+	if comment.Text == "" {
+		return ErrMissingRequiredFields
+	}
+	return nil
 }

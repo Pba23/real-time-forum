@@ -38,6 +38,7 @@ func main() {
 	// Post Handler
 	r.Handle("/post", rateLimiter.Wrap("api", http.HandlerFunc(handler.CreatePost)))
 	r.Handle("/edit-post/{postID}", rateLimiter.Wrap("api", http.HandlerFunc(handler.EditPost)))
+	r.Handle("/comment/{postID}", rateLimiter.Wrap("api", http.HandlerFunc(handler.CreateComment)))
 	go models.DeleteExpiredSessions()
 
 	// Start the server with the Gorilla Mux router
