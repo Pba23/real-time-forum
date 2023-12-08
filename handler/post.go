@@ -13,7 +13,8 @@ import (
 
 func CreatePost(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/post", http.MethodPost) {
-		isLogin :=  models.ValidSession(req)
+		isLogin :=  true
+		userInSession := models.GetUserFromSession(req)
 		if isLogin{
 			var postInfo models.Post
 			if err := json.NewDecoder(req.Body).Decode(&postInfo); err != nil {
@@ -26,7 +27,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
             }
 			postInfo.Slug= lib.Slugify(postInfo.Title)
 			categories := strings.Split(req.FormValue("categories"),"#")
-
+			postInfo.AuthorID=userInSession.ID
 			if err := models.PostRepo.CreatePost(&postInfo); err!= nil {
                 fmt.Printf(err.Error())
                 lib.HandleError(res, http.StatusInternalServerError, "Error creating post")
@@ -72,14 +73,14 @@ func EditPost(res http.ResponseWriter, req *http.Request) {
 		isLogin :=  models.ValidSession(req)
 		postID := mux.Vars(req)["postID"]
 		post,err := models.PostRepo.GetPostByID(postID)
-		userInSession := models.GetUserFromSession(req)
+		//userInSession := models.GetUserFromSession(req)
 		if err!= nil {
             lib.HandleError(res, http.StatusNotFound, "post not found")
             return
         }
 		if postID!=""{	
 			if isLogin {
-				if post.AuthorID == userInSession.ID {
+				if post.AuthorID !="" {
 					var postInfo models.Post
 					if err := json.NewDecoder(req.Body).Decode(&postInfo); err!= nil {
 						lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
