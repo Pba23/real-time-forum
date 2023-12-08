@@ -5,40 +5,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/css/chat.css">
-    <link rel="stylesheet" href="/css/main.css">
+    <title>Real-Time Forum 💜</title>
+    <link rel="icon" href="./img/logo.svg">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/utils.css">
 </head>
 
 <body>
     <l-header></l-header>
     <main>
-        <div class="l-grid__item l-grid__item--sticky f-height px--8">
-            <div class="card bg--light-gradient text--dark">
-                <div class="card__body">
-                    <div class="display--flex justify--space-between">
-                        <div class="text--left f-width">
-                            <div class="display--flex align--center justify--space-between f-width">
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="l-grid__item">
-            <div class="card f-height">
-                <div class="card__header">
-                    <h3></h3>
-                </div>
-                <div class="card__footer">
-                    <div class="send">
-                        <button class="button--primary">🚀</button>
-                        <textarea name="msg" id="msg" rows="1" placeholder="Enter your message"></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <l-router></l-router>
     </main>
     <l-footer></l-footer>
 
@@ -46,6 +23,7 @@
         // Load all components
         Promise.all([
             // Components which are not effected by routing
+            import('/js/lib/router.js').then(module => ['l-router', module.default]),
             import('/js/layouts/header.js').then(module => ['l-header', module.default]),
             import('/js/layouts/footer.js').then(module => ['l-footer', module.default])
         ]).then(elements => elements.forEach(element => {

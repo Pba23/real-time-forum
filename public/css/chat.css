@@ -1,5 +1,5 @@
 :root {
-    --blue: #0368D9;
+    --blue: var(--primary);
     --grey: #333333;
     --light-grey: #E4E6EB;
     --white: #FFFFFF;
@@ -45,7 +45,7 @@
     visibility: hidden;
 }
 
-.message.outgoing {
+.wrap.outgoing .message {
     flex-direction: row-reverse;
 }
 
@@ -65,7 +65,7 @@
     max-width: 500px;
 }
 
-.message.outgoing .speech-bubble {
+.wrap.outgoing .message .speech-bubble {
     background-color: var(--outgoing-bg);
     color: var(--outgoing-txt);
 }
@@ -74,7 +74,7 @@
     border-radius: 5px 40px 40px 5px;
 }
 
-.message.outgoing+.message.outgoing .speech-bubble {
+.wrap.outgoing .message+.message .speech-bubble {
     border-radius: 40px 5px 5px 40px;
 }
 
@@ -82,7 +82,7 @@
     border-radius: 40px 40px 40px 5px;
 }
 
-.message.outgoing:first-child .speech-bubble {
+.wrap.outgoing .message:first-child .speech-bubble {
     border-radius: 40px 40px 5px 40px;
 }
 
@@ -90,7 +90,7 @@
     border-radius: 5px 40px 40px 40px;
 }
 
-.message.outgoing:last-child .speech-bubble {
+.wrap.outgoing .message:last-child .speech-bubble {
     border-radius: 40px 5px 40px 40px !important;
 }
 
@@ -98,7 +98,7 @@
     border-radius: 40px 40px 40px 40px;
 }
 
-.message.outgoing:only-child .speech-bubble {
+.wrap.outgoing .message:only-child .speech-bubble {
     border-radius: 40px 40px 40px 40px;
 }
 
@@ -107,8 +107,8 @@
     margin-left: 60px;
 }
 
-.message.outgoing .speech-bubble:first-child,
-.message.outgoing .image-wrap:first-child {
+.wrap.outgoing .message .speech-bubble:first-child,
+.wrap.outgoing .message .image-wrap:first-child {
     margin-right: 60px;
 }
 
@@ -124,7 +124,7 @@
     overflow: hidden;
 }
 
-.message.outgoing .profile-picture {
+.wrap.outgoing .message .profile-picture {
     margin-left: 10px;
     margin-right: 0;
 }
