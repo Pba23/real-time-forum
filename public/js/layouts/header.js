@@ -67,7 +67,9 @@ export default class Header extends HTMLElement {
             </a>
             <div>
                 ${user ? /* html */`
-                <a href="#/profile" class="btn primary not mr--8">Welcome le con ${user.nickname}</a>`
+                <a href="#/profile">Welcome le con ${user.nickname}</a>
+                <a href="#/logout" class="btn primary not mr--8">Logout</a>
+                `
                 : /* html */`
                 <a href="#/login" class="btn primary not mr--8">Login</a>
                 <a href="#/register" class="btn primary not">Register</a>`
