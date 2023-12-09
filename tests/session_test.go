@@ -55,9 +55,9 @@ func TestValidSession_Expired(t *testing.T) {
 func TestNewSessionToken(t *testing.T) {
 	res := httptest.NewRecorder()
 	UserID := "user123"
-	Username := "testuser"
+	NickName := "testuser"
 
-	models.NewSessionToken(res, UserID, Username)
+	models.NewSessionToken(res, UserID, NickName)
 
 	// Get the set cookie from the response recorder
 	setCookie := res.Header().Get("Set-Cookie")

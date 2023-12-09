@@ -22,6 +22,11 @@ type PostItem struct {
 	ListOfCommentator []string
 }
 
+type CompletePost struct {
+	Post
+	Comments []*CommentItem
+}
+
 type Post struct {
 	ID           string
 	Title        string
@@ -57,8 +62,8 @@ func (pr *PostRepository) CreatePost(post *Post) error {
 }
 
 // Get a post by ID from the database
-func (pr *PostRepository) GetPostByID(postID string) (*Post, error) {
-	var post Post
+func (pr *PostRepository) GetPostByID(postID string) (*CompletePost, error) {
+	var post CompletePost
 	row := pr.db.QueryRow("SELECT id, title, slug, description, imageURL, authorID, isEdited, createDate, modifiedDate FROM post WHERE id = ?", postID)
 	err := row.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.ImageURL, &post.AuthorID, &post.IsEdited, &post.CreateDate, &post.ModifiedDate)
 	if err != nil {
@@ -70,7 +75,7 @@ func (pr *PostRepository) GetPostByID(postID string) (*Post, error) {
 	return &post, nil
 }
 
-func (pr *PostRepository) GetUserOwnPosts(userId, userName string) ([]PostItem, error) {
+func (pr *PostRepository) GetUserOwnPosts(userId, nickName string) ([]PostItem, error) {
 	var posts []*Post
 	var numberComments []int
 
@@ -109,7 +114,7 @@ func (pr *PostRepository) GetUserOwnPosts(userId, userName string) ([]PostItem, 
 			ID:                posts[i].ID,
 			Title:             posts[i].Title,
 			Slug:              posts[i].Slug,
-			AuthorName:        userName,
+			AuthorName:        nickName,
 			ImageURL:          urlImage,
 			LastEditionDate:   lib.TimeSinceCreation(lastModificationDate),
 			NumberOfComments:  numberComments[i],
@@ -136,22 +141,41 @@ func (pr *PostRepository) GetPostBySlug(slug string) (*Post, error) {
 	return &post, nil
 }
 
-// Get all posts from database
-func (pr *PostRepository) GetAllPosts() ([]*Post, error) {
-	var posts []*Post
-	requete := "SELECT id, title, slug, description, imageURL, authorID, isEdited, createDate, modifiedDate FROM post"
-	rows, err := pr.db.Query(requete)
+// Get all posts from database with author information and commentators
+func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
+	var posts []*PostItem
+	request := `
+		SELECT 
+			p.id,
+			p.title,
+			p.slug,
+			u.nickname AS authorName,
+			p.imageURL,
+			p.modifiedDate AS lastEditionDate,
+			COUNT(c.id) AS numberOfComments,
+			COALESCE(GROUP_CONCAT(cu.avatarURL, ', '), '') AS listOfCommentator
+		FROM post p
+		JOIN user u ON p.authorID = u.id
+		LEFT JOIN comment c ON p.id = c.postID
+		LEFT JOIN user cu ON c.authorID = cu.id
+		GROUP BY p.id
+	`
+	rows, err := pr.db.Query(request)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var post Post
-		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.ImageURL, &post.AuthorID, &post.IsEdited, &post.CreateDate, &post.ModifiedDate)
+		var post PostItem
+		ListOfCommentator := ""
+		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &post.AuthorName, &post.ImageURL, &post.LastEditionDate, &post.NumberOfComments, &ListOfCommentator)
 		if err != nil {
 			return nil, err
 		}
+
+		post.ListOfCommentator = strings.Split(ListOfCommentator, ", ")
+
 		posts = append(posts, &post)
 	}
 

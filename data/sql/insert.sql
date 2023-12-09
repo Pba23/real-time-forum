@@ -1,5 +1,5 @@
 -- Insert 5 categories
-INSERT INTO "user" (id, username, email, password, avatarURL, role)
+INSERT INTO "user" (id, nickname, email, password, avatarURL, role)
 VALUES
     ('1', 'yazmin_fisher', 'a@a', '$2a$04$lLHjjHjpj7NOUFuGRtX/j.xhcejgcoDjYzUNfvUHZSrduRZbEqesq', '/uploads/avatar.1.jpeg', '2'),
     ('23439d2e3dfb95bcd256a5456b1105b7a7199adf', 's', 's@a', '$2a$04$lLHjjHjpj7NOUFuGRtX/j.xhcejgcoDjYzUNfvUHZSrduRZbEqesq', '/uploads/avatar.3.jpeg', '2'),

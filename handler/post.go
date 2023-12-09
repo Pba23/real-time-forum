@@ -68,7 +68,7 @@ func EditPost(res http.ResponseWriter, req *http.Request) {
 		}
 		if postID != "" {
 			if isLogin {
-				if post.AuthorID !=userInSession.ID {
+				if post.AuthorID != userInSession.ID {
 					var postInfo models.Post
 					if err := json.NewDecoder(req.Body).Decode(&postInfo); err != nil {
 						lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
@@ -143,16 +143,33 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 }
 
 func GetPost(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/posts/*", http.MethodGet) {
+	if lib.ValidateRequest(req, res, "/post/*", http.MethodGet) {
+		postID := mux.Vars(req)["postID"]
+		post, err := models.PostRepo.GetPostByID(postID)
+		if err != nil {
+			lib.HandleError(res, http.StatusInternalServerError, err.Error())
+		}
 
+		comments, err := models.CommentRepo.GetCommentsOfPost(postID)
+		if err != nil {
+			lib.HandleError(res, http.StatusInternalServerError, err.Error())
+		}
+
+		post.Comments = comments
+
+		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "post retrieved successfully", "post": post})
 	}
 }
 
 func GetAllPosts(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/posts", http.MethodGet) {
-		// _, _ := models.PostRepo.GetAllPosts()
+		posts, err := models.PostRepo.GetAllPosts()
+		if err != nil {
+			lib.HandleError(res, http.StatusInternalServerError, err.Error())
+		}
 
-    }
+		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "posts retrieved successfully", "posts": posts})
+	}
 }
 
 func validatePostInput(post models.Post) error {

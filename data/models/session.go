@@ -18,7 +18,7 @@ var AllSessions sync.Map
 // Session represents a user session.
 type Session struct {
 	UserID   string    `json:"user_id"`
-	Nickname string    `json:"username"`
+	Nickname string    `json:"nickname"`
 	ExpireAt time.Time `json:"exp"`
 }
 
@@ -68,10 +68,10 @@ func NewSessionToken(res http.ResponseWriter, UserID, Nickname string) {
 	})
 }
 
-// deleteSessionIfExist deletes existing sessions for a given username.
-func deleteSessionIfExist(username string) {
+// deleteSessionIfExist deletes existing sessions for a given nickname.
+func deleteSessionIfExist(nickname string) {
 	AllSessions.Range(func(key, value interface{}) bool {
-		if value.(Session).Nickname == username {
+		if value.(Session).Nickname == nickname {
 			AllSessions.Delete(key)
 		}
 		return true
@@ -95,11 +95,11 @@ func generateSessionToken() string {
 	return sessionToken.String()
 }
 
-// CheckIfSessionExist checks if a session exists for a given username.
-func CheckIfSessionExist(username string) bool {
+// CheckIfSessionExist checks if a session exists for a given nickname.
+func CheckIfSessionExist(nickname string) bool {
 	exist := false
 	AllSessions.Range(func(_, value interface{}) bool {
-		if value.(Session).Nickname == username {
+		if value.(Session).Nickname == nickname {
 			exist = true
 		}
 		return true

@@ -74,7 +74,7 @@ func (pcr *PostCategoryRepository) GetPostsOfCategory(categoryName string) ([]Po
 			p.id AS ID,
 			p.title AS Title,
 			p.slug AS Slug,
-			u.username AS AuthorName,
+			u.nickname AS AuthorName,
 			p.imageURL AS ImageURL,
 			p.modifiedDate AS LastEditionDate,
 			COALESCE(cmt.comment_count, 0) AS NumberOfComments,

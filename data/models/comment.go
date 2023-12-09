@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"real-time-forum/lib"
-	"strconv"
 	"strings"
 	"time"
 
@@ -73,15 +72,10 @@ func (cr *CommentRepository) GetCommentByID(commentID string) (*Comment, error) 
 	return &comment, nil
 }
 
-func (cr *CommentRepository) GetCommentsOfPost(postID, limit string) ([]*CommentItem, error) {
-	moreComment, err := strconv.Atoi(limit)
-	if err != nil {
-		return nil, err
-	}
-
+func (cr *CommentRepository) GetCommentsOfPost(postID string) ([]*CommentItem, error) {
 	var comments []*CommentItem
 
-	rows, err := cr.db.Query("SELECT c.id, c.text, c.authorID, c.parentID, c.modifiedDate, u.userName, u.avatarURL FROM comment c LEFT JOIN user u ON c.authorID = u.ID WHERE c.PostID = ? LIMIT ?", postID, moreComment)
+	rows, err := cr.db.Query("SELECT c.id, c.text, c.authorID, c.parentID, c.modifiedDate, u.nickName, u.avatarURL FROM comment c LEFT JOIN user u ON c.authorID = u.ID WHERE c.PostID = ?", postID)
 	if err != nil {
 		return nil, err
 	}
