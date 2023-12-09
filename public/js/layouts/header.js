@@ -33,7 +33,7 @@ export default class Header extends HTMLElement {
     connectedCallback() {
         this.user = undefined
 
-        this.render()
+        this.render();
         // @ts-ignore
         document.body.addEventListener('user', this.userListener)
         this.dispatchEvent(new CustomEvent('getUser', {
@@ -54,6 +54,13 @@ export default class Header extends HTMLElement {
     }
 
     /**
+    * @return {HTMLButtonElement | null}
+    */
+    get button() {
+        return this.querySelector('button#logout')
+    }
+
+    /**
      * renders the header within the body, which is in this case the navbar
      *
      * @param {import("../lib/typing.js").AuthUser} [user = undefined]
@@ -67,8 +74,8 @@ export default class Header extends HTMLElement {
             </a>
             <div>
                 ${user ? /* html */`
-                <a href="#/profile">Welcome le con ${user.nickname}</a>
-                <a href="#/logout" class="btn primary not mr--8">Logout</a>
+                <a href="#/profile">Welcome, ${user.nickname}</a>
+                <button id="logout" class="primary not mr--8">Logout</button>
                 `
                 : /* html */`
                 <a href="#/login" class="btn primary not mr--8">Login</a>
@@ -76,5 +83,15 @@ export default class Header extends HTMLElement {
             }
             </div>
         </header>`
+        if (user) {
+            this.button?.addEventListener('click', () => {
+                console.log('logging out...');
+                this.dispatchEvent(new CustomEvent('logoutUser', {
+                    bubbles: true,
+                    cancelable: true,
+                    composed: true
+                }))
+            });
+        }
     }
 }

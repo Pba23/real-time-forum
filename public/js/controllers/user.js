@@ -157,17 +157,58 @@ export default class User extends HTMLElement {
                 composed: true
             }))
         }
+
+        this.logoutUserListener = event => {
+            if (this.abortController) this.abortController.abort()
+            this.abortController = new AbortController()
+
+            const url = `${Environment.fetchBaseUrl}/logout`
+            console.log("logout...");
+            // answer with event
+            this.dispatchEvent(new CustomEvent('user', {
+                /** @type {UserEventDetail} */
+                detail: {
+                    fetch: this.user ? Promise.resolve(this.user) : Environment.auth ? fetch(url,
+                        {
+                            method: 'DELETE',
+                            credentials: 'include',
+                            ...Environment.fetchHeaders,
+                            signal: this.abortController.signal
+                        })
+                        .then(response => {
+                            if (response.status >= 200 && response.status <= 299) return response.json()
+                            throw new Error(response.statusText)
+                        })
+                        .then(data => {
+                            if (data.user) {
+                                this.user = data.user
+                                Environment.auth = data.user
+                            }
+                            return data.user
+                        })
+                        .catch(error => {
+                            if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = ''
+                            console.log(`Error@UserFetch: ${error}`)
+                        }) : Promise.reject(new Error('No token found'))
+                },
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            }))
+        }
     }
 
     connectedCallback() {
         this.addEventListener('registerUser', this.registerUserListener)
         this.addEventListener('loginUser', this.loginUserListener)
+        this.addEventListener('logoutUser', this.logoutUserListener)
         this.addEventListener('getUser', this.getUserListener)
     }
 
     disconnectedCallback() {
         this.removeEventListener('registerUser', this.registerUserListener)
         this.removeEventListener('loginUser', this.loginUserListener)
+        this.removeEventListener('logoutUser', this.logoutUserListener)
         this.removeEventListener('getUser', this.getUserListener)
     }
 }

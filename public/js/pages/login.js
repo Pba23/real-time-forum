@@ -100,16 +100,11 @@ export default class Login extends HTMLElement {
                 <div class="card__body px--32">
                     <ul class="error-messages"></ul>
                     <form id="register-form">
-            
                                 <label for="identifiant">Identifiant:</label>
                                 <input placeholder="Enter your nickname or your email to login" type="text" id="nickname" name="identifiant"
                                     required>
-                        
-                        
                                 <label for="password">Password:</label>
                                 <input placeholder="Enter your password" type="password" id="password" name="password" required>
-                           
-                       
                         <button class="primary my--16" type="submit">Login</button>
                     </form>
 
@@ -126,6 +121,7 @@ export default class Login extends HTMLElement {
     get loginForm() {
         return this.querySelector('form')
     }
+
     /**
     * @return {HTMLInputElement | null}
     */
