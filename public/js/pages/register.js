@@ -60,6 +60,9 @@ export default class Register extends HTMLElement {
     }
 
     connectedCallback() {
+        if (Environment.auth) {
+            self.location.hash = '#/'
+        }
         if (this.shouldComponentRender()) this.render()
         this.registerForm?.addEventListener('submit', this.submitListener)
         // @ts-ignore

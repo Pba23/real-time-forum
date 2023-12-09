@@ -1,5 +1,4 @@
 // @ts-check
-
 /* global HTMLElement */
 
 /**
@@ -28,6 +27,18 @@ export default class Header extends HTMLElement {
                 this.user = null
             })
         }
+
+        /**
+         * Logs out the user and dispatches a 'logoutUser' event.
+         *
+         */
+        this.logoutUserListener = () => {
+            this.dispatchEvent(new CustomEvent('logoutUser', {
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            }))
+        }
     }
 
     connectedCallback() {
@@ -41,6 +52,11 @@ export default class Header extends HTMLElement {
             cancelable: true,
             composed: true
         }))
+    }
+
+    disconnectedCallback() {
+        // @ts-ignore
+        document.body.removeEventListener('user', this.userListener)
     }
 
     /**
@@ -83,15 +99,8 @@ export default class Header extends HTMLElement {
             }
             </div>
         </header>`
-        if (user) {
-            this.button?.addEventListener('click', () => {
-                console.log('logging out...');
-                this.dispatchEvent(new CustomEvent('logoutUser', {
-                    bubbles: true,
-                    cancelable: true,
-                    composed: true
-                }))
-            });
+        if (this.button) {
+            this.button.addEventListener('click', this.logoutUserListener);
         }
     }
 }

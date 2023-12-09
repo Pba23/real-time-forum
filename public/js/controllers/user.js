@@ -70,8 +70,8 @@ export default class User extends HTMLElement {
                             if (data.errors) throw data.errors
                             if (data.user) {
                                 this.user = data.user
-                                console.log(this.user);
-                                // Environment.token = data.user.token
+                                const _auth = JSON.stringify(this.user);
+                                Environment.auth = _auth;
                             }
                             return data.user
                         })
@@ -108,8 +108,8 @@ export default class User extends HTMLElement {
                             if (data.errors) throw data.errors
                             if (data.user) {
                                 this.user = data.user
-                                console.log(this.user);
-                                // Environment.token = data.user.token
+                                const _auth = JSON.stringify(this.user);
+                                Environment.auth = _auth;
                             }
                             return data.user
                         })
@@ -163,12 +163,11 @@ export default class User extends HTMLElement {
             this.abortController = new AbortController()
 
             const url = `${Environment.fetchBaseUrl}/logout`
-            console.log("logout...");
             // answer with event
             this.dispatchEvent(new CustomEvent('user', {
                 /** @type {UserEventDetail} */
                 detail: {
-                    fetch: this.user ? Promise.resolve(this.user) : Environment.auth ? fetch(url,
+                    fetch: fetch(url,
                         {
                             method: 'DELETE',
                             credentials: 'include',
@@ -180,16 +179,14 @@ export default class User extends HTMLElement {
                             throw new Error(response.statusText)
                         })
                         .then(data => {
-                            if (data.user) {
-                                this.user = data.user
-                                Environment.auth = data.user
-                            }
+                            this.user = undefined
+                            Environment.auth = ""
                             return data.user
                         })
                         .catch(error => {
                             if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = ''
                             console.log(`Error@UserFetch: ${error}`)
-                        }) : Promise.reject(new Error('No token found'))
+                        })
                 },
                 bubbles: true,
                 cancelable: true,

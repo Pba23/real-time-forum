@@ -1,9 +1,8 @@
 // @ts-check
-
-import { Environment } from "../lib/environment.js";
-
 /* global HTMLElement */
 /* global customElements */
+
+import { Environment } from "../lib/environment.js";
 
 /**
  * As a page, this component becomes a domain dependent container and shall hold organisms, molecules and/or atoms
@@ -41,17 +40,14 @@ export default class Login extends HTMLElement {
         this.userListener = event => {
             // @ts-ignore
             event.detail.fetch
-                .then(user => {
-                    console.log("User", user);
-                    console.log(user);
-                    const _auth = JSON.stringify(user);
-                    Environment.auth = _auth;
-                    (self.location.hash = '#/')
-                })
+                .then(user => (self.location.hash = '#/'))
                 .catch(error => (this.errorMessages = error))
         }
     }
     connectedCallback() {
+        if (Environment.auth) {
+            self.location.hash = '#/'
+        }
         if (this.shouldComponentRender()) this.render()
         this.loginForm?.addEventListener('submit', this.submitListener)
         // @ts-ignore
@@ -101,10 +97,9 @@ export default class Login extends HTMLElement {
                     <ul class="error-messages"></ul>
                     <form id="register-form">
                                 <label for="identifiant">Identifiant:</label>
-                                <input placeholder="Enter your nickname or your email to login" type="text" id="nickname" name="identifiant"
-                                    required>
+                                <input placeholder="Enter your nickname or your email to login" type="text" id="nickname" name="identifiant" autocomplete="username" required>
                                 <label for="password">Password:</label>
-                                <input placeholder="Enter your password" type="password" id="password" name="password" required>
+                                <input placeholder="Enter your password" type="password" id="password" name="password" autocomplete="new-password" required>
                         <button class="primary my--16" type="submit">Login</button>
                     </form>
 
