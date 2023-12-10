@@ -120,7 +120,7 @@ func (pcr *PostCategoryRepository) GetPostsOfCategory(categoryName string) ([]Po
 			log.Println("❌ SQL ERROR ", err.Error())
 			return nil, err
 		}
-		post.ListOfCommentator = strings.Split(_listOfCommentator, ",")
+		post.ListOfCategories = strings.Split(_listOfCommentator, ",")
 		post.LastEditionDate = strings.ReplaceAll(post.LastEditionDate, "T", " ")
 		post.LastEditionDate = strings.ReplaceAll(post.LastEditionDate, "Z", "")
 		post.LastEditionDate = lib.TimeSinceCreation(post.LastEditionDate)

@@ -36,5 +36,20 @@
     }} AuthUser
 */
 
+/**
+ * PostItem
+ *
+ * @typedef {{
+    id: int,
+    title: string,
+    slug: string,
+    authorName: string,
+    imageURL: string,
+    lastEditionDate: string,
+    numberOfComments: int,
+    listOfCategories: string[]
+ }} PostItem
+ */
+
 // the line below is a workaround to fix 'is not a module' import error, it seems as it is needed to be recognized by JSDoc types
 export class IgnoreMe { }

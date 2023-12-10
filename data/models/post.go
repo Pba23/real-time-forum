@@ -12,14 +12,14 @@ import (
 )
 
 type PostItem struct {
-	ID                string
-	Title             string
-	Slug              string
-	AuthorName        string
-	ImageURL          string
-	LastEditionDate   string
-	NumberOfComments  int
-	ListOfCommentator []string
+	ID               string   `json:"id"`
+	Title            string   `json:"title"`
+	Slug             string   `json:"slug"`
+	AuthorName       string   `json:"authorName"`
+	ImageURL         string   `json:"imageURL"`
+	LastEditionDate  string   `json:"lastEditionDate"`
+	NumberOfComments int      `json:"numberOfComments"`
+	ListOfCategories []string `json:"listOfCategories"`
 }
 
 type CompletePost struct {
@@ -111,14 +111,14 @@ func (pr *PostRepository) GetUserOwnPosts(userId, nickName string) ([]PostItem, 
 		lastModificationDate = strings.ReplaceAll(lastModificationDate, "Z", "")
 		urlImage := strings.ReplaceAll(posts[i].ImageURL, "jpg", "jpg")
 		postItem := PostItem{
-			ID:                posts[i].ID,
-			Title:             posts[i].Title,
-			Slug:              posts[i].Slug,
-			AuthorName:        nickName,
-			ImageURL:          urlImage,
-			LastEditionDate:   lib.TimeSinceCreation(lastModificationDate),
-			NumberOfComments:  numberComments[i],
-			ListOfCommentator: []string{},
+			ID:               posts[i].ID,
+			Title:            posts[i].Title,
+			Slug:             posts[i].Slug,
+			AuthorName:       nickName,
+			ImageURL:         urlImage,
+			LastEditionDate:  lib.TimeSinceCreation(lastModificationDate),
+			NumberOfComments: numberComments[i],
+			ListOfCategories: []string{},
 		}
 		tabPostItem = append(tabPostItem, postItem)
 
@@ -141,24 +141,23 @@ func (pr *PostRepository) GetPostBySlug(slug string) (*Post, error) {
 	return &post, nil
 }
 
-// Get all posts from database with author information and commentators
+// Get all posts as PostItems with author name and category names
 func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
-	var posts []*PostItem
+	var postItems []*PostItem
 	request := `
 		SELECT 
-			p.id,
-			p.title,
-			p.slug,
+			p.id, p.title, p.slug,
 			u.nickname AS authorName,
 			p.imageURL,
 			p.modifiedDate AS lastEditionDate,
 			COUNT(c.id) AS numberOfComments,
-			COALESCE(GROUP_CONCAT(cu.avatarURL, ', '), '') AS listOfCommentator
+			COALESCE(GROUP_CONCAT(c.name, ', '), '') AS listOfCategories
 		FROM post p
 		JOIN user u ON p.authorID = u.id
-		LEFT JOIN comment c ON p.id = c.postID
-		LEFT JOIN user cu ON c.authorID = cu.id
+		LEFT JOIN post_category pc ON p.id = pc.postID
+		LEFT JOIN category c ON pc.categoryID = c.id
 		GROUP BY p.id
+		ORDER BY p.modifiedDate DESC
 	`
 	rows, err := pr.db.Query(request)
 	if err != nil {
@@ -168,22 +167,33 @@ func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
 
 	for rows.Next() {
 		var post PostItem
-		ListOfCommentator := ""
-		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &post.AuthorName, &post.ImageURL, &post.LastEditionDate, &post.NumberOfComments, &ListOfCommentator)
+		ListOfCategories := ""
+		err := rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Slug,
+			&post.AuthorName,
+			&post.ImageURL,
+			&post.LastEditionDate,
+			&post.NumberOfComments,
+			&ListOfCategories,
+		)
 		if err != nil {
 			return nil, err
 		}
 
-		post.ListOfCommentator = strings.Split(ListOfCommentator, ", ")
-
-		posts = append(posts, &post)
+		post.LastEditionDate = strings.ReplaceAll(post.LastEditionDate, "T", " ")
+		post.LastEditionDate = strings.ReplaceAll(post.LastEditionDate, "Z", "")
+		post.LastEditionDate = lib.TimeSinceCreation(post.LastEditionDate)
+		post.ListOfCategories = strings.Split(ListOfCategories, ", ")
+		postItems = append(postItems, &post)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return posts, nil
+	return postItems, nil
 }
 
 // Get user's comment by post

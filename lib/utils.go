@@ -179,7 +179,7 @@ func TimeSinceCreation(creationDate string) string {
 
 	creationTime, err := time.Parse(layout, creationDate)
 	if err != nil {
-		return "Invalid date format"
+		return "Invalid date format " + creationDate
 	}
 
 	currentTime := time.Now()
