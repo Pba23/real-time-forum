@@ -114,16 +114,16 @@ func (pcr *PostCategoryRepository) GetPostsOfCategory(categoryName string) ([]Po
 		_listOfCommentator := ""
 		var post PostItem
 		err := rows.Scan(
-			&post.ID, &post.Title, &post.Slug, &post.AuthorName, &post.ImageURL, &post.LastEditionDate, &post.NumberOfComments, &_listOfCommentator,
+			&post.ID, &post.Title, &post.Slug, &post.AuthorName, &post.ImageURL, &post.ModifiedDate, &post.NumberOfComments, &_listOfCommentator,
 		)
 		if err != nil {
 			log.Println("❌ SQL ERROR ", err.Error())
 			return nil, err
 		}
 		post.ListOfCategories = strings.Split(_listOfCommentator, ",")
-		post.LastEditionDate = strings.ReplaceAll(post.LastEditionDate, "T", " ")
-		post.LastEditionDate = strings.ReplaceAll(post.LastEditionDate, "Z", "")
-		post.LastEditionDate = lib.TimeSinceCreation(post.LastEditionDate)
+		post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "T", " ")
+		post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "Z", "")
+		post.ModifiedDate = lib.TimeSinceCreation(post.ModifiedDate)
 		posts = append(posts, post)
 	}
 

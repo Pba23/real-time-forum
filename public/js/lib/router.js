@@ -46,6 +46,12 @@ export default class Router extends HTMLElement {
                 regExp: new RegExp(/^#\/register/),
                 authPage: true,
             },
+            // Post page (URL: /#/post/post-slug-here )
+            {
+                name: 'p-post',
+                path: '../pages/post.js',
+                regExp: new RegExp(/^#\/post/)
+            },
         ]
 
         this.previousRoute = this.routes[0]
@@ -86,7 +92,6 @@ export default class Router extends HTMLElement {
         // find the correct route or do nothing
         if ((route = this.routes.find(route => route.regExp.test(hash)))) {
             if (route.authPage) {
-                console.log('Event sent', route.authPage, this.previousRoute.authPage);
                 this.dispatchEvent(new CustomEvent('authPage', {
                     detail: {
                         authPage: true,

@@ -45,10 +45,26 @@
     slug: string,
     authorName: string,
     imageURL: string,
-    lastEditionDate: string,
+    modifiedDate: string,
     numberOfComments: int,
     listOfCategories: string[]
  }} PostItem
+ */
+
+/**
+ * EntirePost
+ *
+ * @typedef {{
+    id: int,
+    title: string,
+    description: string,
+    slug: string,
+    authorName: string,
+    imageURL: string,
+    modifiedDate: string,
+    numberOfComments: int,
+    listOfCategories: string[]
+ }} EntirePost
  */
 
 // the line below is a workaround to fix 'is not a module' import error, it seems as it is needed to be recognized by JSDoc types

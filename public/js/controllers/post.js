@@ -8,6 +8,19 @@
 
 /**
  *
+ * @typedef {{ slug?: string }} RequestPostEventDetail
+ */
+
+/**
+ *
+ * @typedef {{
+      slug: RequestPostEventDetail,
+      fetch: Promise<import("../lib/typing.js").EntirePost>
+    }} PostEventDetail
+ */
+
+/**
+ *
  * @typedef {{ tag?: string, author?: string, favorite?: string, limit?: number, offset?: number, showYourFeed?: boolean }} RequestListPostsEventDetail
  */
 
@@ -41,6 +54,42 @@ export default class Post extends HTMLElement {
          * @type {AbortController | null}
          */
         this.abortController = null
+        this.abortControllerList = null
+
+        /**
+         * Listens to the event name/typeArg: 'requestPost'
+         *
+         * @param {CustomEvent & {detail: RequestPostEventDetail}} event
+         */
+        this.requestPostListener = event => {
+            // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
+            const slug = event.detail.slug || Environment.slug || ''
+            const url = `${Environment.fetchBaseUrl}/post/${slug}`
+            // reset old AbortController and assign new one
+            if (this.abortController) this.abortController.abort()
+            this.abortController = new AbortController()
+            // answer with event
+            console.log(`fetching ${url}`);
+            this.dispatchEvent(new CustomEvent('post', {
+                /** @type {PostEventDetail} */
+                detail: {
+                    slug,
+                    fetch: fetch(url, {
+                        signal: this.abortController.signal,
+                        ...Environment.fetchHeaders
+                    }).then(response => {
+                        if (response.status >= 200 && response.status <= 299) return response.json()
+                        throw new Error(response.statusText)
+                        // @ts-ignore
+                    }).then(data => {
+                        return data.post
+                    })
+                },
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            }))
+        }
 
         /**
          * Listens to the event name/typeArg: 'requestListPosts'
@@ -51,14 +100,14 @@ export default class Post extends HTMLElement {
         this.requestListPostsListener = event => {
             const url = `${Environment.fetchBaseUrl}/posts`
             // reset old AbortController and assign new one
-            if (this.abortController) this.abortController.abort()
-            this.abortController = new AbortController()
+            if (this.abortControllerList) this.abortControllerList.abort()
+            this.abortControllerList = new AbortController()
             // answer with event
             this.dispatchEvent(new CustomEvent('listPosts', {
                 /** @type {ListPostsEventDetail} */
                 detail: {
                     fetch: fetch(url, {
-                        signal: this.abortController.signal,
+                        signal: this.abortControllerList.signal,
                         ...Environment.fetchHeaders
                     }).then(response => {
                         if (response.status >= 200 && response.status <= 299) return response.json()
@@ -78,10 +127,14 @@ export default class Post extends HTMLElement {
     connectedCallback() {
         // @ts-ignore
         this.addEventListener('requestListPosts', this.requestListPostsListener)
+        // @ts-ignore
+        this.addEventListener('requestPost', this.requestPostListener)
     }
-
+    
     disconnectedCallback() {
         // @ts-ignore
         this.removeEventListener('requestListPosts', this.requestListPostsListener)
+        // @ts-ignore
+        this.removeEventListener('requestPost', this.requestPostListener)
     }
 }
