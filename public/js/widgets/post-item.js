@@ -52,7 +52,7 @@ export default class PostPreview extends HTMLElement {
                 <div class="display--flex flex--col f-width">
                     <h4 class="mr--16"><a class="not" href="#/post/${post.slug}">${post.title}</a></h4>
                     <div class="display--flex f-width justify--space-between mb--8">
-                        <span class="text--small text--gray">${post.lastEditionDate}</span>
+                        <span class="text--small text--gray">${post.modifiedDate}</span>
                         <a href="#">${post.authorName}</a>
                     </div>
                     <div class="display--flex f-width justify--space-between">

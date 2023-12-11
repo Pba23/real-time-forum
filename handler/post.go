@@ -144,13 +144,13 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 
 func GetPost(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/post/*", http.MethodGet) {
-		postID := mux.Vars(req)["postID"]
-		post, err := models.PostRepo.GetPostByID(postID)
+		slug := mux.Vars(req)["slug"]
+		post, err := models.PostRepo.GetPostBySlug(slug)
 		if err != nil {
 			lib.HandleError(res, http.StatusInternalServerError, err.Error())
 		}
 
-		comments, err := models.CommentRepo.GetCommentsOfPost(postID)
+		comments, err := models.CommentRepo.GetCommentsOfPost(post.ID)
 		if err != nil {
 			lib.HandleError(res, http.StatusInternalServerError, err.Error())
 		}

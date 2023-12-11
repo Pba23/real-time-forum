@@ -17,7 +17,7 @@ type PostItem struct {
 	Slug             string   `json:"slug"`
 	AuthorName       string   `json:"authorName"`
 	ImageURL         string   `json:"imageURL"`
-	LastEditionDate  string   `json:"lastEditionDate"`
+	ModifiedDate     string   `json:"modifiedDate"`
 	NumberOfComments int      `json:"numberOfComments"`
 	ListOfCategories []string `json:"listOfCategories"`
 }
@@ -28,15 +28,15 @@ type CompletePost struct {
 }
 
 type Post struct {
-	ID           string
-	Title        string
-	Slug         string
-	Description  string
-	ImageURL     string
-	AuthorID     string
-	IsEdited     bool
-	CreateDate   string
-	ModifiedDate string
+	ID           string `json:"id"`
+	Title        string `json:"title"`
+	Slug         string `json:"slug"`
+	Description  string `json:"description"`
+	ImageURL     string `json:"imageURL"`
+	AuthorID     string `json:"authorID"`
+	IsEdited     bool   `json:"isEdited"`
+	CreateDate   string `json:"createDate"`
+	ModifiedDate string `json:"modifiedDate"`
 }
 
 type PostRepository struct {
@@ -116,7 +116,7 @@ func (pr *PostRepository) GetUserOwnPosts(userId, nickName string) ([]PostItem, 
 			Slug:             posts[i].Slug,
 			AuthorName:       nickName,
 			ImageURL:         urlImage,
-			LastEditionDate:  lib.TimeSinceCreation(lastModificationDate),
+			ModifiedDate:     lib.TimeSinceCreation(lastModificationDate),
 			NumberOfComments: numberComments[i],
 			ListOfCategories: []string{},
 		}
@@ -128,16 +128,19 @@ func (pr *PostRepository) GetUserOwnPosts(userId, nickName string) ([]PostItem, 
 }
 
 // Get a post by TITLE from the database
-func (pr *PostRepository) GetPostBySlug(slug string) (*Post, error) {
-	var post Post
+func (pr *PostRepository) GetPostBySlug(slug string) (*CompletePost, error) {
+	var post CompletePost
 	row := pr.db.QueryRow("SELECT id, title, slug, description, imageURL, authorID, isEdited, createDate, modifiedDate FROM post WHERE slug = ?", slug)
 	err := row.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.ImageURL, &post.AuthorID, &post.IsEdited, &post.CreateDate, &post.ModifiedDate)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // Post not found
+			return nil, err // Post not found
 		}
 		return nil, err
 	}
+	post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "T", " ")
+	post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "Z", "")
+	post.ModifiedDate = lib.TimeSinceCreation(post.ModifiedDate)
 	return &post, nil
 }
 
@@ -174,7 +177,7 @@ func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
 			&post.Slug,
 			&post.AuthorName,
 			&post.ImageURL,
-			&post.LastEditionDate,
+			&post.ModifiedDate,
 			&post.NumberOfComments,
 			&ListOfCategories,
 		)
@@ -182,9 +185,9 @@ func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
 			return nil, err
 		}
 
-		post.LastEditionDate = strings.ReplaceAll(post.LastEditionDate, "T", " ")
-		post.LastEditionDate = strings.ReplaceAll(post.LastEditionDate, "Z", "")
-		post.LastEditionDate = lib.TimeSinceCreation(post.LastEditionDate)
+		post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "T", " ")
+		post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "Z", "")
+		post.ModifiedDate = lib.TimeSinceCreation(post.ModifiedDate)
 		post.ListOfCategories = strings.Split(ListOfCategories, ", ")
 		postItems = append(postItems, &post)
 	}

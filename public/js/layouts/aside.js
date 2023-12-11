@@ -26,7 +26,6 @@ export default class Aside extends HTMLElement {
         * @param {CustomEvent & {detail: AuthPageEventDetail}} event
         */
         this.authPageListener = event => {
-            console.log('Event received', this.isAuthPage, event.detail.authPage);
             if (this.isAuthPage === undefined || this.isAuthPage !== event.detail.authPage) {
                 this.isAuthPage = event.detail.authPage
                 this.render()
