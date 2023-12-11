@@ -78,7 +78,7 @@ func GetComment(res http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			lib.HandleError(res, http.StatusInternalServerError, err.Error())
 		}
-		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "post retrieved successfully", "post": comment})
+		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "comment retrieved successfully", "comment": comment})
 	}
 }
 
