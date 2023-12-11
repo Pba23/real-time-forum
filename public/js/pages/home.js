@@ -30,11 +30,11 @@ export default class Home extends HTMLElement {
      */
     render() {
         this.innerHTML = /* html */`
-        <main>
-            <div class="l-grid__item aside f-height">
-                <post-list></post-list>
+        <div class="l-grid__item">
+            <div class="card f-height">
+                <h1>Welcome</div>
             </div>
-        </main>
+        </div>
       `
     }
 

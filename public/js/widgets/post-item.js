@@ -42,7 +42,6 @@ export default class PostPreview extends HTMLElement {
      * @return {void | string}
      */
     render(post = this.post) {
-        console.log(post);
         if (post == undefined || post == null) {
             this.innerHTML = `<div class="Post-preview">No Post is here... yet.</div>`
             return

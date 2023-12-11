@@ -45,18 +45,16 @@ export default class Register extends HTMLElement {
          * @param {CustomEvent & {detail: import("../controllers/user.js").UserEventDetail}} event
          */
         this.userListener = event => {
-            console.log("User", event.detail);
-            // @ts-ignore
             event.detail.fetch
                 .then(user => {
-                    console.log(user);
-                    const _auth = JSON.stringify(user);
-                    Environment.auth = _auth;
-                    self.location.hash = '#/';
+                    if (user) {
+                        self.location.hash = '#/';
+                    } else {
+                        console.log('User not found');
+                    }
                 })
                 .catch(error => (this.errorMessages = error))
         }
-
     }
 
     connectedCallback() {
@@ -91,24 +89,6 @@ export default class Register extends HTMLElement {
      */
     render() {
         this.innerHTML = /* html */`
-        <main>
-        <div class="l-grid__item aside f-height">
-            <div class="card f-height mb--0">
-                <div class="card__body p--32 text--center">
-                    <h2 class="mb--24">🚀 Join the Real-Time Forum Community!</h2>
-                    <p>
-                        Connect with like-minded individuals, participate in discussions, and experience real-time chat
-                        with other members.
-                    </p>
-                    <h2 class="mt--32 mb--24">Why join us?</h2>
-                    <ul>
-                        <li>🎤 Engage in meaningful discussions on various topics.</li>
-                        <li>🗨️ Experience real-time chat for instant communication.</li>
-                        <li>📰 Stay updated with the latest posts and comments.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
         <div class="l-grid__item">
             <div class="card align--center justify--center f-height">
                 <div class="card__header">
@@ -166,7 +146,6 @@ export default class Register extends HTMLElement {
                 </div>
             </div>
         </div>
-        </main>
       `
     }
 

@@ -20,7 +20,7 @@ export default class PostList extends HTMLElement {
          *
          * @param {CustomEvent & {detail: import("../controllers/post.js").ListPostsEventDetail}} event
          */
-        this.listPostsListener = event => { console.log(event); this.render(event.detail.fetch)}
+        this.listPostsListener = event => this.render(event.detail.fetch)
     }
 
     connectedCallback() {
@@ -50,7 +50,6 @@ export default class PostList extends HTMLElement {
     render(fetchAllPosts) {
         Promise.all([fetchAllPosts, this.loadChildComponents()]).then(result => {
             const [posts, children] = result
-            console.log(posts);
             if (!posts || !posts.length) {
                 this.innerHTML = '<div class="Post-preview">No Posts are here... yet.</div>'
             } else {

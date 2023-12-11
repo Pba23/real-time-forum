@@ -16,22 +16,26 @@
     <c-user>
         <c-post>
             <l-header></l-header>
-            <l-router></l-router>
-            <l-footer></l-footer>
+            <main>
+                <l-aside></l-aside>
+                <l-router></l-router>
+                <l-footer></l-footer>
+            </main>
         </c-post>
     </c-user>
 
     <script rel=preload type=module>
         // Load all components
         Promise.all([
+            // Components which are not effected by routing
+            import('/js/layouts/header.js').then(module => ['l-header', module.default]),
+            import('/js/layouts/footer.js').then(module => ['l-footer', module.default]),
+            import('/js/layouts/aside.js').then(module => ['l-aside', module.default]),
             // Router
             import('/js/lib/router.js').then(module => ['l-router', module.default]),
             // Controllers
             import('/js/controllers/user.js').then(module => ['c-user', module.default]),
             import('/js/controllers/post.js').then(module => ['c-post', module.default]),
-            // Components which are not effected by routing
-            import('/js/layouts/header.js').then(module => ['l-header', module.default]),
-            import('/js/layouts/footer.js').then(module => ['l-footer', module.default])
         ]).then(elements => elements.forEach(element => {
             // don't define already existing customElements
             if (element && !customElements.get(element[0])) customElements.define(...element)

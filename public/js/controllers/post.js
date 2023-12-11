@@ -49,7 +49,6 @@ export default class Post extends HTMLElement {
          */
         // @ts-ignore
         this.requestListPostsListener = event => {
-            console.log(event);
             const url = `${Environment.fetchBaseUrl}/posts`
             // reset old AbortController and assign new one
             if (this.abortController) this.abortController.abort()
@@ -66,7 +65,6 @@ export default class Post extends HTMLElement {
                         throw new Error(response.statusText)
                         // @ts-ignore
                     }).then(data => {
-                        console.log(data);
                         return data.posts
                     })
                 },
