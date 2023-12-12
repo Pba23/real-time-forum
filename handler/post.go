@@ -45,9 +45,14 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 				}
 				models.PostCategoryRepo.CreatePostCategory(category.ID, postInfo.ID)
 			}
-			lib.SendJSONResponse(res, http.StatusOK, map[string]string{
+			post, err := models.PostRepo.GetPostItemByID(postInfo.ID)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, "Error getting post : "+err.Error())
+				return
+			}
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{
 				"message": "post created successfully",
-				"id":      postInfo.ID,
+				"post":      post,
 			})
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "not connected")

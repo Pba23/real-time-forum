@@ -199,6 +199,50 @@ func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
 	return postItems, nil
 }
 
+// Get all posts as PostItems with author name and category names
+func (pr *PostRepository) GetPostItemByID(postID string) (PostItem, error) {
+	request := `
+		SELECT 
+			p.id, p.title, p.slug,
+			u.nickname AS authorName,
+			p.imageURL,
+			p.modifiedDate AS lastEditionDate,
+			COUNT(c.id) AS numberOfComments,
+			COALESCE(GROUP_CONCAT(c.name, ', '), '') AS listOfCategories
+		FROM post p
+		JOIN user u ON p.authorID = u.id
+		LEFT JOIN post_category pc ON p.id = pc.postID
+		LEFT JOIN category c ON pc.categoryID = c.id
+		WHERE p.id = ?
+		GROUP BY p.id
+		ORDER BY p.modifiedDate DESC
+	`
+	row := pr.db.QueryRow(request, postID)
+
+	var post PostItem
+	ListOfCategories := ""
+	err := row.Scan(
+		&post.ID,
+		&post.Title,
+		&post.Slug,
+		&post.AuthorName,
+		&post.ImageURL,
+		&post.ModifiedDate,
+		&post.NumberOfComments,
+		&ListOfCategories,
+	)
+	if err != nil {
+		return post, err
+	}
+
+	post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "T", " ")
+	post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "Z", "")
+	post.ModifiedDate = lib.TimeSinceCreation(post.ModifiedDate)
+	post.ListOfCategories = strings.Split(ListOfCategories, ", ")
+
+	return post, nil
+}
+
 // Get user's comment by post
 func (pr *PostRepository) GetUserReaction(userID string) (map[Post][]Comment, error) {
 	commentMap := make(map[Post][]Comment)
