@@ -96,29 +96,29 @@ func GetComments(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func EditComment(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/edit-comment/*", http.MethodPost) {
+// func EditComment(res http.ResponseWriter, req *http.Request) {
+// 	if lib.ValidateRequest(req, res, "/edit-comment/*", http.MethodPost) {
 
-	}
-}
+// 	}
+// }
 
-func DeleteComment(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/delete-comment/*", http.MethodGet) {
+// func DeleteComment(res http.ResponseWriter, req *http.Request) {
+// 	if lib.ValidateRequest(req, res, "/delete-comment/*", http.MethodGet) {
 
-	}
-}
+// 	}
+// }
 
-func LikeComment(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/like-comment/*", http.MethodGet) {
+// func LikeComment(res http.ResponseWriter, req *http.Request) {
+// 	if lib.ValidateRequest(req, res, "/like-comment/*", http.MethodGet) {
 
-	}
-}
+// 	}
+// }
 
-func DislikeComment(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/dislike-comment/*", http.MethodGet) {
+// func DislikeComment(res http.ResponseWriter, req *http.Request) {
+// 	if lib.ValidateRequest(req, res, "/dislike-comment/*", http.MethodGet) {
 
-	}
-}
+// 	}
+// }
 func validateCommentInput(comment models.Comment) error {
 	// Add any validation rules as needed
 	if comment.Text == "" {
@@ -126,10 +126,4 @@ func validateCommentInput(comment models.Comment) error {
 	}
 	return nil
 }
-func validateUpdateCommentInput(comment models.Comment) error {
-	// Add any validation rules as needed
-	if comment.Text == "" {
-		return ErrMissingRequiredFields
-	}
-	return nil
-}
+
