@@ -54,7 +54,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 			}
 			lib.SendJSONResponse(res, http.StatusOK, map[string]any{
 				"message": "post created successfully",
-				"post":      post,
+				"post":    post,
 			})
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "not connected")
@@ -155,11 +155,13 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 		post, err := models.PostRepo.GetPostBySlug(slug)
 		if err != nil {
 			lib.HandleError(res, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		comments, err := models.CommentRepo.GetCommentsOfPost(post.ID)
 		if err != nil {
 			lib.HandleError(res, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		post.Comments = comments
