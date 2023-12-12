@@ -39,6 +39,18 @@ type Post struct {
 	ModifiedDate string `json:"modifiedDate"`
 }
 
+type PostCreation struct {
+	ID           string `json:"id"`
+	Title       string   `json:"title"`
+	Slug        string   `json:"slug"`
+	Description string   `json:"description"`
+	AuthorID    string   `json:"authorID"`
+	ImageURL     string `json:"imageURL"`
+	Categories  []string `json:"categories"`
+	CreateDate   string `json:"createDate"`
+	ModifiedDate string `json:"modifiedDate"`
+}
+
 type PostRepository struct {
 	db *sql.DB
 }
@@ -50,7 +62,7 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 }
 
 // Create a new post in the database
-func (pr *PostRepository) CreatePost(post *Post) error {
+func (pr *PostRepository) CreatePost(post *PostCreation) error {
 	ID, err := uuid.NewV4()
 	if err != nil {
 		log.Printf("❌ Failed to generate UUID: %v", err)

@@ -18,7 +18,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 		isLogin := models.ValidSession(req)
 		if isLogin {
 			userInSession := models.GetUserFromSession(req)
-			var postInfo models.Post
+			var postInfo models.PostCreation
 			if err := json.NewDecoder(req.Body).Decode(&postInfo); err != nil {
 				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
 				return
@@ -28,7 +28,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 				return
 			}
 			postInfo.Slug = lib.Slugify(postInfo.Title)
-			categories := strings.Split(req.FormValue("categories"), "#")
+			categories := postInfo.Categories
 			postInfo.AuthorID = userInSession.ID
 			if err := models.PostRepo.CreatePost(&postInfo); err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error creating post : "+err.Error())
@@ -177,7 +177,7 @@ func GetAllPosts(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func validatePostInput(post models.Post) error {
+func validatePostInput(post models.PostCreation) error {
 	if post.Title == "" || post.ImageURL == "" || post.Description == "" {
 		return ErrMissingRequiredFields
 	}
