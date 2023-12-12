@@ -176,15 +176,12 @@ func isValidFileType(contentType string) bool {
 
 func TimeSinceCreation(creationDate string) string {
 	layout := "2006-01-02 15:04:05" // Date format layout
-
 	creationTime, err := time.Parse(layout, creationDate)
 	if err != nil {
-		return "Invalid date format " + creationDate
+		return "Invalid date format"
 	}
-
 	currentTime := time.Now()
 	elapsedTime := currentTime.Sub(creationTime)
-
 	if elapsedTime < time.Hour/60 {
 		seconds := int(elapsedTime.Hours() * 60 * 60)
 		return fmt.Sprintf("%d second%s ago", seconds, pluralize(seconds))
@@ -202,6 +199,7 @@ func TimeSinceCreation(creationDate string) string {
 		return fmt.Sprintf("%d month%s ago", months, pluralize(months))
 	} else {
 		years := int(elapsedTime.Hours() / (24 * 30 * 12))
+		fmt.Println("------------------------------------------------\n\ntime:            ",creationDate)
 		return fmt.Sprintf("%d year%s ago", years, pluralize(years))
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"log"
 	"real-time-forum/lib"
 	"strings"
+	"time"
 
 	uuid "github.com/gofrs/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -40,15 +41,15 @@ type Post struct {
 }
 
 type PostCreation struct {
-	ID           string `json:"id"`
-	Title       string   `json:"title"`
-	Slug        string   `json:"slug"`
-	Description string   `json:"description"`
-	AuthorID    string   `json:"authorID"`
-	ImageURL     string `json:"imageURL"`
-	Categories  []string `json:"categories"`
-	CreateDate   string `json:"createDate"`
-	ModifiedDate string `json:"modifiedDate"`
+	ID           string   `json:"id"`
+	Title        string   `json:"title"`
+	Slug         string   `json:"slug"`
+	Description  string   `json:"description"`
+	AuthorID     string   `json:"authorID"`
+	ImageURL     string   `json:"imageURL"`
+	Categories   []string `json:"categories"`
+	CreateDate   string   `json:"createDate"`
+	ModifiedDate string   `json:"modifiedDate"`
 }
 
 type PostRepository struct {
@@ -68,6 +69,8 @@ func (pr *PostRepository) CreatePost(post *PostCreation) error {
 		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	post.ID = ID.String()
+	post.CreateDate = time.Now().Format("2006-01-02 15:04:05")
+	post.ModifiedDate =time.Now().Format("2006-01-02 15:04:05")
 	_, err = pr.db.Exec("INSERT INTO post (id, title, slug, description, imageURL, authorID, createDate, modifiedDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 		post.ID, post.Title, post.Slug, post.Description, post.ImageURL, post.AuthorID, post.CreateDate, post.ModifiedDate)
 	return err
