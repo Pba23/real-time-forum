@@ -32,8 +32,8 @@ func (cr *CategoryRepository) CreateCategory(category *Category) error {
 		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	category.ID = ID.String()
-	_, err = cr.db.Exec("INSERT INTO category (id, name, createDate, modifiedDate) VALUES (?, ?, ?, ?)",
-		category.ID, category.Name, category.CreateDate, category.ModifiedDate)
+	_, err = cr.db.Exec("INSERT INTO category (id, name) VALUES (?, ?)",
+		category.ID, category.Name)
 	return err
 }
 

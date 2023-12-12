@@ -34,7 +34,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 				lib.HandleError(res, http.StatusInternalServerError, "Error creating post : "+err.Error())
 				return
 			}
-			for i := 1; i < len(categories); i++ {
+			for i := 0; i < len(categories); i++ {
 				name := strings.TrimSpace(categories[i])
 				category, _ := models.CategoryRepo.GetCategoryByName(name)
 				if category == nil {
