@@ -68,7 +68,7 @@
  */
 
 /**
-* SingleComment
+* CommentItem
 *
 * @typedef {{
       id: string,
@@ -82,7 +82,7 @@
       lastModifiedDate: string,
       nbrLikesComment: int,
       nbrDislikesComment: int,
-   }} SingleComment
+   }} CommentItem
 */
 
 /**
@@ -99,7 +99,7 @@
  * MultipleComments
  *
  * @typedef {{
-      comments: SingleComment[]
+      comments: CommentItem[]
     }} MultipleComments
  */
 

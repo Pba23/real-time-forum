@@ -52,6 +52,11 @@ export default class Router extends HTMLElement {
                 path: '../pages/post.js',
                 regExp: new RegExp(/^#\/post/)
             },
+            {
+                name: 'p-add-post',
+                path: '../pages/add-post.js',
+                regExp: new RegExp(/^#\/add-post/)
+            },
         ]
 
         this.previousRoute = this.routes[0]

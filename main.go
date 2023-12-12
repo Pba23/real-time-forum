@@ -36,7 +36,7 @@ func main() {
 	r.Handle("/sign-in", rateLimiter.Wrap("auth", http.HandlerFunc(handler.SignIn)))
 	r.Handle("/logout", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Logout)))
 
-	// Post Handler
+	// Post Handlers
 	r.Handle("/post", rateLimiter.Wrap("api", http.HandlerFunc(handler.CreatePost)))
 	r.Handle("/post/{slug}", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetPost)))
 	r.Handle("/posts", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetAllPosts)))

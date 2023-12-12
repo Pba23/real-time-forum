@@ -36,14 +36,16 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 			}
 			for i := 0; i < len(categories); i++ {
 				name := strings.TrimSpace(categories[i])
-				category, _ := models.CategoryRepo.GetCategoryByName(name)
-				if category == nil {
-					category = &models.Category{
-						Name: name,
+				if name != "" {
+					category, _ := models.CategoryRepo.GetCategoryByName(name)
+					if category == nil {
+						category = &models.Category{
+							Name: name,
+						}
+						models.CategoryRepo.CreateCategory(category)
 					}
-					models.CategoryRepo.CreateCategory(category)
+					models.PostCategoryRepo.CreatePostCategory(category.ID, postInfo.ID)
 				}
-				models.PostCategoryRepo.CreatePostCategory(category.ID, postInfo.ID)
 			}
 			post, err := models.PostRepo.GetPostItemByID(postInfo.ID)
 			if err != nil {
