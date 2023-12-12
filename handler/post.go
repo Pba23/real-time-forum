@@ -36,14 +36,16 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 			}
 			for i := 0; i < len(categories); i++ {
 				name := strings.TrimSpace(categories[i])
-				category, _ := models.CategoryRepo.GetCategoryByName(name)
-				if category == nil {
-					category = &models.Category{
-						Name: name,
+				if name != "" {
+					category, _ := models.CategoryRepo.GetCategoryByName(name)
+					if category == nil {
+						category = &models.Category{
+							Name: name,
+						}
+						models.CategoryRepo.CreateCategory(category)
 					}
-					models.CategoryRepo.CreateCategory(category)
+					models.PostCategoryRepo.CreatePostCategory(category.ID, postInfo.ID)
 				}
-				models.PostCategoryRepo.CreatePostCategory(category.ID, postInfo.ID)
 			}
 			post, err := models.PostRepo.GetPostItemByID(postInfo.ID)
 			if err != nil {
@@ -52,7 +54,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 			}
 			lib.SendJSONResponse(res, http.StatusOK, map[string]any{
 				"message": "post created successfully",
-				"post":      post,
+				"post":    post,
 			})
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "not connected")
@@ -153,11 +155,13 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 		post, err := models.PostRepo.GetPostBySlug(slug)
 		if err != nil {
 			lib.HandleError(res, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		comments, err := models.CommentRepo.GetCommentsOfPost(post.ID)
 		if err != nil {
 			lib.HandleError(res, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		post.Comments = comments

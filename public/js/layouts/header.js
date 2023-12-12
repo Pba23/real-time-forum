@@ -93,7 +93,8 @@ export default class Header extends HTMLElement {
             <div>
                 ${user ? /* html */`
                 <a href="#/profile">Welcome, ${user.nickname}</a>
-                <button id="logout" class="primary not mr--8">Logout</button>
+                <a href="#/add-post" class="btn small primary not mr--8">New Post</a>
+                <button id="logout" class="primary small mr--8">Logout</button>
                 `
                 : /* html */`
                 <a href="#/login" class="btn primary not mr--8">Login</a>

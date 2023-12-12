@@ -12,85 +12,115 @@
  * @class ListPostPreviews
  */
 export default class PostList extends HTMLElement {
-    constructor() {
-        super()
-
-        /**
-         * Listens to the event name/typeArg: 'listPosts'
-         *
-         * @param {CustomEvent & {detail: import("../controllers/post.js").ListPostsEventDetail}} event
-         */
-        this.listPostsListener = event => this.render(event.detail.fetch)
-    }
-
-    connectedCallback() {
-        // listen for Posts
-        // @ts-ignore
-        document.body.addEventListener('listPosts', this.listPostsListener)
-        this.dispatchEvent(new CustomEvent('requestListPosts', {
-            /** @type {import("../controllers/post.js").RequestListPostsEventDetail} */
-            detail: {},
-            bubbles: true,
-            cancelable: true,
-            composed: true
-        }))
-    }
-
-    disconnectedCallback() {
-        // @ts-ignore
-        document.body.removeEventListener('listPosts', this.listPostsListener)
-    }
+  constructor() {
+    super()
 
     /**
-     * renders each received Post
+     * Listens to the event name/typeArg: 'listPosts'
      *
-     * @param {Promise<import("../lib/typing.js").PostItem[]>} fetchAllPosts
-     * @return {void}
+     * @param {CustomEvent & {detail: import("../controllers/post.js").ListPostsEventDetail}} event
      */
-    render(fetchAllPosts) {
-        Promise.all([fetchAllPosts, this.loadChildComponents()]).then(result => {
-            const [posts, children] = result
-            if (!posts || !posts.length) {
-                this.innerHTML = '<div class="Post-preview">No Posts are here... yet.</div>'
-            } else {
-                this.innerHTML = ''
-                posts.forEach(p => {
-                    /** @type {import("./post-item.js").default & any} */
-                    // @ts-ignore
-                    const PostPreview = new children[0][1](p)
-                    this.appendChild(PostPreview)
-                })
-                if (!this.getAttribute('no-scroll')) this.scrollToEl(this)
-            }
+    this.listPostsListener = event => this.render(event.detail.fetch)
+
+    this.postListener = event => event.detail.fetch.then(data => {
+      const post = data.post
+      if (this.firstItem) {
+        if (this.childComponentsPromise) {
+          this.childComponentsPromise.then(children => {
+            const postItem = children[0][1]
+            const postItemElement = new postItem(post)
             // @ts-ignore
-        }).catch(error => (this.innerHTML = console.warn(error) || (error && typeof error.toString === 'function' && error.toString().includes('aborted') ? '<div class="Post-preview">Loading...</div>' : '<div class="Post-preview">An error occurred fetching the Posts!</div>')))
-    }
+            this.insertBefore(postItemElement, this.firstItem)
+          });
+        }
+      } else {
+        // @ts-ignore
+        this.appendChild(this.createComment(post))
+      }
+    })
+  }
 
-    /**
-     * fetch children when first needed
-     *
-     * @returns {Promise<[string, CustomElementConstructor][]>}
-     */
-    loadChildComponents() {
-        return this.childComponentsPromise || (this.childComponentsPromise = Promise.all([
-            import('./post-item.js').then(
-                /** @returns {[string, CustomElementConstructor]} */
-                module => ['post-item', module.default]
-            )
-        ]).then(elements => {
-            elements.forEach(element => {
-                // don't define already existing customElements
-                // @ts-ignore
-                if (!customElements.get(element[0])) customElements.define(...element)
-            })
-            return elements
-        }))
-    }
+  connectedCallback() {
+    // listen for Posts
+    // @ts-ignore
+    document.body.addEventListener('listPosts', this.listPostsListener)
+    // @ts-ignore
+    document.body.addEventListener('post', this.postListener)
+    this.dispatchEvent(new CustomEvent('requestListPosts', {
+      /** @type {import("../controllers/post.js").RequestListPostsEventDetail} */
+      detail: {},
+      bubbles: true,
+      cancelable: true,
+      composed: true
+    }))
+  }
 
-    // inspired from: https://github.com/Weedshaker/PeerWebSite/blob/master/JavaScript/js/Player/Player.js
-    scrollToEl(el) {
-        const rect = el.getBoundingClientRect()
-        // check if the element is outside the viewport, otherwise don't scroll
-        if (rect && rect.top < 0) el.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'smooth' })
-    }
+  disconnectedCallback() {
+    // @ts-ignore
+    document.body.removeEventListener('post', this.postListener)
+    // @ts-ignore
+    document.body.removeEventListener('listPosts', this.listPostsListener)
+  }
+
+  /**
+   * renders each received Post
+   *
+   * @param {Promise<import("../lib/typing.js").PostItem[]>} fetchAllPosts
+   * @return {void}
+   */
+  render(fetchAllPosts) {
+    Promise.all([fetchAllPosts, this.loadChildComponents()]).then(result => {
+      const [posts, children] = result
+      if (!posts || !posts.length) {
+        this.innerHTML = '<div class="Post-preview">No Posts are here... yet.</div>'
+      } else {
+        this.innerHTML = ''
+        posts.forEach(p => {
+          /** @type {import("./post-item.js").default & any} */
+          // @ts-ignore
+          const PostPreview = new children[0][1](p)
+          this.appendChild(PostPreview)
+        })
+        if (!this.getAttribute('no-scroll')) this.scrollToEl(this)
+      }
+      // @ts-ignore
+    }).catch(error => (this.innerHTML = console.warn(error) || (error && typeof error.toString === 'function' && error.toString().includes('aborted') ? '<div class="Post-preview">Loading...</div>' : '<div class="Post-preview">An error occurred fetching the Posts!</div>')))
+  }
+
+  /**
+   * fetch children when first needed
+   *
+   * @returns {Promise<[string, CustomElementConstructor][]>}
+   */
+  loadChildComponents() {
+    return this.childComponentsPromise || (this.childComponentsPromise = Promise.all([
+      import('./post-item.js').then(
+        /** @returns {[string, CustomElementConstructor]} */
+        module => ['post-item', module.default]
+      )
+    ]).then(elements => {
+      elements.forEach(element => {
+        // don't define already existing customElements
+        // @ts-ignore
+        if (!customElements.get(element[0])) customElements.define(...element)
+      })
+      return elements
+    }))
+  }
+
+  /**
+* returns the first card element
+*
+* @readonly
+* @return {HTMLElement | null}
+*/
+  get firstItem() {
+    return this.querySelector('post-item:nth-child(1)')
+  }
+
+  scrollToEl(el) {
+    const rect = el.getBoundingClientRect()
+    // check if the element is outside the viewport, otherwise don't scroll
+    if (rect && rect.top < 0) el.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'smooth' })
+  }
 }

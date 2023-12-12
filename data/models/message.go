@@ -34,8 +34,8 @@ func (rr *MessageRepository) CreateMessage(message *Message) error {
 		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	message.ID = ID.String()
-	_, err = rr.db.Exec("INSERT INTO message (id, senderID, receiverID, content, createDate, modifiedDate) VALUES (?, ?, ?, ?, ?, ?)",
-		message.ID, message.SenderID, message.ReceiverID, message.Text, message.CreateDate, message.ModifiedDate)
+	_, err = rr.db.Exec("INSERT INTO message (id, senderID, receiverID, content) VALUES (?, ?, ?, ?)",
+		message.ID, message.SenderID, message.ReceiverID, message.Text)
 	return err
 }
 

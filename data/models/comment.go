@@ -5,20 +5,19 @@ import (
 	"log"
 	"real-time-forum/lib"
 	"strings"
-	"time"
 
 	uuid "github.com/gofrs/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type Comment struct {
-	ID           string `json:id`
-	Text         string `json:text`
-	AuthorID     string `json:authorID`
-	PostID       string `json:postID`
-	ParentID     string `json:parentID`
-	ModifiedDate string `json:modifiedDate`
-	CreateDate   string `json:createDate`
+	ID           string `json:"id"`
+	Text         string `json:"text"`
+	AuthorID     string `json:"authorID"`
+	PostID       string `json:"postID"`
+	ParentID     string `json:"parentID"`
+	ModifiedDate string `json:"modifiedDate"`
+	CreateDate   string `json:"createDate"`
 }
 
 type CommentItem struct {
@@ -52,9 +51,8 @@ func (cr *CommentRepository) CreateComment(comment *Comment) error {
 		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	comment.ID = ID.String()
-	comment.CreateDate = time.Now().Format("2006-01-02 15:04:05")
-	_, err = cr.db.Exec("INSERT INTO comment (id, text, authorID, postID, parentID, createDate, modifiedDate) VALUES (?, ?, ?, ?, ?, ?, ?)",
-		comment.ID, comment.Text, comment.AuthorID, comment.PostID, comment.ParentID, comment.CreateDate, comment.ModifiedDate)
+	_, err = cr.db.Exec("INSERT INTO comment (id, text, authorID, postID, parentID) VALUES (?, ?, ?, ?, ?)",
+		comment.ID, comment.Text, comment.AuthorID, comment.PostID, comment.ParentID)
 	return err
 }
 

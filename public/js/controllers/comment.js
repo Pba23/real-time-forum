@@ -13,7 +13,7 @@
 /**
  *
  * @typedef {{
-  fetch: Promise<import("../lib/typing.js").SingleComment>
+  fetch: Promise<import("../lib/typing.js").CommentItem>
 }} CommentEventDetail
 */
 
@@ -75,7 +75,7 @@ export default class Comments extends HTMLElement {
                 detail: {
                     fetch: fetch(url, {
                         method: 'POST',
-                        body: JSON.stringify( event.detail.comment),
+                        body: JSON.stringify(event.detail.comment),
                         signal: this.abortController.signal,
                         credentials: 'include',
                         ...Environment.fetchHeaders

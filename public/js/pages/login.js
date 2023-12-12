@@ -11,69 +11,69 @@ import { Environment } from "../lib/environment.js";
  * @class Login
  */
 export default class Login extends HTMLElement {
-    constructor() {
-        super()
+  constructor() {
+    super()
 
-        this.submitListener = (e) => {
-            if (this.loginForm?.checkValidity()) {
-                e.preventDefault();
+    this.submitListener = (e) => {
+      if (this.loginForm?.checkValidity()) {
+        e.preventDefault();
 
-                this.dispatchEvent(new CustomEvent('loginUser', {
-                    detail: {
-                        /** @type {import("../lib/typing.js").Login} */
-                        user: {
-                            identifiant: (this.identifiantField) ? this.identifiantField.value : "",
-                            password: (this.passwordField) ? this.passwordField.value : ""
-                        }
-                    },
-                    bubbles: true,
-                    cancelable: true,
-                    composed: true
-                }))
+        this.dispatchEvent(new CustomEvent('loginUser', {
+          detail: {
+            /** @type {import("../lib/typing.js").Login} */
+            user: {
+              identifiant: (this.identifiantField) ? this.identifiantField.value : "",
+              password: (this.passwordField) ? this.passwordField.value : ""
             }
-        }
-        /**
-        * Listens to the event name/typeArg: 'user'
-        *
-        * @param {CustomEvent & {detail: import("../controllers/user.js").UserEventDetail}} event
-        */
-        this.userListener = event => {
-            event.detail.fetch
-                .then(user => {
-                    if (user && /^#\/login/.test(location.hash)) {
-                        self.location.hash = '#/';
-                    }
-                })
-                .catch(error => (this.errorMessages = error))
-        }
+          },
+          bubbles: true,
+          cancelable: true,
+          composed: true
+        }))
+      }
     }
-
-    connectedCallback() {
-        if (Environment.auth) {
-            self.location.hash = '#/'
-        }
-        if (this.shouldComponentRender()) this.render()
-        this.loginForm?.addEventListener('submit', this.submitListener)
-        // @ts-ignore
-        document.body.addEventListener('user', this.userListener)
-    }
-
     /**
-     * evaluates if a render is necessary
-     *
-     * @return {boolean}
-     */
-    shouldComponentRender() {
-        return !this.innerHTML
+    * Listens to the event name/typeArg: 'user'
+    *
+    * @param {CustomEvent & {detail: import("../controllers/user.js").UserEventDetail}} event
+    */
+    this.userListener = event => {
+      event.detail.fetch
+        .then(user => {
+          if (user && /^#\/login/.test(location.hash)) {
+            self.location.hash = '#/';
+          }
+        })
+        .catch(error => (this.errorMessages = error))
     }
+  }
 
-    /**
-     * renders the footer
-     *
-     * @return {void}
-     */
-    render() {
-        this.innerHTML = /* html */`
+  connectedCallback() {
+    if (Environment.auth) {
+      self.location.hash = '#/'
+    }
+    if (this.shouldComponentRender()) this.render()
+    this.loginForm?.addEventListener('submit', this.submitListener)
+    // @ts-ignore
+    document.body.addEventListener('user', this.userListener)
+  }
+
+  /**
+   * evaluates if a render is necessary
+   *
+   * @return {boolean}
+   */
+  shouldComponentRender() {
+    return !this.innerHTML
+  }
+
+  /**
+   * renders the footer
+   *
+   * @return {void}
+   */
+  render() {
+    this.innerHTML = /* html */`
         <div class="l-grid__item">
             <div class="card align--center justify--center f-height">
                 <div class="card__header">
@@ -83,7 +83,7 @@ export default class Login extends HTMLElement {
                     <ul class="error-messages"></ul>
                     <form id="register-form">
                                 <label for="identifiant">Identifiant:</label>
-                                <input placeholder="Enter your nickname or your email to login" type="text" id="nickname" name="identifiant" autocomplete="username" required>
+                                <input placeholder="Enter your nickname or your email to login" type="text" id="identifiant" name="identifiant" autocomplete="username" required>
                                 <label for="password">Password:</label>
                                 <input placeholder="Enter your password" type="password" id="password" name="password" autocomplete="new-password" required>
                         <button class="primary my--16" type="submit">Login</button>
@@ -94,40 +94,40 @@ export default class Login extends HTMLElement {
             </div>
         </div>
       `
-    }
-    /**
-     * @return {HTMLFormElement | null}
-     */
-    get loginForm() {
-        return this.querySelector('form')
-    }
+  }
+  /**
+   * @return {HTMLFormElement | null}
+   */
+  get loginForm() {
+    return this.querySelector('form')
+  }
 
-    /**
-    * @return {HTMLInputElement | null}
-    */
-    get identifiantField() {
-        return this.querySelector('input[name="identifiant"]')
-    }
-    /**
-    * @return {HTMLInputElement | null}
-    */
-    get passwordField() {
-        return document.querySelector('input[name="password"]')
-    }
-    get errorMessages() {
-        return this.querySelector('.error-messages')
-    }
+  /**
+  * @return {HTMLInputElement | null}
+  */
+  get identifiantField() {
+    return this.querySelector('input[name="identifiant"]')
+  }
+  /**
+  * @return {HTMLInputElement | null}
+  */
+  get passwordField() {
+    return document.querySelector('input[name="password"]')
+  }
+  get errorMessages() {
+    return this.querySelector('.error-messages')
+  }
 
-    set errorMessages(errors) {
-        const ul = this.querySelector('.error-messages')
-        if (ul && typeof errors === 'object') {
-            ul.innerHTML = ''
-            for (const key in errors) {
-                const li = document.createElement('li')
-                li.textContent = `${key}: ${errors[key].reduce((acc, curr) => `${acc}${acc ? ' | ' : ''}${curr}`, '')}`
-                ul.appendChild(li)
-            }
-        }
+  set errorMessages(errors) {
+    const ul = this.querySelector('.error-messages')
+    if (ul && typeof errors === 'object') {
+      ul.innerHTML = ''
+      for (const key in errors) {
+        const li = document.createElement('li')
+        li.textContent = `${key}: ${errors[key].reduce((acc, curr) => `${acc}${acc ? ' | ' : ''}${curr}`, '')}`
+        ul.appendChild(li)
+      }
     }
+  }
 
 }

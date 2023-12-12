@@ -91,7 +91,7 @@ export default class CommentList extends HTMLElement {
     /**
      * html snipper for comment to be filled
      *
-     * @param {import("../lib/typing.js").SingleComment} comment
+     * @param {import("../lib/typing.js").CommentItem} comment
      * @return {Node | string}
      */
     createComment(comment, text = true) {
