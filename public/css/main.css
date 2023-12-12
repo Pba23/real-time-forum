@@ -148,7 +148,7 @@ button:hover,
 textarea:hover,
 input:hover,
 select:hover {
-    filter: brightness(.5);
+    /* filter: brightness(.5); */
 }
 
 button,

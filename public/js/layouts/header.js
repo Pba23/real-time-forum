@@ -1,6 +1,8 @@
 // @ts-check
 /* global HTMLElement */
 
+import { Environment } from "../lib/environment.js"
+
 /**
  * As an organism, this component shall hold molecules and/or atoms
  *
@@ -43,8 +45,8 @@ export default class Header extends HTMLElement {
 
     connectedCallback() {
         this.user = undefined
+        this.render(Environment.auth);
 
-        this.render();
         // @ts-ignore
         document.body.addEventListener('user', this.userListener)
         this.dispatchEvent(new CustomEvent('getUser', {
@@ -79,7 +81,7 @@ export default class Header extends HTMLElement {
     /**
      * renders the header within the body, which is in this case the navbar
      *
-     * @param {import("../lib/typing.js").AuthUser} [user = undefined]
+     * @param {import("../lib/typing.js").AuthUser | null} [user = undefined]
      * @return {void}
      */
     render(user) {

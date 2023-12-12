@@ -59,12 +59,20 @@ func CreateComment(res http.ResponseWriter, req *http.Request) {
 			}
 			commentInfo.AuthorID = userInSession.ID
 			commentInfo.PostID = postID
-			models.CommentRepo.CreateComment(&commentInfo)
-			lib.SendJSONResponse(res, http.StatusOK, map[string]string{
+			err = models.CommentRepo.CreateComment(&commentInfo)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, "Error creating comment : "+err.Error())
+				return
+			}
+			comment, err := models.CommentRepo.GetCommentByID(commentInfo.ID)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, "Error getting comment : "+err.Error())
+				return
+			}
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{
 				"message": "comment created successfully",
-				// "id":commentInfo.ID ,
+				"comment": comment,
 			})
-
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "not connected")
 		}
@@ -72,8 +80,19 @@ func CreateComment(res http.ResponseWriter, req *http.Request) {
 }
 
 func GetComments(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/comment/*", http.MethodPost) {
+	if lib.ValidateRequest(req, res, "/comments/*", http.MethodGet) {
+		postID := mux.Vars(req)["postID"]
+		comments, err := models.CommentRepo.GetCommentsOfPost(postID)
+		if err != nil {
+			lib.HandleError(res, http.StatusNotFound, err.Error())
+			return
+		}
 
+		comments = SortComments(comments)
+		lib.SendJSONResponse(res, http.StatusOK, map[string]any{
+			"message": "comment list got successfully",
+			"comments": comments,
+		})
 	}
 }
 

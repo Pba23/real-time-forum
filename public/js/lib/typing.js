@@ -67,5 +67,41 @@
  }} EntirePost
  */
 
+/**
+* SingleComment
+*
+* @typedef {{
+      id: string,
+      index: int,
+      depth: string,
+      text: string,
+      authorID: string,
+      authorName: string,
+      authorAvatar: string,
+      parentID: string,
+      lastModifiedDate: string,
+      nbrLikesComment: int,
+      nbrDislikesComment: int,
+   }} SingleComment
+*/
+
+/**
+* AddComment
+*
+* @typedef {{
+      text: string,
+      postID: string,
+      authorID: string
+   }} AddComment
+*/
+
+/**
+ * MultipleComments
+ *
+ * @typedef {{
+      comments: SingleComment[]
+    }} MultipleComments
+ */
+
 // the line below is a workaround to fix 'is not a module' import error, it seems as it is needed to be recognized by JSDoc types
 export class IgnoreMe { }

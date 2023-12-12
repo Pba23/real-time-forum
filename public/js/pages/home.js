@@ -45,10 +45,6 @@ export default class Home extends HTMLElement {
    */
     loadChildComponents() {
         return this.childComponentsPromise || (this.childComponentsPromise = Promise.all([
-            import('../widgets/post-list.js').then(
-                /** @returns {[string, CustomElementConstructor]} */
-                module => ['post-list', module.default]
-            ),
         ]).then(elements => {
             elements.forEach(element => {
                 // don't define already existing customElements

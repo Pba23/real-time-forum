@@ -69,7 +69,6 @@ export default class Post extends HTMLElement {
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            console.log(`fetching ${url}`);
             this.dispatchEvent(new CustomEvent('post', {
                 /** @type {PostEventDetail} */
                 detail: {

@@ -42,6 +42,7 @@ func main() {
 	r.Handle("/posts", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetAllPosts)))
 	r.Handle("/edit-post/{postID}", rateLimiter.Wrap("api", http.HandlerFunc(handler.EditPost)))
 	r.Handle("/comment/{postID}", rateLimiter.Wrap("api", http.HandlerFunc(handler.CreateComment)))
+	r.Handle("/comments/{postID}", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetComments)))
 
 	go models.DeleteExpiredSessions()
 

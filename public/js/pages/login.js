@@ -40,10 +40,8 @@ export default class Login extends HTMLElement {
         this.userListener = event => {
             event.detail.fetch
                 .then(user => {
-                    if (user) {
+                    if (user && /^#\/login/.test(location.hash)) {
                         self.location.hash = '#/';
-                    } else {
-                        console.log('User not found');
                     }
                 })
                 .catch(error => (this.errorMessages = error))

@@ -52,20 +52,21 @@ class EnvironmentClass {
   /**
    * get JWT token
    *
-   * @return {string | null}
+   * @return {import("./typing").AuthUser | null}
    */
   get auth() {
-    return self.localStorage.getItem('auth')
+    const auth = self.localStorage.getItem('auth')
+    return auth ? JSON.parse(auth) : null
   }
 
   /**
    * set JWT token
    *
-   * @param {string} auth
+   * @param {import("./typing").AuthUser | null} auth
    */
   set auth(auth) {
-    if (auth && auth !== '') {
-      self.localStorage.setItem('auth', auth)
+    if (auth) {
+      self.localStorage.setItem('auth', JSON.stringify(auth))
     } else {
       self.localStorage.removeItem('auth')
     }

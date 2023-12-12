@@ -12,27 +12,27 @@ import (
 )
 
 type Comment struct {
-	ID           string
-	Text         string
-	AuthorID     string
-	PostID       string
-	ParentID     string
-	CreateDate   string
-	ModifiedDate string
+	ID           string `json:id`
+	Text         string `json:text`
+	AuthorID     string `json:authorID`
+	PostID       string `json:postID`
+	ParentID     string `json:parentID`
+	ModifiedDate string `json:modifiedDate`
+	CreateDate   string `json:createDate`
 }
 
 type CommentItem struct {
-	ID                 string
-	Index              int
-	Depth              string
-	Text               string
-	AuthorID           string
-	AuthorName         string
-	AuthorAvatar       string
-	ParentID           string
-	LastModifiedDate   string
-	NbrLikesComment    int
-	NbrDislikesComment int
+	ID                 string `json:"id"`
+	Index              int    `json:"index"`
+	Depth              string `json:"depth"`
+	Text               string `json:"text"`
+	AuthorID           string `json:"authorID"`
+	AuthorName         string `json:"authorName"`
+	AuthorAvatar       string `json:"authorAvatar"`
+	ParentID           string `json:"parentID"`
+	LastModifiedDate   string `json:"lastModifiedDate"`
+	NbrLikesComment    int    `json:"nbrLikesComment"`
+	NbrDislikesComment int    `json:"nbrDislikesComment"`
 }
 
 type CommentRepository struct {
@@ -59,17 +59,27 @@ func (cr *CommentRepository) CreateComment(comment *Comment) error {
 }
 
 // Get a comment by ID from the database
-func (cr *CommentRepository) GetCommentByID(commentID string) (*Comment, error) {
-	var comment Comment
-	row := cr.db.QueryRow("SELECT id, text, authorID, postID, parentID, createDate, modifiedDate FROM comment WHERE id = ?", commentID)
-	err := row.Scan(&comment.ID, &comment.Text, &comment.AuthorID, &comment.PostID, &comment.ParentID, &comment.CreateDate, &comment.ModifiedDate)
+func (cr *CommentRepository) GetCommentByID(id string) (CommentItem, error) {
+	var comment CommentItem
+	row := cr.db.QueryRow("SELECT c.id, c.text, c.authorID, c.parentID, c.modifiedDate, u.nickName, u.avatarURL FROM comment c LEFT JOIN user u ON c.authorID = u.ID WHERE c.id = ?", id)
+
+	err := row.Scan(&comment.ID, &comment.Text, &comment.AuthorID, &comment.ParentID, &comment.LastModifiedDate, &comment.AuthorName, &comment.AuthorAvatar)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil // Comment not found
-		}
-		return nil, err
+		return comment, err
 	}
-	return &comment, nil
+	comment.LastModifiedDate = strings.ReplaceAll(comment.LastModifiedDate, "T", " ")
+	comment.LastModifiedDate = strings.ReplaceAll(comment.LastModifiedDate, "Z", "")
+	comment.LastModifiedDate = lib.TimeSinceCreation(comment.LastModifiedDate)
+	comment.NbrLikesComment, err = CommentRateRepo.GetLikesByComment(comment.ID)
+	if err != nil {
+		return comment, err
+	}
+	comment.NbrDislikesComment, err = CommentRateRepo.GetDislikesByComment(comment.ID)
+	if err != nil {
+		return comment, err
+	}
+
+	return comment, nil
 }
 
 func (cr *CommentRepository) GetCommentsOfPost(postID string) ([]*CommentItem, error) {

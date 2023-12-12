@@ -70,8 +70,7 @@ export default class User extends HTMLElement {
                             if (data.errors) throw data.errors
                             if (data.user) {
                                 this.user = data.user
-                                const _auth = JSON.stringify(this.user);
-                                Environment.auth = _auth;
+                                Environment.auth = this.user;
                             }
                             return data.user
                         })
@@ -108,8 +107,7 @@ export default class User extends HTMLElement {
                             if (data.errors) throw data.errors
                             if (data.user) {
                                 this.user = data.user
-                                const _auth = JSON.stringify(this.user);
-                                Environment.auth = _auth;
+                                Environment.auth = data.user;
                             }
                             return data.user
                         })
@@ -148,7 +146,7 @@ export default class User extends HTMLElement {
                             return data.user
                         })
                         .catch(error => {
-                            if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = ''
+                            if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = null
                             console.log(`Error@UserFetch: ${error}`)
                         }) : Promise.reject(new Error('No token found'))
                 },
@@ -180,11 +178,11 @@ export default class User extends HTMLElement {
                         })
                         .then(data => {
                             this.user = undefined
-                            Environment.auth = ""
+                            Environment.auth = null
                             return data.user
                         })
                         .catch(error => {
-                            if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = ''
+                            if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = null
                             console.log(`Error@UserFetch: ${error}`)
                         })
                 },

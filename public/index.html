@@ -14,14 +14,16 @@
 
 <body>
     <c-user>
-        <c-post>
-            <l-header></l-header>
-            <main>
-                <l-aside></l-aside>
-                <l-router></l-router>
+        <c-comment>
+            <c-post>
+                <l-header></l-header>
+                <main>
+                    <l-aside></l-aside>
+                    <l-router></l-router>
+                </main>
                 <l-footer></l-footer>
-            </main>
-        </c-post>
+            </c-post>
+        </c-comment>
     </c-user>
 
     <script rel=preload type=module>
@@ -36,6 +38,7 @@
             // Controllers
             import('/js/controllers/user.js').then(module => ['c-user', module.default]),
             import('/js/controllers/post.js').then(module => ['c-post', module.default]),
+            import('/js/controllers/comment.js').then(module => ['c-comment', module.default]),
         ]).then(elements => elements.forEach(element => {
             // don't define already existing customElements
             if (element && !customElements.get(element[0])) customElements.define(...element)

@@ -47,10 +47,8 @@ export default class Register extends HTMLElement {
         this.userListener = event => {
             event.detail.fetch
                 .then(user => {
-                    if (user) {
+                    if (user && /^#\/register/.test(location.hash)) {
                         self.location.hash = '#/';
-                    } else {
-                        console.log('User not found');
                     }
                 })
                 .catch(error => (this.errorMessages = error))
