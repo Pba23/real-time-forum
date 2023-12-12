@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"html"
+
 	// "errors"
 	"net/http"
 	"real-time-forum/data/models"
@@ -53,10 +55,11 @@ func CreateComment(res http.ResponseWriter, req *http.Request) {
 				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
 				return
 			}
-			if err := validateCommentInput(commentInfo); err != nil {
+			if err := validateCommentInput(&commentInfo); err != nil {
 				lib.HandleError(res, http.StatusBadRequest, err.Error())
 				return
 			}
+
 			commentInfo.AuthorID = userInSession.ID
 			commentInfo.PostID = postID
 			err = models.CommentRepo.CreateComment(&commentInfo)
@@ -90,7 +93,7 @@ func GetComments(res http.ResponseWriter, req *http.Request) {
 
 		comments = SortComments(comments)
 		lib.SendJSONResponse(res, http.StatusOK, map[string]any{
-			"message": "comment list got successfully",
+			"message":  "comment list got successfully",
 			"comments": comments,
 		})
 	}
@@ -117,13 +120,13 @@ func GetComments(res http.ResponseWriter, req *http.Request) {
 // func DislikeComment(res http.ResponseWriter, req *http.Request) {
 // 	if lib.ValidateRequest(req, res, "/dislike-comment/*", http.MethodGet) {
 
-// 	}
-// }
-func validateCommentInput(comment models.Comment) error {
+//		}
+//	}
+func validateCommentInput(comment *models.Comment) error {
 	// Add any validation rules as needed
 	if comment.Text == "" {
 		return ErrMissingRequiredFields
 	}
+	comment.Text = html.EscapeString(comment.Text)
 	return nil
 }
-

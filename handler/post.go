@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"html"
 
 	// "errors"
 
@@ -23,7 +24,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
 				return
 			}
-			if err := validatePostInput(postInfo); err != nil {
+			if err := validatePostInput(&postInfo); err != nil {
 				lib.HandleError(res, http.StatusBadRequest, err.Error())
 				return
 			}
@@ -181,10 +182,13 @@ func GetAllPosts(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func validatePostInput(post models.PostCreation) error {
+func validatePostInput(post *models.PostCreation) error {
 	if post.Title == "" || post.ImageURL == "" || post.Description == "" {
 		return ErrMissingRequiredFields
 	}
+	post.Title = html.EscapeString(post.Title)
+	post.Description = html.EscapeString(post.Description)
+	post.ImageURL = html.EscapeString(post.ImageURL)
 	return nil
 }
 

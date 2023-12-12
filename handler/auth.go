@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"html"
 	"log"
 	"net/http"
 	"real-time-forum/data/models"
@@ -19,7 +20,7 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 		}
 
 		// Validate user input (e.g., check if required fields are provided)
-		if err := validateSignUpInput(user); err != nil {
+		if err := validateSignUpInput(&user); err != nil {
 			lib.HandleError(res, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -142,11 +143,14 @@ func Me(res http.ResponseWriter, req *http.Request) {
 var ErrMissingRequiredFields = errors.New("missing required fields")
 
 // validateSignUpInput validates the input data for user registration.
-func validateSignUpInput(user models.User) error {
+func validateSignUpInput(user *models.User) error {
 	// Add any validation rules as needed
 	if user.Nickname == "" || user.Email == "" || user.Password == "" {
 		return ErrMissingRequiredFields
 	}
+	user.Nickname = html.EscapeString(user.Nickname)
+	user.Email = html.EscapeString(user.Email)
+	user.Password = html.EscapeString(user.Password)
 	return nil
 }
 
