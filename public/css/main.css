@@ -1,4 +1,4 @@
-html {
+:root {
     --black: #000000;
     --white: #ffffff;
     --darkest: #101010;
@@ -18,6 +18,29 @@ html {
     --color: var(--lightest);
     --surface: var(--darker);
     --f-height: calc(100vh - (7rem + 10vh));
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --black: #ffffff;
+        --white: #000000;
+        --darkest: #dbdada;
+        --darker: #bcc5e2;
+        --dark: #a3afbf;
+        --medium: #dfe7ef;
+        --light: #36393d;
+        --lighter: #121213;
+        --lightest: var(--white);
+        --primary: #7b16ff;
+        --primary-light: #ddd9ff;
+        --primary-trans: rgba(123, 22, 255, 0.4);
+        --yellow: #fdcb6e;
+        --orange: #e17055;
+        --teal: #00cec9;
+        --bg: var(--darkest);
+        --color: var(--lightest);
+        --surface: var(--darker);
+    }
 }
 
 /* width */
