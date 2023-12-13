@@ -86,6 +86,19 @@
 */
 
 /**
+* MessageItem
+*
+* @typedef {{
+      id: string,
+      text: string,
+      senderID: string,
+      senderName: string,
+      senderAvatar: string,
+      receiverID: string,
+      lastModifiedDate: string,
+   }} MessageItem
+*/
+/**
 * AddComment
 *
 * @typedef {{
@@ -96,12 +109,27 @@
 */
 
 /**
+* AddMessage
+*
+* @typedef {{
+      text: string,
+      receiverID: string,
+      authorID: string
+   }} AddMessage
+*/
+/**
  * MultipleComments
  *
  * @typedef {{
       comments: CommentItem[]
     }} MultipleComments
  */
-
+/**
+ * MultipleMessages
+ *
+ * @typedef {{
+      messages: MessageItem[]
+    }} MultipleMessages
+ */
 // the line below is a workaround to fix 'is not a module' import error, it seems as it is needed to be recognized by JSDoc types
 export class IgnoreMe { }
