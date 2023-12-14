@@ -16,24 +16,19 @@ export default class MessageList extends HTMLElement {
         /**
      * Listens to the event name/typeArg: 'message'
      *
-     * @param {CustomEvent & {detail: import("../controllers/chat.js").MessageEventDetail}} event
+     * @param {CustomEvent & {detail: import("../controllers/chat.js").CommentEventDetail}} event
      */
         this.messageListener = event => event.detail.fetch.then((data) => {
-            const message = data.message
-            if (this.firstCard) {
-                // @ts-ignore
-                this.insertBefore(this.createMessage(message, false), this.firstCard)
-            } else {
+            const message = data.message     
                 // @ts-ignore
                 this.appendChild(this.createMessage(message))
-            }
         })
 
         /**
          * Listens to the event name/typeArg: 'messages'
          * which is returned when adding a message
          *
-         * @param {CustomEvent & {detail: import("../controllers/chat.js").MessageEventDetail}} event
+         * @param {CustomEvent & {detail: import("../controllers/chat.js").CommentEventDetail}} event
          */
         this.messagesListener = event => {
             this.render(event.detail.fetch)
