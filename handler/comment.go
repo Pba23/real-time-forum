@@ -10,8 +10,6 @@ import (
 	"real-time-forum/lib"
 	"sort"
 	"strings"
-
-	"github.com/gorilla/mux"
 )
 
 func SortComments(comments []*models.CommentItem) []*models.CommentItem {
@@ -43,7 +41,9 @@ func CreateComment(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/comment/*", http.MethodPost) {
 		userInSession := models.GetUserFromSession(req)
 		isLogin := models.ValidSession(req)
-		postID := mux.Vars(req)["postID"]
+		path := req.URL.Path
+		pathPart := strings.Split(path, "/")
+		postID := pathPart[2]
 		_, err := models.PostRepo.GetPostByID(postID)
 		if err != nil {
 			lib.HandleError(res, http.StatusNotFound, "post not found")
@@ -85,13 +85,14 @@ func CreateComment(res http.ResponseWriter, req *http.Request) {
 
 func GetComments(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/comments/*", http.MethodGet) {
-		postID := mux.Vars(req)["postID"]
+		path := req.URL.Path
+		pathPart := strings.Split(path, "/")
+		postID := pathPart[2]
 		comments, err := models.CommentRepo.GetCommentsOfPost(postID)
 		if err != nil {
 			lib.HandleError(res, http.StatusNotFound, err.Error())
 			return
 		}
-
 		comments = SortComments(comments)
 		lib.SendJSONResponse(res, http.StatusOK, map[string]any{
 			"message":  "comment list got successfully",

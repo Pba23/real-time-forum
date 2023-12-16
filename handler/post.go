@@ -10,8 +10,6 @@ import (
 	"real-time-forum/data/models"
 	"real-time-forum/lib"
 	"strings"
-
-	"github.com/gorilla/mux"
 )
 
 func CreatePost(res http.ResponseWriter, req *http.Request) {
@@ -67,14 +65,16 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 func EditPost(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/edit-post/*", http.MethodPost) {
 		isLogin := models.ValidSession(req)
-		postID := mux.Vars(req)["postID"]
-		userInSession := models.GetUserFromSession(req)
-		post, err := models.PostRepo.GetPostByID(postID)
-		if err != nil {
-			lib.HandleError(res, http.StatusNotFound, "post not found")
-			return
-		}
-		if postID != "" {
+		path := req.URL.Path
+		pathPart := strings.Split(path, "/")
+		if len(pathPart) == 3 && pathPart[1] == "edit-post" && pathPart[2] != "" {
+			postID := pathPart[2]
+			userInSession := models.GetUserFromSession(req)
+			post, err := models.PostRepo.GetPostByID(postID)
+			if err != nil {
+				lib.HandleError(res, http.StatusNotFound, "post not found")
+				return
+			}
 			if isLogin {
 				if post.AuthorID != userInSession.ID {
 					var postInfo models.Post
@@ -128,14 +128,16 @@ func EditPost(res http.ResponseWriter, req *http.Request) {
 func DeletePost(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/delete-post/*", http.MethodGet) {
 		isLogin := models.ValidSession(req)
-		postID := mux.Vars(req)["postID"]
-		post, err := models.PostRepo.GetPostByID(postID)
-		userInSession := models.GetUserFromSession(req)
-		if err != nil {
-			lib.HandleError(res, http.StatusNotFound, "post not found")
-			return
-		}
-		if postID != "" {
+		path := req.URL.Path
+		pathPart := strings.Split(path, "/")
+		if len(pathPart) == 3 && pathPart[1] == "edit-post" && pathPart[2] != "" {
+			postID := pathPart[2]
+			post, err := models.PostRepo.GetPostByID(postID)
+			userInSession := models.GetUserFromSession(req)
+			if err != nil {
+				lib.HandleError(res, http.StatusNotFound, "post not found")
+				return
+			}
 			if isLogin {
 				if post.AuthorID == userInSession.ID {
 					models.PostRepo.DeletePost(postID)
@@ -146,13 +148,17 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 			} else {
 				lib.HandleError(res, http.StatusUnauthorized, "not connected")
 			}
+		}else {
+			lib.HandleError(res, http.StatusNotFound, "post not found")
 		}
 	}
 }
 
 func GetPost(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/post/*", http.MethodGet) {
-		slug := mux.Vars(req)["slug"]
+		path := req.URL.Path
+		pathPart := strings.Split(path, "/")
+		slug := pathPart[2]
 		post, err := models.PostRepo.GetPostBySlug(slug)
 		if err != nil {
 			lib.HandleError(res, http.StatusInternalServerError, err.Error())
@@ -183,7 +189,7 @@ func GetAllPosts(res http.ResponseWriter, req *http.Request) {
 }
 
 func validatePostInput(post *models.PostCreation) error {
-	if post.Title == "" || post.ImageURL == "" || post.Description == "" {
+	if post.Title == "" || post.ImageURL == "" || post.Description == "" || len(post.Categories) == 0 {
 		return ErrMissingRequiredFields
 	}
 	post.Title = html.EscapeString(post.Title)
