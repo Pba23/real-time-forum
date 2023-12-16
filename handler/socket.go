@@ -27,14 +27,14 @@ type NewPostEvent struct {
 
 type NewCommentEvent struct {
 	Type   string             `json:"type"`
-	PostID string                `json:"postID"`
+	PostID string             `json:"postID"`
 	Data   models.CommentItem `json:"comment"`
 }
 
 type NewStatusEvent struct {
-	Type     string `json:"type"`
-	UserID string `json:"username"`
-	Online   bool   `json:"online"`
+	Type   string `json:"type"`
+	UserID string `json:"userID"`
+	Online bool   `json:"online"`
 }
 
 type NewMessageEvent struct {
@@ -42,8 +42,8 @@ type NewMessageEvent struct {
 	Message models.Message `json:"message"`
 }
 
-func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+func HandleWebSocket(res http.ResponseWriter, req *http.Request) {
+	conn, err := upgrader.Upgrade(res, req, nil)
 	if err != nil {
 		log.Println(err)
 		return
@@ -65,13 +65,13 @@ func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 		}
 		switch data.Type {
 		case "login":
-			UserConnections.Store(conn, data.Data["username"])
-			SendStatus(data.Data["username"].(string), true)
-			defer SendStatus(data.Data["username"].(string), false)
+			UserConnections.Store(conn, data.Data["userID"])
+			SendStatus(data.Data["userID"].(string), true)
+			defer SendStatus(data.Data["userID"].(string), false)
 		case "logout":
 			conn.Close()
 			UserConnections.Delete(conn)
-			SendStatus(data.Data["username"].(string), false)
+			SendStatus(data.Data["userID"].(string), false)
 		}
 	}
 }

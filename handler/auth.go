@@ -53,7 +53,6 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 			AvatarURL: user.AvatarURL,
 		}
 		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "User created successfully", "user": authUser})
-		SendStatus(authUser.ID, true)
 	}
 }
 
@@ -95,7 +94,6 @@ func SignIn(res http.ResponseWriter, req *http.Request) {
 				AvatarURL:  user.AvatarURL,
 			}
 			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "Login successful", "user": authUser})
-			SendStatus(authUser.ID, true)
 			return
 		}
 
@@ -109,10 +107,8 @@ func Logout(res http.ResponseWriter, req *http.Request) {
 		// Check if there is an active session
 		if models.ValidSession(req) {
 			// Delete the session
-			currentUser := models.GetUserFromSession(req)
 			models.DeleteSession(req)
 			lib.SendJSONResponse(res, http.StatusOK, map[string]string{"message": "Logout successful"})
-			SendStatus(currentUser.ID, false)
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "No active session")
 		}

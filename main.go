@@ -31,7 +31,7 @@ func main() {
 	r.Handle("/", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Index)))
 
 	// WebSocket
-	http.HandleFunc("/ws", handler.HandleWebSocket)
+	r.HandleFunc("/ws", handler.HandleWebSocket)
 
 	// Authentication
 	r.Handle("/me", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Me)))

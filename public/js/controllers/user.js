@@ -70,7 +70,13 @@ export default class User extends HTMLElement {
                             if (data.errors) throw data.errors
                             if (data.user) {
                                 this.user = data.user
-                                Environment.auth = this.user;
+                                Environment.auth = data.user;
+                                this.dispatchEvent(new CustomEvent('ok-login', {
+                                    detail: {},
+                                    bubbles: true,
+                                    cancelable: true,
+                                    composed: true
+                                }))
                             }
                             return data.user
                         })
@@ -108,6 +114,12 @@ export default class User extends HTMLElement {
                             if (data.user) {
                                 this.user = data.user
                                 Environment.auth = data.user;
+                                this.dispatchEvent(new CustomEvent('ok-login', {
+                                    detail: {},
+                                    bubbles: true,
+                                    cancelable: true,
+                                    composed: true
+                                }))
                             }
                             return data.user
                         })
@@ -177,9 +189,13 @@ export default class User extends HTMLElement {
                             throw new Error(response.statusText)
                         })
                         .then(data => {
+                            this.dispatchEvent(new CustomEvent('ok-logout', {
+                                detail: {},
+                                bubbles: true,
+                                cancelable: true,
+                                composed: true
+                            }))
                             this.user = undefined
-                            Environment.auth = null
-                            self.location.hash = '#/login'
                             return data.user
                         })
                         .catch(error => {
