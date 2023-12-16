@@ -9,12 +9,12 @@ import (
 )
 
 type Message struct {
-	ID           string
-	SenderID     string
-	ReceiverID   string
-	Text         string
-	CreateDate   string
-	ModifiedDate string
+	ID           string `json:"id"`
+	SenderID     string `json:"senderID"`
+	ReceiverID   string `json:"receiverID"`
+	Text         string `json:"text"`
+	CreateDate   string `json:"createDate"`
+	ModifiedDate string `json:"modifiedDate"`
 }
 
 type MessageRepository struct {
@@ -36,12 +36,23 @@ func (rr *MessageRepository) CreateMessage(message *Message) error {
 	message.ID = ID.String()
 	_, err = rr.db.Exec("INSERT INTO message (id, senderID, receiverID, content) VALUES (?, ?, ?, ?)",
 		message.ID, message.SenderID, message.ReceiverID, message.Text)
+	if err != nil {
+		log.Printf("❌ Failed to insert message into the database: %v", err)
+		return err
+	}
 	return err
 }
 
-func (rr *MessageRepository) GetAllMessage() ([]Message, error) {
-	var Messagetab []Message
-	rows, err := rr.db.Query("SELECT id, senderID, receiverID, content, createDate, modifiedDate FROM message ORDER BY modifiedDate DESC")
+// GetDiscussionsBetweenUsers retrieves all discussions between two users.
+func (rr *MessageRepository) GetDiscussionsBetweenUsers(user1ID, user2ID string) ([]*Message, error) {
+	var discussions []*Message
+
+	rows, err := rr.db.Query(`
+		SELECT id, senderID, receiverID, content, createDate, modifiedDate
+		FROM message
+		WHERE (senderID = ? AND receiverID = ?) OR (senderID = ? AND receiverID = ?)
+		ORDER BY modifiedDate DESC
+	`, user1ID, user2ID, user2ID, user1ID)
 
 	if err != nil {
 		return nil, err
@@ -51,16 +62,42 @@ func (rr *MessageRepository) GetAllMessage() ([]Message, error) {
 	for rows.Next() {
 		var message Message
 		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Text, &message.CreateDate, &message.ModifiedDate)
-
 		if err != nil {
 			return nil, err
 		}
-
-		Messagetab = append(Messagetab, message)
+		discussions = append(discussions, &message)
 	}
 
-	return Messagetab, nil
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
+	return discussions, nil
+}
+
+func (mr *MessageRepository) GetAllMessages() ([]Message, error) {
+	var messageList []Message
+	rows, err := mr.db.Query("SELECT id, senderID, receiverID, content, createDate, modifiedDate FROM message ORDER BY modifiedDate DESC")
+
+	if err != nil {
+		log.Printf("❌ Failed to get messages from the database: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var message Message
+		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Text, &message.CreateDate, &message.ModifiedDate)
+
+		if err != nil {
+			log.Printf("❌ Failed to scan message rows: %v", err)
+			return nil, err
+		}
+
+		messageList = append(messageList, message)
+	}
+
+	return messageList, nil
 }
 
 // Get a message by ID from the database
@@ -78,14 +115,14 @@ func (rr *MessageRepository) GetMessageByID(messageID string) (*Message, error) 
 }
 
 // Update a message in the database
-func (rr *MessageRepository) Updatemessage(message *Message) error {
+func (rr *MessageRepository) UpdateMessage(message *Message) error {
 	_, err := rr.db.Exec("UPDATE message SET senderID = ?, receiverID = ?, text = ?, createDate = ?, modifiedDate = ? WHERE id = ?",
 		message.SenderID, message.ReceiverID, message.Text, message.CreateDate, message.ModifiedDate, message.ID)
 	return err
 }
 
 // Delete a message from the database
-func (rr *MessageRepository) Deletemessage(messageID string) error {
+func (rr *MessageRepository) DeleteMessage(messageID string) error {
 	_, err := rr.db.Exec("DELETE FROM message WHERE id = ?", messageID)
 	return err
 }

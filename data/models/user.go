@@ -10,15 +10,15 @@ import (
 )
 
 type User struct {
-	ID         string `json:"id"`
-	Nickname   string `json:"nickname"`
-	Firstname  string `json:"firstname"`
-	Lastname   string `json:"lastname"`
-	Age        int    `json:"age"`
-	Gender     string `json:"gender"`
-	Email      string `json:"email"`
-	Password   string `json:"password"`
-	AvatarURL  string `json:"avatar_url"`
+	ID        string `json:"id"`
+	Nickname  string `json:"nickname"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	Age       int    `json:"age"`
+	Gender    string `json:"gender"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	AvatarURL string `json:"avatar_url"`
 }
 
 type UserSignIn struct {
@@ -36,6 +36,13 @@ type AuthUser struct {
 	IsLoggedIn bool   `json:"is_logged_in"`
 	Email      string `json:"email"`
 	AvatarURL  string `json:"avatar_url"`
+}
+
+type UserItem struct {
+	ID              string `json:"id"`
+	Nickname        string `json:"nickname"`
+	LastMessage     string `json:"last_message"`
+	LastMessageTime string `json:"last_message_time"`
 }
 
 var DEFAULT_AVATAR = "/uploads/avatar.1.jpeg"
@@ -116,43 +123,42 @@ func (ur *UserRepository) GetUserByNickname(nickname string) (*User, error) {
 }
 
 // Select All users
-func (ur *UserRepository) SelectAllUsers() ([]User, error) {
-	var user []User
-	row, err := ur.db.Query("SELECT * FROM user")
+func (ur *UserRepository) SelectAllUsers(userID string) ([]UserItem, error) {
+	var users []UserItem
+	rows, err := ur.db.Query(`
+		SELECT u.ID, u.nickname, m.text AS last_message, m.createDate AS last_message_time
+		FROM user u
+		LEFT JOIN (
+			SELECT senderID, receiverID, text, createDate
+			FROM message
+			WHERE (senderID = ? OR receiverID = ?)
+			ORDER BY createDate DESC
+			LIMIT 1
+		) m ON u.ID = m.senderID OR u.ID = m.receiverID
+	`, userID, userID)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for row.Next() {
-		var ID string
-		var email string
-		var nickname string
-		var firstname string
-		var lastname string
-		var age int
-		var gender string
-		var password string
-		var avatarUrl string
+	defer rows.Close()
 
-		err = row.Scan(&ID, &nickname, &firstname, &lastname, &age, &gender, &email, &password, &avatarUrl)
+	for rows.Next() {
+		var ID, nickname, lastMessage, lastMessageTime string
+
+		err = rows.Scan(&ID, &nickname, &lastMessage, &lastMessageTime)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		var tab = User{
-			ID:        ID,
-			Email:     email,
-			Nickname:  nickname,
-			Firstname: firstname,
-			Lastname:  lastname,
-			Age:       age,
-			Gender:    gender,
-			Password:  password,
-			AvatarURL: avatarUrl,
+		user := UserItem{
+			ID:              ID,
+			Nickname:        nickname,
+			LastMessage:     lastMessage,
+			LastMessageTime: lastMessageTime,
 		}
 
-		user = append(user, tab)
+		users = append(users, user)
 	}
-	return user, nil
+	return users, nil
 }
 
 // Select All users
