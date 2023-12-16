@@ -12,7 +12,7 @@ type Message struct {
 	ID           string `json:"id"`
 	SenderID     string `json:"senderID"`
 	ReceiverID   string `json:"receiverID"`
-	Text         string `json:"text"`
+	Content         string `json:"text"`
 	CreateDate   string `json:"createDate"`
 	ModifiedDate string `json:"modifiedDate"`
 }
@@ -35,7 +35,7 @@ func (rr *MessageRepository) CreateMessage(message *Message) error {
 	}
 	message.ID = ID.String()
 	_, err = rr.db.Exec("INSERT INTO message (id, senderID, receiverID, content) VALUES (?, ?, ?, ?)",
-		message.ID, message.SenderID, message.ReceiverID, message.Text)
+		message.ID, message.SenderID, message.ReceiverID, message.Content)
 	if err != nil {
 		log.Printf("❌ Failed to insert message into the database: %v", err)
 		return err
@@ -61,7 +61,7 @@ func (rr *MessageRepository) GetDiscussionsBetweenUsers(user1ID, user2ID string)
 
 	for rows.Next() {
 		var message Message
-		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Text, &message.CreateDate, &message.ModifiedDate)
+		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate, &message.ModifiedDate)
 		if err != nil {
 			return nil, err
 		}
@@ -87,7 +87,7 @@ func (mr *MessageRepository) GetAllMessages() ([]Message, error) {
 
 	for rows.Next() {
 		var message Message
-		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Text, &message.CreateDate, &message.ModifiedDate)
+		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate, &message.ModifiedDate)
 
 		if err != nil {
 			log.Printf("❌ Failed to scan message rows: %v", err)
@@ -104,7 +104,7 @@ func (mr *MessageRepository) GetAllMessages() ([]Message, error) {
 func (rr *MessageRepository) GetMessageByID(messageID string) (*Message, error) {
 	var message Message
 	row := rr.db.QueryRow("SELECT id, senderID, receiverID, content, createDate, modifiedDate FROM message WHERE id = ?", messageID)
-	err := row.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Text, &message.CreateDate, &message.ModifiedDate)
+	err := row.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate, &message.ModifiedDate)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Message not found
@@ -117,7 +117,7 @@ func (rr *MessageRepository) GetMessageByID(messageID string) (*Message, error) 
 // Update a message in the database
 func (rr *MessageRepository) UpdateMessage(message *Message) error {
 	_, err := rr.db.Exec("UPDATE message SET senderID = ?, receiverID = ?, text = ?, createDate = ?, modifiedDate = ? WHERE id = ?",
-		message.SenderID, message.ReceiverID, message.Text, message.CreateDate, message.ModifiedDate, message.ID)
+		message.SenderID, message.ReceiverID, message.Content, message.CreateDate, message.ModifiedDate, message.ID)
 	return err
 }
 

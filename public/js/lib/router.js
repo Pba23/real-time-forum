@@ -61,6 +61,11 @@ export default class Router extends HTMLElement {
                 path: '../pages/chat.js',
                 regExp: new RegExp(/^#\/chat/)
             },
+            {
+                name: 'p-chat',
+                path: '../pages/chat.js',
+                regExp: new RegExp(/^#\/chat/)
+            },
         ]
 
         this.previousRoute = this.routes[0]

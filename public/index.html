@@ -15,16 +15,18 @@
 <body>
     <c-socket>
         <c-user>
-            <c-comment>
-                <c-post>
-                    <l-header></l-header>
-                    <main>
-                        <l-aside></l-aside>
-                        <l-router></l-router>
-                    </main>
-                    <l-footer></l-footer>
-                </c-post>
-            </c-comment>
+            <c-chat>
+                <c-comment>
+                    <c-post>
+                        <l-header></l-header>
+                        <main>
+                            <l-aside></l-aside>
+                            <l-router></l-router>
+                        </main>
+                        <l-footer></l-footer>
+                    </c-post>
+                </c-comment>
+            </c-chat>
         </c-user>
     </c-socket>
 
@@ -39,6 +41,7 @@
             import('/js/lib/router.js').then(module => ['l-router', module.default]),
             // Controllers
             import('/js/controllers/socket.js').then(module => ['c-socket', module.default]),
+            import('/js/controllers/chat.js').then(module => ['c-chat', module.default]),
             import('/js/controllers/user.js').then(module => ['c-user', module.default]),
             import('/js/controllers/post.js').then(module => ['c-post', module.default]),
             import('/js/controllers/comment.js').then(module => ['c-comment', module.default]),

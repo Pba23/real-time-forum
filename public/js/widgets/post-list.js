@@ -4,7 +4,6 @@
 /* global HTMLElement */
 
 /**
- * https://github.com/Weedshaker/event-driven-web-components-realworld-example-app/blob/master/FRONTEND_INSTRUCTIONS.md#ListPosts
  * As an organism, this component shall hold molecules and/or atoms
  * this organism always renders new when connected to keep most recent and does not need shouldComponentRender
  *

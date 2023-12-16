@@ -1,118 +1,125 @@
 // @ts-check
 
-/* global CustomEvent */
+/* global customElements */
 /* global HTMLElement */
 
 /**
- * As a molecule, this component shall hold Atoms
+ * As an organism, this component shall hold molecules and/or atoms
+ * this organism always renders new when connected to keep most recent and does not need shouldComponentRender
  *
  * @export
- * @class MessageList
+ * @class ListChatPreviews
  */
-export default class MessageList extends HTMLElement {
-    constructor() {
-        super()
-        this.postID = null
-        /**
-     * Listens to the event name/typeArg: 'message'
-     *
-     * @param {CustomEvent & {detail: import("../controllers/chat.js").CommentEventDetail}} event
-     */
-        this.messageListener = event => event.detail.fetch.then((data) => {
-            const message = data.message     
-                // @ts-ignore
-                this.appendChild(this.createMessage(message))
-        })
+export default class ChatList extends HTMLElement {
+  constructor() {
+    super()
 
-        /**
-         * Listens to the event name/typeArg: 'messages'
-         * which is returned when adding a message
-         *
-         * @param {CustomEvent & {detail: import("../controllers/chat.js").CommentEventDetail}} event
-         */
-        this.messagesListener = event => {
-            this.render(event.detail.fetch)
+    /**
+     * Listens to the event name/typeArg: 'listChats'
+     *
+     * @param {CustomEvent & {detail: import("../controllers/chat.js").ListChatsEventDetail}} event
+     */
+    this.listChatsListener = event => this.render(event.detail.fetch)
+
+    this.chatListener = event => event.detail.fetch.then(data => {
+      const chat = data.chat
+      if (this.firstItem) {
+        if (this.childComponentsPromise) {
+          this.childComponentsPromise.then(children => {
+            const chatItem = children[0][1]
+            const chatItemElement = new chatItem(chat)
+            // @ts-ignore
+            this.insertBefore(chatItemElement, this.firstItem)
+          });
         }
-    }
-
-    connectedCallback() {
-        // listen for messages
+      } else {
         // @ts-ignore
-        document.body.addEventListener('message', this.messageListener)
-        // @ts-ignore
-        document.body.addEventListener('messages', this.messagesListener)
-        this.postID = this.getAttribute("post-id");
+        this.appendChild(this.createComment(chat))
+      }
+    })
+  }
 
-        // on every connect it will attempt to get newest messages
-        this.dispatchEvent(new CustomEvent('getmessages', {
-            detail: {
-                postID: this.postID
-            },
-            bubbles: true,
-            cancelable: true,
-            composed: true
-        }))
-    }
+  connectedCallback() {
+    // listen for Chats
+    // @ts-ignore
+    document.body.addEventListener('listChats', this.listChatsListener)
+    // @ts-ignore
+    document.body.addEventListener('chat', this.chatListener)
+    this.dispatchEvent(new CustomEvent('requestListChats', {
+      /** @type {import("../controllers/chat.js").RequestListChatsEventDetail} */
+      detail: {},
+      bubbles: true,
+      cancelable: true,
+      composed: true
+    }))
+  }
 
-    disconnectedCallback() {
-        // @ts-ignore
-        document.body.removeEventListener('messages', this.messagesListener)
-    }
+  disconnectedCallback() {
+    // @ts-ignore
+    document.body.removeEventListener('chat', this.chatListener)
+    // @ts-ignore
+    document.body.removeEventListener('listChats', this.listChatsListener)
+  }
 
-    /**
-     * evaluates if a render is necessary
-     *
-     * @return {boolean}
-     */
-    shouldComponentRender() {
-        return !this.innerHTML
-    }
-
-    /**
-     * renders each received message
-     *
-     * @param {Promise<import("../lib/typing.js").MultipleMessages> | null} fetchMessages
-     * @return {void}
-     */
-    render(fetchMessages) {
-        this.innerHTML = ""
-        fetchMessages && fetchMessages.then((data) => {
-            const messages = data.messages
-            if (!messages) return
-            this.innerHTML += messages.reduce((messagesStr, message) => (messagesStr += this.createMessage(message)), '')
-        })
-    }
-
-    /**
-     * html snipper for message to be filled
-     *
-     * @param {import("../lib/typing.js").MessageItem} message
-     * @return {Node | string}
-     */
-    createMessage(message, text = true) {
-        const card = /* html */`
-        <div class="message active">
-            <div class="profile-picture">
-                <img src="${message.senderAvatar}" alt="Profile Picture">
-            </div>
-            <div class="speech-bubble">
-                <p>${message.text}</p>
-            </div>
-        </div>`
-        if (text) return card
-        const div = document.createElement('div')
-        div.classList.add("wrap", "outgoing")
-        div.innerHTML = card
-        return div.children[0]
-    }
-
-    /**
-   * returns the first card element
+  /**
+   * renders each received Chat
    *
-   * @readonly
-   * @return {HTMLElement | null}
+   * @param {Promise<import("../lib/typing.js").ChatItem[]>} fetchAllChats
+   * @return {void}
    */
-    get firstCard() {
-        return this.querySelector('.message:nth-child(1)')
-    }
+  render(fetchAllChats) {
+    Promise.all([fetchAllChats, this.loadChildComponents()]).then(result => {
+      const [chats, children] = result
+      if (!chats || !chats.length) {
+        this.innerHTML = '<div class="Chat-preview">No Chats are here... yet.</div>'
+      } else {
+        this.innerHTML = ''
+        chats.forEach(c => {
+          /** @type {import("./chat-item.js").default & any} */
+          // @ts-ignore
+          const ChatItem = new children[0][1](c)
+          this.appendChild(ChatItem)
+        })
+        if (!this.getAttribute('no-scroll')) this.scrollToEl(this)
+      }
+      // @ts-ignore
+    }).catch(error => (this.innerHTML = console.warn(error) || (error && typeof error.toString === 'function' && error.toString().includes('aborted') ? '<div class="Chat-preview">Loading...</div>' : '<div class="Chat-preview">An error occurred fetching the Chats!</div>')))
+  }
+
+  /**
+   * fetch children when first needed
+   *
+   * @returns {Promise<[string, CustomElementConstructor][]>}
+   */
+  loadChildComponents() {
+    return this.childComponentsPromise || (this.childComponentsPromise = Promise.all([
+      import('./chat-item.js').then(
+        /** @returns {[string, CustomElementConstructor]} */
+        module => ['chat-item', module.default]
+      )
+    ]).then(elements => {
+      elements.forEach(element => {
+        // don't define already existing customElements
+        // @ts-ignore
+        if (!customElements.get(element[0])) customElements.define(...element)
+      })
+      return elements
+    }))
+  }
+
+  /**
+* returns the first card element
+*
+* @readonly
+* @return {HTMLElement | null}
+*/
+  get firstItem() {
+    return this.querySelector('chat-item:nth-child(1)')
+  }
+
+  scrollToEl(el) {
+    const rect = el.getBoundingClientRect()
+    // check if the element is outside the viewport, otherwise don't scroll
+    if (rect && rect.top < 0) el.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'smooth' })
+  }
 }

@@ -41,6 +41,7 @@ type AuthUser struct {
 type UserItem struct {
 	ID              string `json:"id"`
 	Nickname        string `json:"nickname"`
+	IsConnected     bool   `json:"is_connected"`
 	LastMessage     string `json:"last_message"`
 	LastMessageTime string `json:"last_message_time"`
 }
@@ -126,10 +127,13 @@ func (ur *UserRepository) GetUserByNickname(nickname string) (*User, error) {
 func (ur *UserRepository) SelectAllUsers(userID string) ([]UserItem, error) {
 	var users []UserItem
 	rows, err := ur.db.Query(`
-		SELECT u.ID, u.nickname, m.text AS last_message, m.createDate AS last_message_time
+		SELECT
+			u.ID, u.nickname,
+			COALESCE(m.content, '') AS last_message,
+			COALESCE(m.createDate, '') AS last_message_time
 		FROM user u
 		LEFT JOIN (
-			SELECT senderID, receiverID, text, createDate
+			SELECT senderID, receiverID, content, createDate
 			FROM message
 			WHERE (senderID = ? OR receiverID = ?)
 			ORDER BY createDate DESC

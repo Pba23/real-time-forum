@@ -4,48 +4,46 @@
 /* global AbortController */
 /* global CustomEvent */
 /* global fetch */
+/* global self */
 
 /**
  *
- * @typedef {{ slug?: string, body: string }} AddCommentsEventDetail
+ * @typedef {{ slug?: string }} RequestChatEventDetail
  */
 
 /**
  *
  * @typedef {{
-  fetch: Promise<import("../lib/typing.js").CommentItem>
-}} CommentEventDetail
+      slug: RequestChatEventDetail,
+      fetch: Promise<import("../lib/typing.js").ChatItem>
+    }} ChatEventDetail
+ */
+
+/**
+ *
+ * @typedef {{ tag?: string, author?: string, favorite?: string, limit?: number, offset?: number, showYourFeed?: boolean }} RequestListChatsEventDetail
+ */
+
+/**
+ *
+ * @typedef {{
+  fetch: Promise<import("../lib/typing.js").ChatItem[]>
+}} ListChatsEventDetail
 */
-
-/**
- *
- * @typedef {{ slug?: string }} GetCommentsEventDetail
- */
-
-/**
- *
- * @typedef {{
-      fetch: Promise<import("../lib/typing.js").MultipleComments>
-    }} CommentsEventDetail
- */
-
-/**
- *
- * @typedef {{ slug?: string, id: string }} DeleteCommentEventDetail
- */
 
 import { Environment } from '../lib/environment.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
- * dispatches: 'comment' on 'addComment'
- * dispatches: 'comments' on 'getComments'
- * does nothing on 'deleteComment'
+ * dispatches: 'chat' on 'requestChat'
+ * dispatches: 'chat' on 'chatChat'
+ * reroutes to home on 'deleteChat'
+ * dispatches: 'listChats' on 'requestListChats'
  *
  * @export
- * @class Comments
+ * @class Chat
  */
-export default class Comments extends HTMLElement {
+export default class Chat extends HTMLElement {
     constructor() {
         super()
 
@@ -56,34 +54,34 @@ export default class Comments extends HTMLElement {
          * @type {AbortController | null}
          */
         this.abortController = null
+        this.abortControllerList = null
 
-        /**
-         * Listens to the event name/typeArg: 'addComment'
-         *
-         * @param {CustomEvent & {detail: AddCommentsEventDetail}} event
-         */
-        this.addCommentListener = event => {
-            // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
-            const postID = event.detail.comment.postID
-            const url = `${Environment.fetchBaseUrl}/comment/${postID}`
-            // reset old AbortController and assign new one
+        this.publishChatListener = event => {
+            const url = `${Environment.fetchBaseUrl}/chat`
+
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
+
             // answer with event
-            this.dispatchEvent(new CustomEvent('comment', {
-                /** @type {CommentEventDetail} */
+            this.dispatchEvent(new CustomEvent('chat', {
                 detail: {
-                    fetch: fetch(url, {
-                        method: 'POST',
-                        body: JSON.stringify(event.detail.comment),
-                        signal: this.abortController.signal,
-                        credentials: 'include',
-                        ...Environment.fetchHeaders
-                    }).then(response => {
-                        if (response.status >= 200 && response.status <= 299) return response.json()
-                        throw new Error(response.statusText)
-                        // @ts-ignore
-                    })
+                    fetch: fetch(url,
+                        {
+                            method: event.detail.slug ? 'PUT' : 'CHAT',
+                            ...Environment.fetchHeaders,
+                            body: JSON.stringify(event.detail),
+                            credentials: "include",
+                            signal: this.abortController.signal
+                        })
+                        .then(response => {
+                            if (response.status >= 200 && response.status <= 299) return response.json()
+                            throw new Error(response.statusText)
+                        })
+                        .then(data => {
+                            if (data.errors) throw data.errors
+                            self.location.hash = `#/chats/${data.chat.slug}`
+                            return data
+                        })
                 },
                 bubbles: true,
                 cancelable: true,
@@ -92,31 +90,31 @@ export default class Comments extends HTMLElement {
         }
 
         /**
-         * Listens to the event name/typeArg: 'getComments'
+         * Listens to the event name/typeArg: 'requestChat'
          *
-         * @param {CustomEvent & {detail: GetCommentsEventDetail}} event
+         * @param {CustomEvent & {detail: RequestChatEventDetail}} event
          */
-        this.getCommentsListener = event => {
+        this.requestChatListener = event => {
             // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
-            const postID = event.detail.postID
-            const url = `${Environment.fetchBaseUrl}/comments/${postID}`
+            const slug = event.detail.slug || Environment.slug || ''
+            const url = `${Environment.fetchBaseUrl}/chat/${slug}`
             // reset old AbortController and assign new one
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('comments', {
-                /** @type {CommentsEventDetail} */
+            this.dispatchEvent(new CustomEvent('chat', {
+                /** @type {ChatEventDetail} */
                 detail: {
+                    slug,
                     fetch: fetch(url, {
                         signal: this.abortController.signal,
-                        credentials: 'include',
                         ...Environment.fetchHeaders
                     }).then(response => {
                         if (response.status >= 200 && response.status <= 299) return response.json()
                         throw new Error(response.statusText)
                         // @ts-ignore
                     }).then(data => {
-                        return data
+                        return data.chat
                     })
                 },
                 bubbles: true,
@@ -126,37 +124,52 @@ export default class Comments extends HTMLElement {
         }
 
         /**
-         * Listens to the event name/typeArg: 'deleteComment'
+         * Listens to the event name/typeArg: 'requestListChats'
          *
-         * @param {CustomEvent & {detail: DeleteCommentEventDetail}} event
+         * @param {CustomEvent & {detail: RequestListChatsEventDetail}} event
          */
-        this.deleteCommentListener = event => {
-            // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
-            const slug = (event.detail && event.detail.slug) || Environment.slug || ''
-            const url = `${Environment.fetchBaseUrl}/comments/${event.detail.id}`
-            fetch(url, {
-                method: 'DELETE',
-                credentials: 'include',
-                ...Environment.fetchHeaders
-            }).then(response => {
-                if (response.status >= 200 && response.status <= 299) return
-                throw new Error(response.statusText)
-                // @ts-ignore
-            })
+        // @ts-ignore
+        this.requestListChatsListener = event => {
+            const url = `${Environment.fetchBaseUrl}/chat/users`
+            // reset old AbortController and assign new one
+            if (this.abortControllerList) this.abortControllerList.abort()
+            this.abortControllerList = new AbortController()
+            // answer with event
+            this.dispatchEvent(new CustomEvent('listChats', {
+                /** @type {ListChatsEventDetail} */
+                detail: {
+                    fetch: fetch(url, {
+                        signal: this.abortControllerList.signal,
+                        credentials: "include",
+                        ...Environment.fetchHeaders
+                    }).then(response => {
+                        if (response.status >= 200 && response.status <= 299) return response.json()
+                        throw new Error(response.statusText)
+                        // @ts-ignore
+                    }).then(data => {
+                        return data.users
+                    })
+                },
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            }))
         }
     }
 
     connectedCallback() {
         // @ts-ignore
-        this.addEventListener('addComment', this.addCommentListener)
+        this.addEventListener('publishChat', this.publishChatListener)
         // @ts-ignore
-        this.addEventListener('getComments', this.getCommentsListener)
+        this.addEventListener('requestListChats', this.requestListChatsListener)
+        // @ts-ignore
+        this.addEventListener('requestChat', this.requestChatListener)
     }
 
     disconnectedCallback() {
         // @ts-ignore
-        this.removeEventListener('addComment', this.addCommentListener)
+        this.removeEventListener('requestListChats', this.requestListChatsListener)
         // @ts-ignore
-        this.removeEventListener('getComments', this.getCommentsListener)
+        this.removeEventListener('requestChat', this.requestChatListener)
     }
 }
