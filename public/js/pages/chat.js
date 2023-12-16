@@ -22,6 +22,7 @@ export default class Chat extends HTMLElement {
      * @param {CustomEvent & {detail: import("../controllers/message.js").MessagesEventDetail}} event
      */
         this.messageListener = event => event.detail.fetch.then((data) => {
+            console.log(data);
             if (this.textField) {
                 this.textField.value = ''
             }
@@ -60,15 +61,15 @@ export default class Chat extends HTMLElement {
         this.submitListener = (e) => {
             e.preventDefault();
             if (this.messageForm?.checkValidity()) {
-                console.log("Listen");
+                const message = {
+                    text: (this.textField) ? this.textField.value : "",
+                    authorID: Environment.auth ? this.user.id : '',
+                    receiverID: this.chat.talker.id
+                }
                 this.dispatchEvent(new CustomEvent('addMessage', {
                     detail: {
                         /** @type {import("../lib/typing.js").AddMessage} */
-                        message: {
-                            text: (this.textField) ? this.textField.value : "",
-                            authorID: Environment.auth ? this.user.id : '',
-                            receiverID: this.chat?.id
-                        }
+                        message
                     },
                     bubbles: true,
                     cancelable: true,
@@ -90,7 +91,7 @@ export default class Chat extends HTMLElement {
         // @ts-ignore
         document.body.addEventListener('message', this.messageListener)
         // @ts-ignore
-        document.body.addEventListener('chat', this.chatListener)
+        document.body.addEventListener('chat-load', this.chatListener)
         // on every connect it will attempt to get newest chats
         this.dispatchEvent(new CustomEvent('requestChat', {
             /** @type {import("../controllers/chat.js").RequestChatEventDetail} */
@@ -138,20 +139,21 @@ export default class Chat extends HTMLElement {
     // @ts-ignore
     render(user = this.user) {
         if (user !== undefined) this.user = user
+        if (!this.chat) return
 
-        if (!this.chat) {
-            this.innerHTML = /* html */`<div class="l-grid__item"><div class="card f-height"><div class="card__body">Start the discussion</div></div></div>`
-        } else {
-            this.innerHTML = /* html */`<div class="l-grid__item">
+        this.innerHTML = /* html */`<div class="l-grid__item">
             <div class="card f-height">
                 <div class="card__header justify--space-between">
-                    <h3>Talk with ${this.chat.nickname}</h3>
+                    <h3>Talk with ${this.chat.talker ? this.chat.talker.nickname : `...`}</h3>
                 </div>
-                <div class="card__body">
+                ${!this.chat.messages ?
+                /* html */`<div class="card__body">Start the discussion</div>` :
+                /* html */`<div class="card__body">
                     <div class="outer-wrap">
-                        <message-list chat-id="${this.chat.id}"></message-list>
-                    </div>
+                    <message-list chat-id="${this.chat.id}"></message-list>
                 </div>
+            </div>`
+            }
                 <div class="card__footer">
                     <form class="send">
                         <button type="submit" class="primary">🚀</button>
@@ -160,7 +162,6 @@ export default class Chat extends HTMLElement {
                 </div>
             </div>
         </div>`
-        }
     }
 
     /**

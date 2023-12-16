@@ -10,9 +10,9 @@ import (
 
 type Message struct {
 	ID           string `json:"id"`
-	SenderID     string `json:"senderID"`
+	SenderID     string `json:"authorID"`
 	ReceiverID   string `json:"receiverID"`
-	Content         string `json:"text"`
+	Content      string `json:"text"`
 	CreateDate   string `json:"createDate"`
 	ModifiedDate string `json:"modifiedDate"`
 }
@@ -55,7 +55,9 @@ func (rr *MessageRepository) GetDiscussionsBetweenUsers(user1ID, user2ID string)
 	`, user1ID, user2ID, user2ID, user1ID)
 
 	if err != nil {
-		return nil, err
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 	}
 	defer rows.Close()
 

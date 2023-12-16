@@ -64,8 +64,7 @@ export default class Messages extends HTMLElement {
          */
         this.addMessageListener = event => {
             // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
-            const postID = event.detail.message.postID
-            const url = `${Environment.fetchBaseUrl}/message/${postID}`
+            const url = `${Environment.fetchBaseUrl}/chat/new`
             // reset old AbortController and assign new one
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
@@ -98,8 +97,9 @@ export default class Messages extends HTMLElement {
          */
         this.getMessagesListener = event => {
             // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
-            const postID = event.detail.postID
-            const url = `${Environment.fetchBaseUrl}/messages/${postID}`
+            const slug = event.detail.slug || Environment.slug || ''
+            const id = slug.split("-")[1]
+            const url = `${Environment.fetchBaseUrl}/chat/messages/${id}`
             // reset old AbortController and assign new one
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()

@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"real-time-forum/data/models"
 	"real-time-forum/lib"
+	"strings"
 )
 
 func GetUsers(res http.ResponseWriter, req *http.Request) {
@@ -29,11 +32,24 @@ func GetUsers(res http.ResponseWriter, req *http.Request) {
 }
 
 func GetMessages(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/chat/messages", http.MethodGet) {
+	if lib.ValidateRequest(req, res, "/chat/messages/*", http.MethodGet) {
 		isLogin := models.ValidSession(req)
 		if isLogin {
-			_ = models.GetUserFromSession(req)
+			user := models.GetUserFromSession(req)
+			path := req.URL.Path
+			pathPart := strings.Split(path, "/")
+			idReceiver := pathPart[3]
+			messages, err := models.MessageRepo.GetDiscussionsBetweenUsers(user.ID, idReceiver)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, "Error getting messages : "+err.Error())
+				return
+			}
+			talker, err := models.UserRepo.GetUserByID(idReceiver)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, "Error getting talker : "+err.Error())
+			}
 
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"messages": messages, "talker": talker})
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "No active session")
 		}
@@ -41,12 +57,23 @@ func GetMessages(res http.ResponseWriter, req *http.Request) {
 }
 
 func NewMessage(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/chat/new", http.MethodGet) {
+	log.Println(req)
+	if lib.ValidateRequest(req, res, "/chat/new", http.MethodPost) {
 		isLogin := models.ValidSession(req)
 		if isLogin {
 			_ = models.GetUserFromSession(req)
-
-			// SendMessage(data)
+			var message models.Message
+			if err := json.NewDecoder(req.Body).Decode(&message); err != nil {
+				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
+				return
+			}
+			log.Println(message)
+			err := models.MessageRepo.CreateMessage(&message)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, "Error creating message : "+err.Error())
+			}
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": message})
+			SendMessage(message)
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "No active session")
 		}

@@ -50,7 +50,7 @@ export default class ChatPreview extends HTMLElement {
         <div class="card item">
             <div class="card__body">
                 <div class="display--flex flex--col f-width">
-                    <h4 class="mr--16"><a class="not" href="#/chat/${chat.id}">${chat.nickname} ${chat.is_connected ? '🟢' : '🔴'}</a></h4>
+                    <h4 class="mr--16"><a class="not" href="#/chat/${chat.nickname}-${chat.id}">${chat.nickname} ${chat.is_connected ? '🟢' : '🔴'}</a></h4>
                     <div class="display--flex f-width justify--space-between mb--8">
                         <span class="text--small text--gray">${chat.last_message ? chat.last_message : 'No messages'}</span>
                         <span class="text--small text--gray">${chat.last_message_time}</span>

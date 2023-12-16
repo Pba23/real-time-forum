@@ -105,10 +105,11 @@ export default class MessageList extends HTMLElement {
      * @return {Node | string}
      */
     createMessage(message, text = true) {
+        console.log(message);
         const card = /* html */`
         <div class="message active">
             <div class="profile-picture">
-                <img src="${message.senderAvatar}" alt="Profile Picture">
+                <img src="${message.senderAvatar? '' : `https://ui-avatars.com/api/?name=John+Doe&background=random`}" alt="Profile Picture">
             </div>
             <div class="speech-bubble">
                 <p>${message.text}</p>

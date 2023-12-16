@@ -97,24 +97,27 @@ export default class Chat extends HTMLElement {
         this.requestChatListener = event => {
             // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
             const slug = event.detail.slug || Environment.slug || ''
-            const url = `${Environment.fetchBaseUrl}/chat/${slug}`
+            const id = slug.split("-")[1]
+            const url = `${Environment.fetchBaseUrl}/chat/messages/${id}`
             // reset old AbortController and assign new one
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('chat', {
+            this.dispatchEvent(new CustomEvent('chat-load', {
                 /** @type {ChatEventDetail} */
                 detail: {
                     slug,
                     fetch: fetch(url, {
                         signal: this.abortController.signal,
+                        credentials: "include",
                         ...Environment.fetchHeaders
                     }).then(response => {
                         if (response.status >= 200 && response.status <= 299) return response.json()
                         throw new Error(response.statusText)
                         // @ts-ignore
                     }).then(data => {
-                        return data.chat
+                        console.log(data);
+                        return data
                     })
                 },
                 bubbles: true,
