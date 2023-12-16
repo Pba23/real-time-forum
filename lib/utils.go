@@ -199,6 +199,7 @@ func TimeSinceCreation(creationDate string) string {
 		return fmt.Sprintf("%d month%s ago", months, pluralize(months))
 	} else {
 		years := int(elapsedTime.Hours() / (24 * 30 * 12))
+		fmt.Println("------------------------------------------------\n\ntime:            ",creationDate)
 		return fmt.Sprintf("%d year%s ago", years, pluralize(years))
 	}
 }
