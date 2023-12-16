@@ -3,3 +3,4 @@ tmp/*
 data/sql/forum.db
 uploads/*
 public/temp.html
+public/test.html

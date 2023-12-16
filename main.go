@@ -30,6 +30,9 @@ func main() {
 	// Single Page
 	r.Handle("/", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Index)))
 
+	// WebSocket
+	http.HandleFunc("/ws", handler.HandleWebSocket)
+
 	// Authentication
 	r.Handle("/me", rateLimiter.Wrap("auth", http.HandlerFunc(handler.Me)))
 	r.Handle("/sign-up", rateLimiter.Wrap("auth", http.HandlerFunc(handler.SignUp)))
@@ -41,8 +44,15 @@ func main() {
 	r.Handle("/post/{slug}", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetPost)))
 	r.Handle("/posts", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetAllPosts)))
 	r.Handle("/edit-post/{postID}", rateLimiter.Wrap("api", http.HandlerFunc(handler.EditPost)))
+
+	// Comment Handlers
 	r.Handle("/comment/{postID}", rateLimiter.Wrap("api", http.HandlerFunc(handler.CreateComment)))
 	r.Handle("/comments/{postID}", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetComments)))
+
+	// Chat Handlers
+	http.HandleFunc("/chat/users", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetUsers)))
+	http.HandleFunc("/chat/messages", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetMessages)))
+	http.HandleFunc("/chat/new", rateLimiter.Wrap("api", http.HandlerFunc(handler.NewMessage)))
 
 	go models.DeleteExpiredSessions()
 

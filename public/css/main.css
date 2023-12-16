@@ -20,7 +20,7 @@
     --f-height: calc(100vh - (7rem + 10vh));
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
     :root {
         --black: #ffffff;
         --white: #000000;
@@ -41,7 +41,7 @@
         --color: var(--lightest);
         --surface: var(--darker);
     }
-}
+} */
 
 /* width */
 ::-webkit-scrollbar {
