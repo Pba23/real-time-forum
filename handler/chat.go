@@ -36,23 +36,37 @@ type User struct {
 
 func GetUsers(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/chat/users", http.MethodGet) {
-		currentUser := models.GetUserFromSession(req)
-		users, err := models.UserRepo.SelectAllUsers(currentUser.ID)
-		if err != nil {
-			lib.HandleError(res, http.StatusInternalServerError, err.Error())
+		isLogin := models.ValidSession(req)
+		if isLogin {
+			_ = models.GetUserFromSession(req)
+
+		} else {
+			lib.HandleError(res, http.StatusUnauthorized, "No active session")
 		}
-		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"users": users})
 	}
 }
 
 func GetMessages(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/chat/messages", http.MethodGet) { }
+	if lib.ValidateRequest(req, res, "/chat/messages", http.MethodGet) {
+		isLogin := models.ValidSession(req)
+		if isLogin {
+			_ = models.GetUserFromSession(req)
 
+		} else {
+			lib.HandleError(res, http.StatusUnauthorized, "No active session")
+		}
+	}
 }
 
 func NewMessage(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/chat/new", http.MethodGet) { }
+	if lib.ValidateRequest(req, res, "/chat/new", http.MethodGet) {
+		isLogin := models.ValidSession(req)
+		if isLogin {
+			_ = models.GetUserFromSession(req)
 
-	// SendMessage(data)
+			// SendMessage(data)
+		} else {
+			lib.HandleError(res, http.StatusUnauthorized, "No active session")
+		}
+	}
 }
-

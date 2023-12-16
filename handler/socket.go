@@ -27,13 +27,13 @@ type NewPostEvent struct {
 
 type NewCommentEvent struct {
 	Type   string             `json:"type"`
-	PostID int                `json:"postID"`
+	PostID string                `json:"postID"`
 	Data   models.CommentItem `json:"comment"`
 }
 
 type NewStatusEvent struct {
 	Type     string `json:"type"`
-	Username string `json:"username"`
+	UserID string `json:"username"`
 	Online   bool   `json:"online"`
 }
 
@@ -90,7 +90,7 @@ func SendPost(post models.PostItem) {
 	})
 }
 
-func SendComment(postID int, comment models.CommentItem) {
+func SendComment(postID string, comment models.CommentItem) {
 	data := NewCommentEvent{"comment", postID, comment}
 	output, err := json.Marshal(data)
 	if err != nil {
@@ -104,8 +104,8 @@ func SendComment(postID int, comment models.CommentItem) {
 	})
 }
 
-func SendStatus(username string, online bool) {
-	data := NewStatusEvent{"status", username, online}
+func SendStatus(userID string, online bool) {
+	data := NewStatusEvent{"status", userID, online}
 	output, err := json.Marshal(data)
 	if err != nil {
 		log.Println(err)

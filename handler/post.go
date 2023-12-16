@@ -57,10 +57,10 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 				"message": "post created successfully",
 				"post":    post,
 			})
+			SendPost(post)
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "not connected")
 		}
-
 	}
 }
 

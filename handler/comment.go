@@ -76,6 +76,7 @@ func CreateComment(res http.ResponseWriter, req *http.Request) {
 				"message": "comment created successfully",
 				"comment": comment,
 			})
+			SendComment(postID, comment)
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "not connected")
 		}
