@@ -20,13 +20,7 @@ export default class CommentList extends HTMLElement {
      */
         this.commentListener = event => event.detail.fetch.then((data) => {
             const comment = data.comment
-            if (this.firstCard) {
-                // @ts-ignore
-                this.insertBefore(this.createComment(comment, false), this.firstCard)
-            } else {
-                // @ts-ignore
-                this.appendChild(this.createComment(comment))
-            }
+            this.addNewComment(comment)
         })
 
         /**
@@ -38,12 +32,28 @@ export default class CommentList extends HTMLElement {
         this.commentsListener = event => {
             this.render(event.detail.fetch)
         }
+
+        this.newComment = event => {
+            console.log(event);
+        }
+    }
+
+    addNewComment(comment) {
+        if (this.firstCard) {
+            // @ts-ignore
+            this.insertBefore(this.createComment(comment, false), this.firstCard)
+        } else {
+            // @ts-ignore
+            this.appendChild(this.createComment(comment))
+        }
     }
 
     connectedCallback() {
         // listen for comments
         // @ts-ignore
         document.body.addEventListener('comment', this.commentListener)
+        // @ts-ignore
+        document.body.addEventListener('new-comment', this.newComment)
         // @ts-ignore
         document.body.addEventListener('comments', this.commentsListener)
         this.postID = this.getAttribute("post-id");

@@ -79,6 +79,9 @@ export default class Post extends HTMLElement {
     }
 
     connectedCallback() {
+        if (!Environment.auth) {
+            self.location.hash = '#/login'
+        }
         this.user = Environment.auth
         this.fetchSinglePost = undefined
         this.loadChildComponents()

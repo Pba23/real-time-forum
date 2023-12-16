@@ -31,7 +31,6 @@ export default class Router extends HTMLElement {
                 name: 'p-home',
                 path: '../pages/home.js',
                 regExp: new RegExp(/^#\/$/),
-                authPage: false,
             },
             // Sign in/Sign up pages (URL: /#/login, /#/register )
             {

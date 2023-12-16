@@ -179,6 +179,7 @@ export default class User extends HTMLElement {
                         .then(data => {
                             this.user = undefined
                             Environment.auth = null
+                            self.location.hash = '#/login'
                             return data.user
                         })
                         .catch(error => {

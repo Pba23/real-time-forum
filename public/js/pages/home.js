@@ -2,6 +2,8 @@
 /* global HTMLElement */
 /* global customElements */
 
+import { Environment } from "../lib/environment.js"
+
 /**
  * As a page, this component becomes a domain dependent container and shall hold organisms, molecules and/or atoms
  *
@@ -10,6 +12,9 @@
  */
 export default class Home extends HTMLElement {
     connectedCallback() {
+        if (!Environment.auth) {
+            self.location.hash = '#/login'
+        }
         this.loadChildComponents()
         if (this.shouldComponentRender()) this.render()
     }

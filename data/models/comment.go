@@ -83,7 +83,7 @@ func (cr *CommentRepository) GetCommentByID(id string) (CommentItem, error) {
 func (cr *CommentRepository) GetCommentsOfPost(postID string) ([]*CommentItem, error) {
 	var comments []*CommentItem
 
-	rows, err := cr.db.Query("SELECT c.id, c.text, c.authorID, c.parentID, c.modifiedDate, u.nickName, u.avatarURL FROM comment c LEFT JOIN user u ON c.authorID = u.ID WHERE c.PostID = ?", postID)
+	rows, err := cr.db.Query("SELECT c.id, c.text, c.authorID, c.parentID, c.modifiedDate, u.nickName, u.avatarURL FROM comment c LEFT JOIN user u ON c.authorID = u.ID WHERE c.PostID = ? ORDER BY modifiedDate DESC", postID)
 	if err != nil {
 		return nil, err
 	}
