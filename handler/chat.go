@@ -45,8 +45,11 @@ func GetMessages(res http.ResponseWriter, req *http.Request) {
 				return
 			}
 			talker, err := models.UserRepo.GetUserByID(idReceiver)
+			log.Println(idReceiver)
+			log.Println(talker)
 			if err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error getting talker : "+err.Error())
+				return
 			}
 
 			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"messages": messages, "talker": talker})
@@ -56,8 +59,27 @@ func GetMessages(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func GetTalker(res http.ResponseWriter, req *http.Request) {
+	if lib.ValidateRequest(req, res, "/chat/user/*", http.MethodGet) {
+		isLogin := models.ValidSession(req)
+		if isLogin {
+			path := req.URL.Path
+			pathPart := strings.Split(path, "/")
+			idReceiver := pathPart[3]
+			talker, err := models.UserRepo.GetUserByID(idReceiver)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, "Error getting talker : "+err.Error())
+				return
+			}
+
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"talker": talker})
+		} else {
+			lib.HandleError(res, http.StatusUnauthorized, "No active session")
+		}
+	}
+}
+
 func NewMessage(res http.ResponseWriter, req *http.Request) {
-	log.Println(req)
 	if lib.ValidateRequest(req, res, "/chat/new", http.MethodPost) {
 		isLogin := models.ValidSession(req)
 		if isLogin {
@@ -67,7 +89,6 @@ func NewMessage(res http.ResponseWriter, req *http.Request) {
 				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
 				return
 			}
-			log.Println(message)
 			err := models.MessageRepo.CreateMessage(&message)
 			if err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error creating message : "+err.Error())

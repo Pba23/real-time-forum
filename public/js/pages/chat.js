@@ -146,14 +146,10 @@ export default class Chat extends HTMLElement {
                 <div class="card__header justify--space-between">
                     <h3>Talk with ${this.chat.talker ? this.chat.talker.nickname : `...`}</h3>
                 </div>
-                ${!this.chat.messages ?
-                /* html */`<div class="card__body">Start the discussion</div>` :
-                /* html */`<div class="card__body">
+                <div class="card__body">
                     <div class="outer-wrap">
-                    <message-list chat-id="${this.chat.id}"></message-list>
+                    <message-list chat-id="${this.chat.talker.id}"></message-list>
                 </div>
-            </div>`
-            }
                 <div class="card__footer">
                     <form class="send">
                         <button type="submit" class="primary">🚀</button>

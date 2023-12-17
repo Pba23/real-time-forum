@@ -88,7 +88,7 @@ func (ur *UserRepository) GetUserByID(userID string) (*User, error) {
 	err := row.Scan(&user.ID, &user.Nickname, &user.Firstname, &user.Lastname, &user.Age, &user.Gender, &user.Email, &user.AvatarURL)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, err // User not found
+			return nil, nil // User not found
 		}
 		return nil, err
 	}

@@ -97,18 +97,18 @@ export default class Messages extends HTMLElement {
          */
         this.getMessagesListener = event => {
             // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
-            const slug = event.detail.slug || Environment.slug || ''
-            const id = slug.split("-")[1]
-            const url = `${Environment.fetchBaseUrl}/chat/messages/${id}`
+            const slug = event.detail.chatID || Environment.slug || ''
+            const url = `${Environment.fetchBaseUrl}/chat/messages/${slug}`
+            console.log(url);
             // reset old AbortController and assign new one
-            if (this.abortController) this.abortController.abort()
-            this.abortController = new AbortController()
+            // if (this.abortController) this.abortController.abort()
+            // this.abortController = new AbortController()
             // answer with event
             this.dispatchEvent(new CustomEvent('messages', {
                 /** @type {MessagesEventDetail} */
                 detail: {
                     fetch: fetch(url, {
-                        signal: this.abortController.signal,
+                        // signal: this.abortController.signal,
                         credentials: 'include',
                         ...Environment.fetchHeaders
                     }).then(response => {

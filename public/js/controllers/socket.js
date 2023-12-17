@@ -3,12 +3,16 @@ import { Environment } from '../lib/environment.js'
 export default class SocketHandler extends HTMLElement {
   constructor() {
     super();
-    this.socket = new WebSocket('ws://localhost:8080/ws');
+    this.socket = new WebSocket('ws://localhost:8085/ws');
+
+    this.socket.onopen = () => {
+      if (Environment.auth) {
+        this.login()
+      }
+    }
 
     this.socket.onmessage = (event) => {
-      console.log(event);
       const data = JSON.parse(event.data);
-      console.log(data);
       switch (data.type) {
         case 'post':
           console.log("POST");
@@ -17,7 +21,14 @@ export default class SocketHandler extends HTMLElement {
           console.log("COMMENT");
           break;
         case 'status':
-          console.log("STATUS");
+          const eventName = `status-${data.userID}`
+          console.log(eventName);
+          this.dispatchEvent(new CustomEvent(eventName, {
+            detail: data.online,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          }))
           break;
         case 'message':
           console.log("MESSAGE");
@@ -38,7 +49,6 @@ export default class SocketHandler extends HTMLElement {
       this.socket.send(JSON.stringify({ type: 'logout', data: { userID: Environment.auth.id } }));
       Environment.auth = null
       self.location.hash = '#/login'
-      this.socket = new WebSocket('ws://localhost:8080/ws');
     }
   }
 

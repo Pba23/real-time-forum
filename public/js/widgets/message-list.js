@@ -57,6 +57,7 @@ export default class MessageList extends HTMLElement {
         // @ts-ignore
         document.body.addEventListener('messages', this.messagesListener)
         this.chatID = this.getAttribute("chat-id");
+        console.log(this.chatID);
 
         // on every connect it will attempt to get newest messages
         this.dispatchEvent(new CustomEvent('getMessages', {
@@ -92,8 +93,12 @@ export default class MessageList extends HTMLElement {
     render(fetchMessages) {
         this.innerHTML = ""
         fetchMessages && fetchMessages.then((data) => {
+            console.log(data);
             const messages = data.messages
-            if (!messages) return
+            if (!messages) {
+                this.innerHTML = /* html */`<div class="card__body">Start the discussion</div>`
+                return
+            }
             this.innerHTML += messages.reduce((messagesStr, message) => (messagesStr += this.createMessage(message)), '')
         })
     }
@@ -105,7 +110,6 @@ export default class MessageList extends HTMLElement {
      * @return {Node | string}
      */
     createMessage(message, text = true) {
-        console.log(message);
         const card = /* html */`
         <div class="message active">
             <div class="profile-picture">

@@ -56,39 +56,6 @@ export default class Chat extends HTMLElement {
         this.abortController = null
         this.abortControllerList = null
 
-        this.publishChatListener = event => {
-            const url = `${Environment.fetchBaseUrl}/chat`
-
-            if (this.abortController) this.abortController.abort()
-            this.abortController = new AbortController()
-
-            // answer with event
-            this.dispatchEvent(new CustomEvent('chat', {
-                detail: {
-                    fetch: fetch(url,
-                        {
-                            method: event.detail.slug ? 'PUT' : 'CHAT',
-                            ...Environment.fetchHeaders,
-                            body: JSON.stringify(event.detail),
-                            credentials: "include",
-                            signal: this.abortController.signal
-                        })
-                        .then(response => {
-                            if (response.status >= 200 && response.status <= 299) return response.json()
-                            throw new Error(response.statusText)
-                        })
-                        .then(data => {
-                            if (data.errors) throw data.errors
-                            self.location.hash = `#/chats/${data.chat.slug}`
-                            return data
-                        })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
-        }
-
         /**
          * Listens to the event name/typeArg: 'requestChat'
          *
@@ -97,8 +64,8 @@ export default class Chat extends HTMLElement {
         this.requestChatListener = event => {
             // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
             const slug = event.detail.slug || Environment.slug || ''
-            const id = slug.split("-")[1]
-            const url = `${Environment.fetchBaseUrl}/chat/messages/${id}`
+            const url = `${Environment.fetchBaseUrl}/chat/user/${slug}`
+            console.log(url);
             // reset old AbortController and assign new one
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
@@ -116,7 +83,6 @@ export default class Chat extends HTMLElement {
                         throw new Error(response.statusText)
                         // @ts-ignore
                     }).then(data => {
-                        console.log(data);
                         return data
                     })
                 },

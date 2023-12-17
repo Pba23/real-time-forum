@@ -45,22 +45,22 @@ type NewMessageEvent struct {
 func HandleWebSocket(res http.ResponseWriter, req *http.Request) {
 	conn, err := upgrader.Upgrade(res, req, nil)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error upgrading connection", err)
 		return
 	}
-
+	
 	UserConnections.Store(conn, "")
 	defer UserConnections.Delete(conn)
 	defer conn.Close()
 	for {
 		_, incoming, err := conn.ReadMessage()
 		if err != nil {
-			log.Println(err)
+			log.Println("Error reading message", err)
 			return
 		}
 		var data wsInput
 		if err := json.Unmarshal([]byte(incoming), &data); err != nil {
-			log.Println(err)
+			log.Println("Error unmarshalling message", err)
 			return
 		}
 		switch data.Type {
@@ -69,8 +69,7 @@ func HandleWebSocket(res http.ResponseWriter, req *http.Request) {
 			SendStatus(data.Data["userID"].(string), true)
 			defer SendStatus(data.Data["userID"].(string), false)
 		case "logout":
-			conn.Close()
-			UserConnections.Delete(conn)
+			UserConnections.Store(conn, "")
 			SendStatus(data.Data["userID"].(string), false)
 		}
 	}
@@ -111,7 +110,8 @@ func SendStatus(userID string, online bool) {
 		log.Println(err)
 	}
 	UserConnections.Range(func(key, value interface{}) bool {
-		if value.(string) != "" {
+		if value.(string) != "" && value.(string) != userID {
+			log.Println(data.Online, value)
 			key.(*websocket.Conn).WriteMessage(websocket.TextMessage, output)
 		}
 		return true
@@ -126,6 +126,7 @@ func SendMessage(message models.Message) {
 	}
 	UserConnections.Range(func(key, value interface{}) bool {
 		if value.(string) == message.SenderID || value.(string) == message.ReceiverID {
+			log.Println(data.Message.Content, value)
 			key.(*websocket.Conn).WriteMessage(websocket.TextMessage, output)
 		}
 		return true
