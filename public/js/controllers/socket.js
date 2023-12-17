@@ -21,9 +21,9 @@ export default class SocketHandler extends HTMLElement {
           console.log("COMMENT");
           break;
         case 'status':
-          const eventName = `status-${data.userID}`
-          console.log(eventName);
-          this.dispatchEvent(new CustomEvent(eventName, {
+          const statusEventName = `status-${data.userID}`
+          console.log(statusEventName);
+          this.dispatchEvent(new CustomEvent(statusEventName, {
             detail: data.online,
             bubbles: true,
             cancelable: true,
@@ -31,7 +31,15 @@ export default class SocketHandler extends HTMLElement {
           }))
           break;
         case 'message':
-          console.log("MESSAGE");
+          console.log(data.message);
+          const messageEventName = `message-${data.message.authorID}`
+          console.log(messageEventName);
+          this.dispatchEvent(new CustomEvent(messageEventName, {
+            detail: data.message,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          }))
           break;
         case 'typing':
           console.log("TYPING");

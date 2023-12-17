@@ -35,6 +35,7 @@ export default class MessageList extends HTMLElement {
 
         this.newMessage = event => {
             console.log(event);
+            this.addNewMessage(event.detail)
         }
     }
 
@@ -58,6 +59,8 @@ export default class MessageList extends HTMLElement {
         document.body.addEventListener('messages', this.messagesListener)
         this.chatID = this.getAttribute("chat-id");
         console.log(this.chatID);
+        const eventName = 'message-' + this.chatID
+        document.body.addEventListener(eventName, this.newMessage)
 
         // on every connect it will attempt to get newest messages
         this.dispatchEvent(new CustomEvent('getMessages', {
