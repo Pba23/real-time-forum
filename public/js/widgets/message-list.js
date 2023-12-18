@@ -20,7 +20,7 @@ export default class MessageList extends HTMLElement {
      */
         this.messageListener = event => event.detail.fetch.then((data) => {
             const message = data.message
-            this.addNewMessage(message)
+            // this.addNewMessage(message)
         })
 
         /**
@@ -45,7 +45,7 @@ export default class MessageList extends HTMLElement {
             this.insertBefore(this.createMessage(message, false), this.firstCard)
         } else {
             // @ts-ignore
-            this.appendChild(this.createMessage(message))
+            this.innerHTML = this.createMessage(message)
         }
     }
 
