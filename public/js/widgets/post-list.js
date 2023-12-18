@@ -4,7 +4,6 @@
 /* global HTMLElement */
 
 /**
- * https://github.com/Weedshaker/event-driven-web-components-realworld-example-app/blob/master/FRONTEND_INSTRUCTIONS.md#ListPosts
  * As an organism, this component shall hold molecules and/or atoms
  * this organism always renders new when connected to keep most recent and does not need shouldComponentRender
  *
@@ -23,21 +22,27 @@ export default class PostList extends HTMLElement {
     this.listPostsListener = event => this.render(event.detail.fetch)
 
     this.postListener = event => event.detail.fetch.then(data => {
+      console.log("POST LISTENER");
       const post = data.post
-      if (this.firstItem) {
-        if (this.childComponentsPromise) {
-          this.childComponentsPromise.then(children => {
-            const postItem = children[0][1]
-            const postItemElement = new postItem(post)
-            // @ts-ignore
-            this.insertBefore(postItemElement, this.firstItem)
-          });
-        }
-      } else {
-        // @ts-ignore
-        this.appendChild(this.createComment(post))
-      }
+      this.addNewPost(post);
     })
+  }
+
+  addNewPost(post) {
+    console.log(post);
+    if (this.childComponentsPromise) {
+      this.childComponentsPromise.then(children => {
+        const postItem = children[0][1];
+        const postItemElement = new postItem(post);
+        // @ts-ignore
+        if (this.firstItem) {
+          this.insertBefore(postItemElement, this.firstItem);
+        } else {
+          // @ts-ignore
+          this.appendChild(postItemElement);
+        }
+      });
+    }
   }
 
   connectedCallback() {
@@ -45,7 +50,9 @@ export default class PostList extends HTMLElement {
     // @ts-ignore
     document.body.addEventListener('listPosts', this.listPostsListener)
     // @ts-ignore
-    document.body.addEventListener('post', this.postListener)
+    document.body.addEventListener('new-post', event => this.addNewPost(event.detail))
+    // @ts-ignore
+    document.body.addEventListener('post-published', this.postListener)
     this.dispatchEvent(new CustomEvent('requestListPosts', {
       /** @type {import("../controllers/post.js").RequestListPostsEventDetail} */
       detail: {},

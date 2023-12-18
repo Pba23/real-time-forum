@@ -47,7 +47,8 @@ func main() {
 
 	// Chat Handlers
 	http.HandleFunc("/chat/users", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetUsers)))
-	http.HandleFunc("/chat/messages", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetMessages)))
+	http.HandleFunc("/chat/user/", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetTalker)))
+	http.HandleFunc("/chat/messages/", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetMessages)))
 	http.HandleFunc("/chat/new", rateLimiter.Wrap("api", http.HandlerFunc(handler.NewMessage)))
 
 	go models.DeleteExpiredSessions()

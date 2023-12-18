@@ -46,6 +46,7 @@ export default class PostPreview extends HTMLElement {
             this.innerHTML = `<div class="Post-preview">No Post is here... yet.</div>`
             return
         }
+        console.log(post.id, post.listOfCategories);
         this.innerHTML = /* html */`
         <div class="card item">
             <div class="card__body">

@@ -10,7 +10,7 @@
  */
 class EnvironmentClass {
   constructor() {
-    this._fetchBaseUrl = 'http://localhost:8080'
+    this._fetchBaseUrl = 'http://localhost:8085'
 
   }
 
@@ -77,7 +77,7 @@ class EnvironmentClass {
    */
   get slug() {
     const urlEnding = this.urlEnding
-    if (urlEnding && urlEnding[0].match(/.*-[a-z0-9]{1,100}$/)) return urlEnding[0]
+    if (urlEnding && urlEnding[0].match(/[a-z0-9]{1,100}$/)) return urlEnding[0]
     return null
   }
 

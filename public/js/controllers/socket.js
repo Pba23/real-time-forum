@@ -3,24 +3,59 @@ import { Environment } from '../lib/environment.js'
 export default class SocketHandler extends HTMLElement {
   constructor() {
     super();
-    this.socket = new WebSocket('ws://localhost:8080/ws');
+    this.socket = new WebSocket('ws://localhost:8085/ws');
+
+    this.socket.onopen = () => {
+      if (Environment.auth) {
+        this.login()
+      }
+    }
 
     this.socket.onmessage = (event) => {
-      console.log(event);
       const data = JSON.parse(event.data);
-      console.log(data);
       switch (data.type) {
         case 'post':
-          console.log("POST");
+          console.log("POST", data);
+          const postEventName = `new-post`
+          console.log(postEventName);
+          this.dispatchEvent(new CustomEvent(postEventName, {
+            detail: data.post,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          }))
           break;
         case 'comment':
-          console.log("COMMENT");
+          console.log("COMMENT", data);
+          const commentEventName = `comment-${data.postID}`
+          console.log(commentEventName);
+          this.dispatchEvent(new CustomEvent(commentEventName, {
+            detail: data.comment,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          }))
           break;
         case 'status':
-          console.log("STATUS");
+          const statusEventName = `status-${data.userID}`
+          console.log(statusEventName);
+          this.dispatchEvent(new CustomEvent(statusEventName, {
+            detail: data.online,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          }))
           break;
         case 'message':
-          console.log("MESSAGE");
+          console.log(data.message);
+          const messageEventName = `message-${data.message.authorID}`
+          console.log(messageEventName);
+          this.dispatchEvent(new CustomEvent(messageEventName, {
+            detail: data.message,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          }))
           break;
         case 'typing':
           console.log("TYPING");
@@ -38,7 +73,6 @@ export default class SocketHandler extends HTMLElement {
       this.socket.send(JSON.stringify({ type: 'logout', data: { userID: Environment.auth.id } }));
       Environment.auth = null
       self.location.hash = '#/login'
-      this.socket = new WebSocket('ws://localhost:8080/ws');
     }
   }
 

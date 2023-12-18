@@ -19,6 +19,7 @@ export default class Aside extends HTMLElement {
     constructor() {
         super()
         this.isAuthPage = false
+        this.isChat = false
 
         /**
         * Listens to the event name/typeArg: 'authPage'
@@ -77,9 +78,33 @@ export default class Aside extends HTMLElement {
       `
             : /* html */`
         <div class="l-grid__item aside f-height">
-            <post-list></post-list>
+            <div class="mb--16">
+                <button class="small primary" id="btnPost">Post</button>
+                <button class="small primary" id="btnChat">Chat</button>
+            </div>
+            ${this.isChat ? /* html */`<chat-list></chat-list>` : /* html */`<post-list></post-list>`}
         </div>
       `
+
+        if (this.btnPost && this.btnChat) {
+            this.btnPost.addEventListener('click', () => { if (this.isChat) this.isChat = false; this.render() });
+            this.btnChat.addEventListener('click', () => { if (!this.isChat) this.isChat = true; this.render() });
+        }
+    }
+
+
+    /**
+    * @return {HTMLButtonElement | null}
+    */
+    get btnPost() {
+        return this.querySelector('button#btnPost')
+    }
+
+    /**
+    * @return {HTMLButtonElement | null}
+    */
+    get btnChat() {
+        return this.querySelector('button#btnChat')
     }
 
     /**
@@ -92,6 +117,10 @@ export default class Aside extends HTMLElement {
             import('../widgets/post-list.js').then(
                 /** @returns {[string, CustomElementConstructor]} */
                 module => ['post-list', module.default]
+            ),
+            import('../widgets/chat-list.js').then(
+                /** @returns {[string, CustomElementConstructor]} */
+                module => ['chat-list', module.default]
             ),
         ]).then(elements => {
             elements.forEach(element => {

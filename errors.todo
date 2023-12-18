@@ -1,0 +1,23 @@
++ [ ] Add avatar URL
++ [ ] Add a post image
++ [ ] Separate incoming and outgoing messages
++ [ ] Show message ago time
++ [ ] Handle message loading while scrolling
++ [ ] Add notifications (unread messages)
++ [ ] Send an image as a comment and message
++ [ ] Manage disconnection issues
+      + [ ] Check if session still exists on page refresh
+      + [ ] Delete session if expired
+      + [ ] The server sends a kill event to kill the session
++ [ ] Protect all API endpoints
++ [ ] Allow messages to be formatted (italic, bold, strikethrough, etc.)
++ [ ] Sidebar should always be displayed when a chat is open even if the page is refreshed
++ [ ] Implement "input" features
++ [ ] Check overflow texts
++ [ ] Refactor models
++ [ ] Refactoring handlers
++ [ ] Refactoring controllers
++ [ ] Refactor widgets
++ [ ] Refactoring pages
++ [ ] Remove all unused log
++ [ ] Add server logs

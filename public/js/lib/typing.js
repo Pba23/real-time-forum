@@ -52,6 +52,18 @@
  */
 
 /**
+ * ChatItem
+ *
+ * @typedef {{
+      id: string
+      nickname: string
+      is_connected: bool
+      last_message: string
+      last_message_time: string
+ }} ChatItem
+ */
+
+/**
  * EntirePost
  *
  * @typedef {{

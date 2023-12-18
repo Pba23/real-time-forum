@@ -19,8 +19,7 @@ export default class CommentList extends HTMLElement {
      * @param {CustomEvent & {detail: import("../controllers/comment.js").CommentsEventDetail}} event
      */
         this.commentListener = event => event.detail.fetch.then((data) => {
-            const comment = data.comment
-            this.addNewComment(comment)
+            console.log(data.comment)
         })
 
         /**
@@ -34,7 +33,7 @@ export default class CommentList extends HTMLElement {
         }
 
         this.newComment = event => {
-            console.log(event);
+            this.addNewComment(event.detail)
         }
     }
 
@@ -44,7 +43,7 @@ export default class CommentList extends HTMLElement {
             this.insertBefore(this.createComment(comment, false), this.firstCard)
         } else {
             // @ts-ignore
-            this.appendChild(this.createComment(comment))
+            this.appendChild(this.createComment(comment, false))
         }
     }
 
@@ -53,11 +52,11 @@ export default class CommentList extends HTMLElement {
         // @ts-ignore
         document.body.addEventListener('comment', this.commentListener)
         // @ts-ignore
-        document.body.addEventListener('new-comment', this.newComment)
-        // @ts-ignore
         document.body.addEventListener('comments', this.commentsListener)
         this.postID = this.getAttribute("post-id");
 
+        // @ts-ignore
+        document.body.addEventListener('comment-' + this.postID, this.newComment)
         // on every connect it will attempt to get newest comments
         this.dispatchEvent(new CustomEvent('getComments', {
             detail: {
@@ -66,7 +65,7 @@ export default class CommentList extends HTMLElement {
             bubbles: true,
             cancelable: true,
             composed: true
-        }))
+        }));
     }
 
     disconnectedCallback() {
@@ -118,6 +117,7 @@ export default class CommentList extends HTMLElement {
         const div = document.createElement('div')
         div.classList.add("wrap", "outgoing")
         div.innerHTML = card
+        console.log(div);
         return div.children[0]
     }
 
