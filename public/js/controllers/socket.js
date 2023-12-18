@@ -15,10 +15,26 @@ export default class SocketHandler extends HTMLElement {
       const data = JSON.parse(event.data);
       switch (data.type) {
         case 'post':
-          console.log("POST");
+          console.log("POST", data);
+          const postEventName = `new-post`
+          console.log(postEventName);
+          this.dispatchEvent(new CustomEvent(postEventName, {
+            detail: data.post,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          }))
           break;
         case 'comment':
-          console.log("COMMENT");
+          console.log("COMMENT", data);
+          const commentEventName = `comment-${data.postID}`
+          console.log(commentEventName);
+          this.dispatchEvent(new CustomEvent(commentEventName, {
+            detail: data.comment,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          }))
           break;
         case 'status':
           const statusEventName = `status-${data.userID}`

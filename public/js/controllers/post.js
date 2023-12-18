@@ -61,13 +61,14 @@ export default class Post extends HTMLElement {
 
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
+            console.log("publishPostListener");
 
             // answer with event
-            this.dispatchEvent(new CustomEvent('post', {
+            this.dispatchEvent(new CustomEvent('post-published', {
                 detail: {
                     fetch: fetch(url,
                         {
-                            method: event.detail.slug ? 'PUT' : 'POST',
+                            method: 'POST',
                             ...Environment.fetchHeaders,
                             body: JSON.stringify(event.detail),
                             credentials: "include",
