@@ -46,7 +46,7 @@ type PostCreation struct {
 	Description  string   `json:"description"`
 	AuthorID     string   `json:"authorID"`
 	ImageURL     string   `json:"imageURL"`
-	Categories   []string `json:"categories"`
+	Categories   string `json:"categories"`
 	CreateDate   string   `json:"createDate"`
 	ModifiedDate string   `json:"modifiedDate"`
 }
@@ -68,7 +68,7 @@ func (pr *PostRepository) CreatePost(post *PostCreation) error {
 		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	post.ID = ID.String()
-	_, err = pr.db.Exec("INSERT INTO post (id, title, slug, description, imageURL, authorID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err = pr.db.Exec("INSERT INTO post (id, title, slug, description, imageURL, authorID) VALUES (?, ?, ?, ?, ?, ?)",
 		post.ID, post.Title, post.Slug, post.Description, post.ImageURL, post.AuthorID)
 	return err
 }
