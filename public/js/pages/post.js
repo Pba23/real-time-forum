@@ -156,6 +156,7 @@ export default class Post extends HTMLElement {
                                 <div class="speech-bubble bg--teal text--dark m--0">
                                     <p>
                                         ${this.post.description}
+                                        
                                     </p>
                                 </div>
                             </div>
