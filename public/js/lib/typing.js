@@ -47,7 +47,7 @@
     imageURL: string,
     modifiedDate: string,
     numberOfComments: int,
-    listOfCategories: string
+    listOfCategories: []string
  }} PostItem
  */
 

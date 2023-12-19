@@ -57,7 +57,7 @@ export default class PostPreview extends HTMLElement {
                         <a href="#">${post.authorName}</a>
                     </div>
                     <div class="display--flex f-width justify--space-between">
-                        ${post.listOfCategories.split("#").reduce((tagListStr, tag) =>
+                        ${post.listOfCategories.reduce((tagListStr, tag) =>
                     tagListStr += /* html */`<a href="#/tag/${tag}">#${tag}</a>`, '')}
                     </div>
                 </div>

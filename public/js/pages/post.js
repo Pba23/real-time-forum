@@ -149,6 +149,8 @@ export default class Post extends HTMLElement {
                 </div>
                 <div class="card__body">
                     <div class="outer-wrap">
+
+                    <img src="${this.post.imageURL}" alt="">
                         <div class="wrap">
                             <div class="message active align--center justify--center">
                                 <div class="speech-bubble bg--teal text--dark m--0">
