@@ -9,9 +9,9 @@
    -    [x] Category
    -    [x] Comment
 5.  [ ] Implement websocket for chat.
-   -    [ ] Implement sending and receiving messages.
+   -    [x] Implement sending and receiving messages.
    -    [ ] Implement notifications.
-   -    [ ] Implement  user online/offline status.
+   -    [x] Implement  user online/offline status.
 6.  [x] Implement user registration and login functionality.
    -    [x] Validate and store user credentials in the database.
    -    [x] Implement login sessions using cookies with expiration dates.

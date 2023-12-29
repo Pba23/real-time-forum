@@ -59,7 +59,8 @@ export default class Chat extends HTMLElement {
         }
 
         this.submitListener = (e) => {
-            e.preventDefault();
+            if (e) e.preventDefault();
+
             if (this.messageForm?.checkValidity()) {
                 const message = {
                     text: (this.textField) ? this.textField.value : "",
@@ -77,6 +78,21 @@ export default class Chat extends HTMLElement {
                 }))
             }
         }
+
+        this.textAreaKeyDownListener = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.submitListener();
+            }
+        };
+
+        this.textAreaKeyUpListener = (e) => {
+            if (e.key === 'Enter' && e.shiftKey && this.textField) {
+                e.preventDefault();
+                // Add a new line without submitting the message
+                this.textField.value += '\n';
+            }
+        };
     }
 
     connectedCallback() {
@@ -117,6 +133,8 @@ export default class Chat extends HTMLElement {
         // @ts-ignore
         document.body.removeEventListener('user', this.userListener)
         // looks nicer when cleared
+        this.messageForm?.removeEventListener('keydown', this.textAreaKeyDownListener);
+        this.messageForm?.removeEventListener('keyup', this.textAreaKeyUpListener);
         this.innerHTML = ''
     }
 
@@ -158,6 +176,9 @@ export default class Chat extends HTMLElement {
                 </div>
             </div>
         </div>`
+
+        this.messageForm?.addEventListener('keydown', this.textAreaKeyDownListener);
+        this.messageForm?.addEventListener('keyup', this.textAreaKeyUpListener);
     }
 
     /**
