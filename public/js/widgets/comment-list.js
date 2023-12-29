@@ -23,7 +23,7 @@ export default class CommentList extends HTMLElement {
         })
 
         /**
-         * Listens to the event name/typeArg: 'comments'
+         * Listens to the event name/typeArg: 'list-comments'
          * which is returned when adding a comment
          *
          * @param {CustomEvent & {detail: import("../controllers/comment.js").CommentEventDetail}} event
@@ -52,13 +52,13 @@ export default class CommentList extends HTMLElement {
         // @ts-ignore
         document.body.addEventListener('comment', this.commentListener)
         // @ts-ignore
-        document.body.addEventListener('comments', this.commentsListener)
+        document.body.addEventListener('list-comments', this.commentsListener)
         this.postID = this.getAttribute("post-id");
 
         // @ts-ignore
         document.body.addEventListener('comment-' + this.postID, this.newComment)
         // on every connect it will attempt to get newest comments
-        this.dispatchEvent(new CustomEvent('getComments', {
+        this.dispatchEvent(new CustomEvent('get-comments', {
             detail: {
                 postID: this.postID
             },
@@ -70,7 +70,7 @@ export default class CommentList extends HTMLElement {
 
     disconnectedCallback() {
         // @ts-ignore
-        document.body.removeEventListener('comments', this.commentsListener)
+        document.body.removeEventListener('list-comments', this.commentsListener)
     }
 
     /**

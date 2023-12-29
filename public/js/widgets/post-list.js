@@ -15,7 +15,7 @@ export default class PostList extends HTMLElement {
     super()
 
     /**
-     * Listens to the event name/typeArg: 'listPosts'
+     * Listens to the event name/typeArg: 'list-posts'
      *
      * @param {CustomEvent & {detail: import("../controllers/post.js").ListPostsEventDetail}} event
      */
@@ -48,12 +48,12 @@ export default class PostList extends HTMLElement {
   connectedCallback() {
     // listen for Posts
     // @ts-ignore
-    document.body.addEventListener('listPosts', this.listPostsListener)
+    document.body.addEventListener('list-posts', this.listPostsListener)
     // @ts-ignore
     document.body.addEventListener('new-post', event => this.addNewPost(event.detail))
     // @ts-ignore
     document.body.addEventListener('post-published', this.postListener)
-    this.dispatchEvent(new CustomEvent('requestListPosts', {
+    this.dispatchEvent(new CustomEvent('request-list-posts', {
       /** @type {import("../controllers/post.js").RequestListPostsEventDetail} */
       detail: {},
       bubbles: true,
@@ -64,9 +64,9 @@ export default class PostList extends HTMLElement {
 
   disconnectedCallback() {
     // @ts-ignore
-    document.body.removeEventListener('post', this.postListener)
+    document.body.removeEventListener('get-post', this.postListener)
     // @ts-ignore
-    document.body.removeEventListener('listPosts', this.listPostsListener)
+    document.body.removeEventListener('list-posts', this.listPostsListener)
   }
 
   /**

@@ -22,11 +22,11 @@ import { Environment } from '../lib/environment.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
- * dispatches: 'user' on 'loginUser'
- * dispatches: 'user' on 'registerUser'
+ * dispatches: 'user' on 'login'
+ * dispatches: 'user' on 'sign-up'
  * dispatches: 'user' on 'updateUser'
- * dispatches: 'user' on 'getUser'
- * dispatches: 'user' (reject) on 'logoutUser'
+ * dispatches: 'user' on 'get-user'
+ * dispatches: 'user' (reject) on 'logout'
  * dispatches: 'profile' on 'getProfile'
  *
  * @export
@@ -211,16 +211,16 @@ export default class User extends HTMLElement {
     }
 
     connectedCallback() {
-        this.addEventListener('registerUser', this.registerUserListener)
-        this.addEventListener('loginUser', this.loginUserListener)
-        this.addEventListener('logoutUser', this.logoutUserListener)
-        this.addEventListener('getUser', this.getUserListener)
+        this.addEventListener('sign-up', this.registerUserListener)
+        this.addEventListener('login', this.loginUserListener)
+        this.addEventListener('logout', this.logoutUserListener)
+        this.addEventListener('get-user', this.getUserListener)
     }
 
     disconnectedCallback() {
-        this.removeEventListener('registerUser', this.registerUserListener)
-        this.removeEventListener('loginUser', this.loginUserListener)
-        this.removeEventListener('logoutUser', this.logoutUserListener)
-        this.removeEventListener('getUser', this.getUserListener)
+        this.removeEventListener('sign-up', this.registerUserListener)
+        this.removeEventListener('login', this.loginUserListener)
+        this.removeEventListener('logout', this.logoutUserListener)
+        this.removeEventListener('get-user', this.getUserListener)
     }
 }

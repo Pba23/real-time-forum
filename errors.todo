@@ -3,7 +3,7 @@
 + [ ] Refactoring handlers
   + [ ] Returning an error
   + [ ] Handling errors in the UI
-+ [ ] Refactoring controllers
++ [x] Refactoring controllers
 + [ ] Refactor widgets
 + [ ] Refactoring pages
 

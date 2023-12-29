@@ -38,8 +38,8 @@ import { Environment } from '../lib/environment.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
- * dispatches: 'comment' on 'addComment'
- * dispatches: 'comments' on 'getComments'
+ * dispatches: 'comment' on 'add-comment'
+ * dispatches: 'list-comments' on 'get-comments'
  * does nothing on 'deleteComment'
  *
  * @export
@@ -58,7 +58,7 @@ export default class Comments extends HTMLElement {
         this.abortController = null
 
         /**
-         * Listens to the event name/typeArg: 'addComment'
+         * Listens to the event name/typeArg: 'add-comment'
          *
          * @param {CustomEvent & {detail: AddCommentsEventDetail}} event
          */
@@ -92,7 +92,7 @@ export default class Comments extends HTMLElement {
         }
 
         /**
-         * Listens to the event name/typeArg: 'getComments'
+         * Listens to the event name/typeArg: 'get-comments'
          *
          * @param {CustomEvent & {detail: GetCommentsEventDetail}} event
          */
@@ -104,7 +104,7 @@ export default class Comments extends HTMLElement {
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('comments', {
+            this.dispatchEvent(new CustomEvent('list-comments', {
                 /** @type {CommentsEventDetail} */
                 detail: {
                     fetch: fetch(url, {
@@ -124,39 +124,19 @@ export default class Comments extends HTMLElement {
                 composed: true
             }))
         }
-
-        /**
-         * Listens to the event name/typeArg: 'deleteComment'
-         *
-         * @param {CustomEvent & {detail: DeleteCommentEventDetail}} event
-         */
-        this.deleteCommentListener = event => {
-            // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
-            const slug = (event.detail && event.detail.slug) || Environment.slug || ''
-            const url = `${Environment.fetchBaseUrl}/comments/${event.detail.id}`
-            fetch(url, {
-                method: 'DELETE',
-                credentials: 'include',
-                ...Environment.fetchHeaders
-            }).then(response => {
-                if (response.status >= 200 && response.status <= 299) return
-                throw new Error(response.statusText)
-                // @ts-ignore
-            })
-        }
     }
 
     connectedCallback() {
         // @ts-ignore
-        this.addEventListener('addComment', this.addCommentListener)
+        this.addEventListener('add-comment', this.addCommentListener)
         // @ts-ignore
-        this.addEventListener('getComments', this.getCommentsListener)
+        this.addEventListener('get-comments', this.getCommentsListener)
     }
 
     disconnectedCallback() {
         // @ts-ignore
-        this.removeEventListener('addComment', this.addCommentListener)
+        this.removeEventListener('add-comment', this.addCommentListener)
         // @ts-ignore
-        this.removeEventListener('getComments', this.getCommentsListener)
+        this.removeEventListener('get-comments', this.getCommentsListener)
     }
 }

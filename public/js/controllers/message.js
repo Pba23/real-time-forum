@@ -38,8 +38,8 @@ import { Environment } from '../lib/environment.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
- * dispatches: 'message' on 'addMessage'
- * dispatches: 'messages' on 'getMessages'
+ * dispatches: 'message' on 'add-message'
+ * dispatches: 'list-messages' on 'get-messages'
  * does nothing on 'deleteMessage'
  *
  * @export
@@ -58,7 +58,7 @@ export default class Messages extends HTMLElement {
         this.abortController = null
 
         /**
-         * Listens to the event name/typeArg: 'addMessage'
+         * Listens to the event name/typeArg: 'add-message'
          *
          * @param {CustomEvent & {detail: AddMessagesEventDetail}} event
          */
@@ -91,7 +91,7 @@ export default class Messages extends HTMLElement {
         }
 
         /**
-         * Listens to the event name/typeArg: 'getMessages'
+         * Listens to the event name/typeArg: 'get-messages'
          *
          * @param {CustomEvent & {detail: GetMessagesEventDetail}} event
          */
@@ -99,12 +99,12 @@ export default class Messages extends HTMLElement {
             // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
             const slug = event.detail.chatID || Environment.slug || ''
             const url = `${Environment.fetchBaseUrl}/chat/messages/${slug}`
-            console.log(url);
+
             // reset old AbortController and assign new one
             // if (this.abortController) this.abortController.abort()
             // this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('messages', {
+            this.dispatchEvent(new CustomEvent('list-messages', {
                 /** @type {MessagesEventDetail} */
                 detail: {
                     fetch: fetch(url, {
@@ -124,39 +124,19 @@ export default class Messages extends HTMLElement {
                 composed: true
             }))
         }
-
-        /**
-         * Listens to the event name/typeArg: 'deleteMessage'
-         *
-         * @param {CustomEvent & {detail: DeleteMessageEventDetail}} event
-         */
-        this.deleteMessageListener = event => {
-            // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
-            const slug = (event.detail && event.detail.slug) || Environment.slug || ''
-            const url = `${Environment.fetchBaseUrl}/messages/${event.detail.id}`
-            fetch(url, {
-                method: 'DELETE',
-                credentials: 'include',
-                ...Environment.fetchHeaders
-            }).then(response => {
-                if (response.status >= 200 && response.status <= 299) return
-                throw new Error(response.statusText)
-                // @ts-ignore
-            })
-        }
     }
 
     connectedCallback() {
         // @ts-ignore
-        this.addEventListener('addMessage', this.addMessageListener)
+        this.addEventListener('add-message', this.addMessageListener)
         // @ts-ignore
-        this.addEventListener('getMessages', this.getMessagesListener)
+        this.addEventListener('get-messages', this.getMessagesListener)
     }
 
     disconnectedCallback() {
         // @ts-ignore
-        this.removeEventListener('addMessage', this.addMessageListener)
+        this.removeEventListener('add-message', this.addMessageListener)
         // @ts-ignore
-        this.removeEventListener('getMessages', this.getMessagesListener)
+        this.removeEventListener('get-messages', this.getMessagesListener)
     }
 }

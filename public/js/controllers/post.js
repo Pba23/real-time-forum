@@ -35,10 +35,10 @@ import { Environment } from '../lib/environment.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
- * dispatches: 'post' on 'requestPost'
+ * dispatches: 'post' on 'request-post'
  * dispatches: 'post' on 'postPost'
  * reroutes to home on 'deletePost'
- * dispatches: 'listPosts' on 'requestListPosts'
+ * dispatches: 'list-posts' on 'request-list-posts'
  *
  * @export
  * @class Post
@@ -61,7 +61,6 @@ export default class Post extends HTMLElement {
 
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
-            console.log("publishPostListener");
 
             // answer with event
             this.dispatchEvent(new CustomEvent('post-published', {
@@ -91,7 +90,7 @@ export default class Post extends HTMLElement {
         }
 
         /**
-         * Listens to the event name/typeArg: 'requestPost'
+         * Listens to the event name/typeArg: 'request-post'
          *
          * @param {CustomEvent & {detail: RequestPostEventDetail}} event
          */
@@ -103,7 +102,7 @@ export default class Post extends HTMLElement {
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('post', {
+            this.dispatchEvent(new CustomEvent('get-post', {
                 /** @type {PostEventDetail} */
                 detail: {
                     slug,
@@ -125,7 +124,7 @@ export default class Post extends HTMLElement {
         }
 
         /**
-         * Listens to the event name/typeArg: 'requestListPosts'
+         * Listens to the event name/typeArg: 'request-list-posts'
          *
          * @param {CustomEvent & {detail: RequestListPostsEventDetail}} event
          */
@@ -136,7 +135,7 @@ export default class Post extends HTMLElement {
             if (this.abortControllerList) this.abortControllerList.abort()
             this.abortControllerList = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('listPosts', {
+            this.dispatchEvent(new CustomEvent('list-posts', {
                 /** @type {ListPostsEventDetail} */
                 detail: {
                     fetch: fetch(url, {
@@ -159,17 +158,19 @@ export default class Post extends HTMLElement {
 
     connectedCallback() {
         // @ts-ignore
-        this.addEventListener('publishPost', this.publishPostListener)
+        this.addEventListener('publish-post', this.publishPostListener)
         // @ts-ignore
-        this.addEventListener('requestListPosts', this.requestListPostsListener)
+        this.addEventListener('request-list-posts', this.requestListPostsListener)
         // @ts-ignore
-        this.addEventListener('requestPost', this.requestPostListener)
+        this.addEventListener('request-post', this.requestPostListener)
     }
 
     disconnectedCallback() {
         // @ts-ignore
-        this.removeEventListener('requestListPosts', this.requestListPostsListener)
+        this.removeEventListener('publish-post', this.publishPostListener)
         // @ts-ignore
-        this.removeEventListener('requestPost', this.requestPostListener)
+        this.removeEventListener('request-list-posts', this.requestListPostsListener)
+        // @ts-ignore
+        this.removeEventListener('request-post', this.requestPostListener)
     }
 }

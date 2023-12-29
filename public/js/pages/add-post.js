@@ -26,7 +26,7 @@ export default class AddPage extends HTMLElement {
         categories: this.categoriesField?.value.match(regex)?.map(tag => tag.slice(1)) || [],
       }
 
-      this.dispatchEvent(new CustomEvent('publishPost', {
+      this.dispatchEvent(new CustomEvent('publish-post', {
         detail: post,
         bubbles: true,
         cancelable: true,
@@ -41,14 +41,14 @@ export default class AddPage extends HTMLElement {
     if (!Environment.auth) {
       self.location.hash = '#/login'
     }
-    document.body.addEventListener('post', this.postListener)
+    document.body.addEventListener('get-post', this.postListener)
     this.render()
     this.postForm?.addEventListener('submit', this.publishListener)
   }
 
   disconnectedCallback() {
     this.postForm?.removeEventListener('submit', this.publishListener)
-    document.body.removeEventListener('post', this.postListener)
+    document.body.removeEventListener('get-post', this.postListener)
   }
 
   /**

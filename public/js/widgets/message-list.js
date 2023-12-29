@@ -24,7 +24,7 @@ export default class MessageList extends HTMLElement {
         })
 
         /**
-         * Listens to the event name/typeArg: 'messages'
+         * Listens to the event name/typeArg: 'list-messages'
          * which is returned when adding a message
          *
          * @param {CustomEvent & {detail: import("../controllers/message.js").MessageEventDetail}} event
@@ -52,7 +52,6 @@ export default class MessageList extends HTMLElement {
 
     scrollToEnd() {
         if (this.lastCard) {
-            console.log(this.lastCard);
             this.lastCard.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'end' });
         }
     }
@@ -64,14 +63,13 @@ export default class MessageList extends HTMLElement {
         // @ts-ignore
         document.body.addEventListener('new-message', this.newMessage)
         // @ts-ignore
-        document.body.addEventListener('messages', this.messagesListener)
+        document.body.addEventListener('list-messages', this.messagesListener)
         this.chatID = this.getAttribute("chat-id");
-        console.log(this.chatID);
         const eventName = 'message-' + this.chatID
         document.body.addEventListener(eventName, this.newMessage)
 
         // on every connect it will attempt to get newest messages
-        this.dispatchEvent(new CustomEvent('getMessages', {
+        this.dispatchEvent(new CustomEvent('get-messages', {
             detail: {
                 chatID: this.chatID
             },
@@ -83,7 +81,7 @@ export default class MessageList extends HTMLElement {
 
     disconnectedCallback() {
         // @ts-ignore
-        document.body.removeEventListener('messages', this.messagesListener)
+        document.body.removeEventListener('list-messages', this.messagesListener)
     }
 
     /**

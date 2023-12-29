@@ -61,7 +61,7 @@ export default class Post extends HTMLElement {
             e.preventDefault();
             if (this.commentForm?.checkValidity()) {
                 console.log("Listen");
-                this.dispatchEvent(new CustomEvent('addComment', {
+                this.dispatchEvent(new CustomEvent('add-comment', {
                     detail: {
                         /** @type {import("../lib/typing.js").AddComment} */
                         comment: {
@@ -90,9 +90,9 @@ export default class Post extends HTMLElement {
         // @ts-ignore
         document.body.addEventListener('comment', this.commentListener)
         // @ts-ignore
-        document.body.addEventListener('post', this.postListener)
+        document.body.addEventListener('get-post', this.postListener)
         // on every connect it will attempt to get newest posts
-        this.dispatchEvent(new CustomEvent('requestPost', {
+        this.dispatchEvent(new CustomEvent('request-post', {
             /** @type {import("../controllers/post.js").RequestPostEventDetail} */
             detail: {}, // slug gets decided at Post.js controller, could also be done by request event to router
             bubbles: true,
@@ -101,7 +101,7 @@ export default class Post extends HTMLElement {
         }))
         // @ts-ignore
         document.body.addEventListener('user', this.userListener)
-        this.dispatchEvent(new CustomEvent('getUser', {
+        this.dispatchEvent(new CustomEvent('get-user', {
             bubbles: true,
             cancelable: true,
             composed: true
@@ -112,7 +112,7 @@ export default class Post extends HTMLElement {
 
     disconnectedCallback() {
         // @ts-ignore
-        document.body.removeEventListener('post', this.postListener)
+        document.body.removeEventListener('get-post', this.postListener)
         // @ts-ignore
         document.body.removeEventListener('user', this.userListener)
         // looks nicer when cleared

@@ -35,10 +35,10 @@ import { Environment } from '../lib/environment.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
- * dispatches: 'chat' on 'requestChat'
+ * dispatches: 'chat' on 'request-chat-infos'
  * dispatches: 'chat' on 'chatChat'
  * reroutes to home on 'deleteChat'
- * dispatches: 'listChats' on 'requestListChats'
+ * dispatches: 'list-chatting-users' on 'request-chatting-users'
  *
  * @export
  * @class Chat
@@ -57,7 +57,7 @@ export default class Chat extends HTMLElement {
         this.abortControllerList = null
 
         /**
-         * Listens to the event name/typeArg: 'requestChat'
+         * Listens to the event name/typeArg: 'request-chat-infos'
          *
          * @param {CustomEvent & {detail: RequestChatEventDetail}} event
          */
@@ -65,7 +65,7 @@ export default class Chat extends HTMLElement {
             // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
             const slug = event.detail.slug || Environment.slug || ''
             const url = `${Environment.fetchBaseUrl}/chat/user/${slug}`
-            console.log(url);
+
             // reset old AbortController and assign new one
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
@@ -93,7 +93,7 @@ export default class Chat extends HTMLElement {
         }
 
         /**
-         * Listens to the event name/typeArg: 'requestListChats'
+         * Listens to the event name/typeArg: 'request-chatting-users'
          *
          * @param {CustomEvent & {detail: RequestListChatsEventDetail}} event
          */
@@ -104,7 +104,7 @@ export default class Chat extends HTMLElement {
             if (this.abortControllerList) this.abortControllerList.abort()
             this.abortControllerList = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('listChats', {
+            this.dispatchEvent(new CustomEvent('list-chatting-users', {
                 /** @type {ListChatsEventDetail} */
                 detail: {
                     fetch: fetch(url, {
@@ -128,17 +128,15 @@ export default class Chat extends HTMLElement {
 
     connectedCallback() {
         // @ts-ignore
-        this.addEventListener('publishChat', this.publishChatListener)
+        this.addEventListener('request-chatting-users', this.requestListChatsListener)
         // @ts-ignore
-        this.addEventListener('requestListChats', this.requestListChatsListener)
-        // @ts-ignore
-        this.addEventListener('requestChat', this.requestChatListener)
+        this.addEventListener('request-chat-infos', this.requestChatListener)
     }
 
     disconnectedCallback() {
         // @ts-ignore
-        this.removeEventListener('requestListChats', this.requestListChatsListener)
+        this.removeEventListener('request-chatting-users', this.requestListChatsListener)
         // @ts-ignore
-        this.removeEventListener('requestChat', this.requestChatListener)
+        this.removeEventListener('request-chat-infos', this.requestChatListener)
     }
 }

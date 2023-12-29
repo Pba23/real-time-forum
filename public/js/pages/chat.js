@@ -67,7 +67,7 @@ export default class Chat extends HTMLElement {
                     authorID: Environment.auth ? this.user.id : '',
                     receiverID: this.chat.talker.id
                 }
-                this.dispatchEvent(new CustomEvent('addMessage', {
+                this.dispatchEvent(new CustomEvent('add-message', {
                     detail: {
                         /** @type {import("../lib/typing.js").AddMessage} */
                         message
@@ -109,7 +109,7 @@ export default class Chat extends HTMLElement {
         // @ts-ignore
         document.body.addEventListener('chat-load', this.chatListener)
         // on every connect it will attempt to get newest chats
-        this.dispatchEvent(new CustomEvent('requestChat', {
+        this.dispatchEvent(new CustomEvent('request-chat-infos', {
             /** @type {import("../controllers/chat.js").RequestChatEventDetail} */
             detail: {}, // slug gets decided at Chat.js controller, could also be done by request event to router
             bubbles: true,
@@ -118,7 +118,7 @@ export default class Chat extends HTMLElement {
         }))
         // @ts-ignore
         document.body.addEventListener('user', this.userListener)
-        this.dispatchEvent(new CustomEvent('getUser', {
+        this.dispatchEvent(new CustomEvent('get-user', {
             bubbles: true,
             cancelable: true,
             composed: true

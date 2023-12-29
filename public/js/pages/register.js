@@ -19,7 +19,7 @@ export default class Register extends HTMLElement {
             if (this.registerForm?.checkValidity()) {
                 e.preventDefault();
 
-                this.dispatchEvent(new CustomEvent('registerUser', {
+                this.dispatchEvent(new CustomEvent('sign-up', {
                     detail: {
                         /** @type {import("../lib/typing.js").Registration} */
                         user: {

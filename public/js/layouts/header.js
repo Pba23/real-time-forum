@@ -31,11 +31,11 @@ export default class Header extends HTMLElement {
         }
 
         /**
-         * Logs out the user and dispatches a 'logoutUser' event.
+         * Logs out the user and dispatches a 'logout' event.
          *
          */
         this.logoutUserListener = () => {
-            this.dispatchEvent(new CustomEvent('logoutUser', {
+            this.dispatchEvent(new CustomEvent('logout', {
                 bubbles: true,
                 cancelable: true,
                 composed: true
@@ -49,7 +49,7 @@ export default class Header extends HTMLElement {
 
         // @ts-ignore
         document.body.addEventListener('user', this.userListener)
-        this.dispatchEvent(new CustomEvent('getUser', {
+        this.dispatchEvent(new CustomEvent('get-user', {
             bubbles: true,
             cancelable: true,
             composed: true

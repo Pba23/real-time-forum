@@ -15,7 +15,7 @@ export default class ChatList extends HTMLElement {
     super()
 
     /**
-     * Listens to the event name/typeArg: 'listChats'
+     * Listens to the event name/typeArg: 'list-chatting-users'
      *
      * @param {CustomEvent & {detail: import("../controllers/chat.js").ListChatsEventDetail}} event
      */
@@ -42,10 +42,10 @@ export default class ChatList extends HTMLElement {
   connectedCallback() {
     // listen for Chats
     // @ts-ignore
-    document.body.addEventListener('listChats', this.listChatsListener)
+    document.body.addEventListener('list-chatting-users', this.listChatsListener)
     // @ts-ignore
     document.body.addEventListener('chat', this.chatListener)
-    this.dispatchEvent(new CustomEvent('requestListChats', {
+    this.dispatchEvent(new CustomEvent('request-chatting-users', {
       /** @type {import("../controllers/chat.js").RequestListChatsEventDetail} */
       detail: {},
       bubbles: true,
@@ -58,7 +58,7 @@ export default class ChatList extends HTMLElement {
     // @ts-ignore
     document.body.removeEventListener('chat', this.chatListener)
     // @ts-ignore
-    document.body.removeEventListener('listChats', this.listChatsListener)
+    document.body.removeEventListener('list-chatting-users', this.listChatsListener)
   }
 
   /**

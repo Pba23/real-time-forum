@@ -18,7 +18,7 @@ export default class Login extends HTMLElement {
       if (this.loginForm?.checkValidity()) {
         e.preventDefault();
 
-        this.dispatchEvent(new CustomEvent('loginUser', {
+        this.dispatchEvent(new CustomEvent('login', {
           detail: {
             /** @type {import("../lib/typing.js").Login} */
             user: {
