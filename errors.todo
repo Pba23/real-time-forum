@@ -11,6 +11,7 @@
 + [ ] Add avatar URL
 + [ ] Add a post image
 + [ ] Separate incoming and outgoing messages
++ [ ] Update side bar last message when a new message is sent
 + [x] Enter key to send message
 + [x] Scroll down when new message
   + [ ] Scroll completely

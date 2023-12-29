@@ -128,19 +128,26 @@ func (ur *UserRepository) GetUserByNickname(nickname string) (*User, error) {
 func (ur *UserRepository) SelectAllUsers(userID string) ([]UserItem, error) {
 	var users []UserItem
 	rows, err := ur.db.Query(`
+	SELECT
+		u.ID,
+		u.nickname,
+		COALESCE(m.content, '') AS last_message,
+		COALESCE(m.createDate, '') AS last_message_time
+	FROM user u
+	LEFT JOIN (
 		SELECT
-			u.ID, u.nickname,
-			COALESCE(m.content, '') AS last_message,
-			COALESCE(m.createDate, '') AS last_message_time
-		FROM user u
-		LEFT JOIN (
-			SELECT senderID, receiverID, content, createDate
-			FROM message
-			WHERE (senderID = ? OR receiverID = ?)
-			ORDER BY createDate DESC
-			LIMIT 1
-		) m ON u.ID = m.senderID OR u.ID = m.receiverID
-	`, userID, userID)
+			CASE
+				WHEN senderID = ? THEN receiverID
+				WHEN receiverID = ? THEN senderID
+			END AS otherUserID,
+			MAX(createDate) AS maxCreateDate
+		FROM message
+		WHERE senderID = ? OR receiverID = ?
+		GROUP BY otherUserID
+	) latestMessages ON u.ID = latestMessages.otherUserID
+	LEFT JOIN message m ON (latestMessages.otherUserID = m.senderID OR latestMessages.otherUserID = m.receiverID) AND latestMessages.maxCreateDate = m.createDate
+
+	`, userID, userID, userID, userID)
 	if err != nil {
 		log.Fatal(err)
 	}
