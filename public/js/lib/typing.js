@@ -47,7 +47,7 @@
     imageURL: string,
     createDate: string,
     numberOfComments: int,
-    listOfCategories: string[]
+    listOfCategories: []string
  }} PostItem
  */
 
@@ -75,7 +75,7 @@
     imageURL: string,
     createDate: string,
     numberOfComments: int,
-    listOfCategories: string[]
+    listOfCategories: string
  }} EntirePost
  */
 

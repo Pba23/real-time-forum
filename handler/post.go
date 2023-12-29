@@ -27,7 +27,9 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 				return
 			}
 			postInfo.Slug = lib.Slugify(postInfo.Title)
-			categories := postInfo.Categories
+			listOfCategories := postInfo.Categories
+			categories := strings.Split(listOfCategories, "#")
+			
 			postInfo.AuthorID = userInSession.ID
 			if err := models.PostRepo.CreatePost(&postInfo); err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error creating post : "+err.Error())
@@ -97,7 +99,7 @@ func GetAllPosts(res http.ResponseWriter, req *http.Request) {
 }
 
 func validatePostInput(post *models.PostCreation) error {
-	if post.Title == "" || post.Description == "" || len(post.Categories) == 0 {
+	if post.Title == "" || post.Description == "" || (post.Categories) == "" {
 		return ErrMissingRequiredFields
 	}
 	post.Title = html.EscapeString(post.Title)

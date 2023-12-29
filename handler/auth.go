@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"html"
 	"log"
 	"net/http"
@@ -15,6 +16,7 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/sign-up", http.MethodPost) {
 		var user models.User
 		if err := json.NewDecoder(req.Body).Decode(&user); err != nil {
+			fmt.Print(err)
 			lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
 			return
 		}
