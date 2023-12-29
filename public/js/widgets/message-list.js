@@ -39,13 +39,21 @@ export default class MessageList extends HTMLElement {
         }
     }
 
-    addNewMessage(message) {
-        if (this.firstCard) {
+    addNewMessage(message, scroll = true) {
+        if (this.lastCard) {
             // @ts-ignore
-            this.insertBefore(this.createMessage(message, false), this.firstCard)
+            this.appendChild(this.createMessage(message, false))
+            if (scroll) this.scrollToEnd()
         } else {
             // @ts-ignore
             this.innerHTML = this.createMessage(message)
+        }
+    }
+
+    scrollToEnd() {
+        if (this.lastCard) {
+            console.log(this.lastCard);
+            this.lastCard.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'end' });
         }
     }
 
@@ -96,13 +104,13 @@ export default class MessageList extends HTMLElement {
     render(fetchMessages) {
         this.innerHTML = ""
         fetchMessages && fetchMessages.then((data) => {
-            console.log(data);
             const messages = data.messages
             if (!messages) {
-                this.innerHTML = /* html */`<div class="card__body">Start the discussion</div>`
+                this.innerHTML = /* html */`Start the discussion`
                 return
             }
-            this.innerHTML += messages.reduce((messagesStr, message) => (messagesStr += this.createMessage(message)), '')
+
+            messages.forEach((message, i, arr) => setTimeout(() => this.addNewMessage(message, i === arr.length - 1), i * 50), '')
         })
     }
 
@@ -116,7 +124,7 @@ export default class MessageList extends HTMLElement {
         const card = /* html */`
         <div class="message active">
             <div class="profile-picture">
-                <img src="${message.senderAvatar? '' : `https://ui-avatars.com/api/?name=John+Doe&background=random`}" alt="Profile Picture">
+                <img src="${message.senderAvatar ? '' : `https://ui-avatars.com/api/?name=John+Doe&background=random`}" alt="Profile Picture">
             </div>
             <div class="speech-bubble">
                 <p>${message.text}</p>
@@ -135,7 +143,7 @@ export default class MessageList extends HTMLElement {
    * @readonly
    * @return {HTMLElement | null}
    */
-    get firstCard() {
-        return this.querySelector('.message:nth-child(1)')
+    get lastCard() {
+        return this.querySelector('.message:last-child')
     }
 }

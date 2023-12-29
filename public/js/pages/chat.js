@@ -159,13 +159,13 @@ export default class Chat extends HTMLElement {
         if (user !== undefined) this.user = user
         if (!this.chat) return
 
-        this.innerHTML = /* html */`<div class="l-grid__item">
+        this.innerHTML = /* html */`
+        <div class="l-grid__item">
             <div class="card f-height">
                 <div class="card__header justify--space-between">
                     <h3>Talk with ${this.chat.talker ? this.chat.talker.nickname : `...`}</h3>
                 </div>
                 <div class="card__body">
-                    <div class="outer-wrap">
                     <message-list chat-id="${this.chat.talker.id}"></message-list>
                 </div>
                 <div class="card__footer">

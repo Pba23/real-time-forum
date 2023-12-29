@@ -12,7 +12,8 @@
 + [ ] Add a post image
 + [ ] Separate incoming and outgoing messages
 + [x] Enter key to send message
-+ [ ] Scroll down when new message
++ [x] Scroll down when new message
+  + [ ] Scroll completely
 + [ ] Show message ago time
 + [ ] Handle message loading while scrolling
 + [ ] Add notifications (unread messages)
