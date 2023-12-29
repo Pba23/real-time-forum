@@ -26,6 +26,7 @@ type UserSignIn struct {
 	Password    string
 }
 
+// TODO: Use the same struct for auth user and user item
 type AuthUser struct {
 	ID         string `json:"id"`
 	Nickname   string `json:"nickname"`
@@ -192,19 +193,6 @@ func (ur *UserRepository) SelectAllUsersOfPost(postID string) ([]User, error) {
 		user = append(user, tab)
 	}
 	return user, nil
-}
-
-// Update a user in the database
-func (ur *UserRepository) UpdateUser(user *User) error {
-	_, err := ur.db.Exec("UPDATE user SET nickname = ?, firstname = ?,lastname = ?,age = ?,gender = ?, email = ?, password = ?, avatarURL = ? WHERE id = ?",
-		user.Nickname, user.Firstname, user.Lastname, user.Age, user.Gender, user.Email, user.Password, user.AvatarURL, user.ID)
-	return err
-}
-
-// Delete a user from the database
-func (ur *UserRepository) DeleteUser(userID string) error {
-	_, err := ur.db.Exec("DELETE FROM user WHERE id = ?", userID)
-	return err
 }
 
 // Check if user exists

@@ -20,7 +20,7 @@ export default class MessageList extends HTMLElement {
      */
         this.messageListener = event => event.detail.fetch.then((data) => {
             const message = data.message
-            // this.addNewMessage(message)
+            this.addNewMessage(message)
         })
 
         /**

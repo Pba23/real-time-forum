@@ -45,7 +45,7 @@ func (pcr *PostCategoryRepository) CreatePostCategory(categoryID, postID string)
 // Get categories of a post from the database
 func (pcr *PostCategoryRepository) GetCategoriesOfPost(postID string) ([]Category, error) {
 	rows, err := pcr.db.Query(`
-		SELECT c.id, c.name, c.createDate, c.modifiedDate
+		SELECT c.id, c.name, c.createDate
 		FROM category c
 		INNER JOIN post_category pc ON c.id = pc.categoryID
 		WHERE pc.postID = ?
@@ -58,7 +58,7 @@ func (pcr *PostCategoryRepository) GetCategoriesOfPost(postID string) ([]Categor
 	var categories []Category
 	for rows.Next() {
 		var category Category
-		err := rows.Scan(&category.ID, &category.Name, &category.CreateDate, &category.ModifiedDate)
+		err := rows.Scan(&category.ID, &category.Name, &category.CreateDate)
 		if err != nil {
 			return nil, err
 		}
@@ -76,7 +76,7 @@ func (pcr *PostCategoryRepository) GetPostsOfCategory(categoryName string) ([]Po
 			p.slug AS Slug,
 			u.nickname AS AuthorName,
 			p.imageURL AS ImageURL,
-			p.modifiedDate AS LastEditionDate,
+			p.createdDate AS LastEditionDate,
 			COALESCE(cmt.comment_count, 0) AS NumberOfComments,
 			COALESCE(cmt.commentators, '') AS ListOfCommentator
 		FROM
@@ -99,9 +99,9 @@ func (pcr *PostCategoryRepository) GetPostsOfCategory(categoryName string) ([]Po
 		WHERE
 			cat.name = ?
 		GROUP BY
-			p.id, p.title, p.slug, u.avatarURL, p.imageURL, p.modifiedDate, comment_count
+			p.id, p.title, p.slug, u.avatarURL, p.imageURL, p.createDate, comment_count
 		ORDER BY
-			p.modifiedDate DESC
+			p.createDate DESC
 	`, categoryName)
 	if err != nil {
 		log.Println("❌ SQL ERROR ", err.Error())
@@ -114,16 +114,16 @@ func (pcr *PostCategoryRepository) GetPostsOfCategory(categoryName string) ([]Po
 		_listOfCommentator := ""
 		var post PostItem
 		err := rows.Scan(
-			&post.ID, &post.Title, &post.Slug, &post.AuthorName, &post.ImageURL, &post.ModifiedDate, &post.NumberOfComments, &_listOfCommentator,
+			&post.ID, &post.Title, &post.Slug, &post.AuthorName, &post.CreateDate, &post.NumberOfComments, &_listOfCommentator,
 		)
 		if err != nil {
 			log.Println("❌ SQL ERROR ", err.Error())
 			return nil, err
 		}
 		post.ListOfCategories = strings.Split(_listOfCommentator, ",")
-		post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "T", " ")
-		post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "Z", "")
-		post.ModifiedDate = lib.TimeSinceCreation(post.ModifiedDate)
+		post.CreateDate = strings.ReplaceAll(post.CreateDate, "T", " ")
+		post.CreateDate = strings.ReplaceAll(post.CreateDate, "Z", "")
+		post.CreateDate = lib.TimeSinceCreation(post.CreateDate)
 		posts = append(posts, post)
 	}
 

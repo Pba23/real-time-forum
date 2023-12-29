@@ -11,27 +11,20 @@ import (
 )
 
 type Comment struct {
-	ID           string `json:"id"`
-	Text         string `json:"text"`
-	AuthorID     string `json:"authorID"`
-	PostID       string `json:"postID"`
-	ParentID     string `json:"parentID"`
-	ModifiedDate string `json:"modifiedDate"`
-	CreateDate   string `json:"createDate"`
+	ID         string `json:"id"`
+	Text       string `json:"text"`
+	AuthorID   string `json:"authorID"`
+	PostID     string `json:"postID"`
+	CreateDate string `json:"createDate"`
 }
 
 type CommentItem struct {
-	ID                 string `json:"id"`
-	Index              int    `json:"index"`
-	Depth              string `json:"depth"`
-	Text               string `json:"text"`
-	AuthorID           string `json:"authorID"`
-	AuthorName         string `json:"authorName"`
-	AuthorAvatar       string `json:"authorAvatar"`
-	ParentID           string `json:"parentID"`
-	LastModifiedDate   string `json:"lastModifiedDate"`
-	NbrLikesComment    int    `json:"nbrLikesComment"`
-	NbrDislikesComment int    `json:"nbrDislikesComment"`
+	ID             string `json:"id"`
+	Text           string `json:"text"`
+	AuthorID       string `json:"authorID"`
+	AuthorName     string `json:"authorName"`
+	AuthorAvatar   string `json:"authorAvatar"`
+	LastCreateDate string `json:"lastCreateDate"`
 }
 
 type CommentRepository struct {
@@ -51,31 +44,23 @@ func (cr *CommentRepository) CreateComment(comment *Comment) error {
 		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	comment.ID = ID.String()
-	_, err = cr.db.Exec("INSERT INTO comment (id, text, authorID, postID, parentID) VALUES (?, ?, ?, ?, ?)",
-		comment.ID, comment.Text, comment.AuthorID, comment.PostID, comment.ParentID)
+	_, err = cr.db.Exec("INSERT INTO comment (id, text, authorID, postID) VALUES (?, ?, ?, ?)",
+		comment.ID, comment.Text, comment.AuthorID, comment.PostID)
 	return err
 }
 
 // Get a comment by ID from the database
 func (cr *CommentRepository) GetCommentByID(id string) (CommentItem, error) {
 	var comment CommentItem
-	row := cr.db.QueryRow("SELECT c.id, c.text, c.authorID, c.parentID, c.modifiedDate, u.nickName, u.avatarURL FROM comment c LEFT JOIN user u ON c.authorID = u.ID WHERE c.id = ?", id)
+	row := cr.db.QueryRow("SELECT c.id, c.text, c.authorID, c.createDate, u.nickName, u.avatarURL FROM comment c LEFT JOIN user u ON c.authorID = u.ID WHERE c.id = ?", id)
 
-	err := row.Scan(&comment.ID, &comment.Text, &comment.AuthorID, &comment.ParentID, &comment.LastModifiedDate, &comment.AuthorName, &comment.AuthorAvatar)
+	err := row.Scan(&comment.ID, &comment.Text, &comment.AuthorID, &comment.LastCreateDate, &comment.AuthorName, &comment.AuthorAvatar)
 	if err != nil {
 		return comment, err
 	}
-	comment.LastModifiedDate = strings.ReplaceAll(comment.LastModifiedDate, "T", " ")
-	comment.LastModifiedDate = strings.ReplaceAll(comment.LastModifiedDate, "Z", "")
-	comment.LastModifiedDate = lib.TimeSinceCreation(comment.LastModifiedDate)
-	comment.NbrLikesComment, err = CommentRateRepo.GetLikesByComment(comment.ID)
-	if err != nil {
-		return comment, err
-	}
-	comment.NbrDislikesComment, err = CommentRateRepo.GetDislikesByComment(comment.ID)
-	if err != nil {
-		return comment, err
-	}
+	comment.LastCreateDate = strings.ReplaceAll(comment.LastCreateDate, "T", " ")
+	comment.LastCreateDate = strings.ReplaceAll(comment.LastCreateDate, "Z", "")
+	comment.LastCreateDate = lib.TimeSinceCreation(comment.LastCreateDate)
 
 	return comment, nil
 }
@@ -83,7 +68,7 @@ func (cr *CommentRepository) GetCommentByID(id string) (CommentItem, error) {
 func (cr *CommentRepository) GetCommentsOfPost(postID string) ([]*CommentItem, error) {
 	var comments []*CommentItem
 
-	rows, err := cr.db.Query("SELECT c.id, c.text, c.authorID, c.parentID, c.modifiedDate, u.nickName, u.avatarURL FROM comment c LEFT JOIN user u ON c.authorID = u.ID WHERE c.PostID = ? ORDER BY modifiedDate DESC", postID)
+	rows, err := cr.db.Query("SELECT c.id, c.text, c.authorID, c.createDate, u.nickName, u.avatarURL FROM comment c LEFT JOIN user u ON c.authorID = u.ID WHERE c.PostID = ? ORDER BY createDate DESC", postID)
 	if err != nil {
 		return nil, err
 	}
@@ -91,21 +76,13 @@ func (cr *CommentRepository) GetCommentsOfPost(postID string) ([]*CommentItem, e
 
 	for rows.Next() {
 		var comment CommentItem
-		err := rows.Scan(&comment.ID, &comment.Text, &comment.AuthorID, &comment.ParentID, &comment.LastModifiedDate, &comment.AuthorName, &comment.AuthorAvatar)
+		err := rows.Scan(&comment.ID, &comment.Text, &comment.AuthorID, &comment.LastCreateDate, &comment.AuthorName, &comment.AuthorAvatar)
 		if err != nil {
 			return nil, err
 		}
-		comment.LastModifiedDate = strings.ReplaceAll(comment.LastModifiedDate, "T", " ")
-		comment.LastModifiedDate = strings.ReplaceAll(comment.LastModifiedDate, "Z", "")
-		comment.LastModifiedDate = lib.TimeSinceCreation(comment.LastModifiedDate)
-		comment.NbrLikesComment, err = CommentRateRepo.GetLikesByComment(comment.ID)
-		if err != nil {
-			return nil, err
-		}
-		comment.NbrDislikesComment, err = CommentRateRepo.GetDislikesByComment(comment.ID)
-		if err != nil {
-			return nil, err
-		}
+		comment.LastCreateDate = strings.ReplaceAll(comment.LastCreateDate, "T", " ")
+		comment.LastCreateDate = strings.ReplaceAll(comment.LastCreateDate, "Z", "")
+		comment.LastCreateDate = lib.TimeSinceCreation(comment.LastCreateDate)
 		comments = append(comments, &comment)
 	}
 
@@ -114,17 +91,4 @@ func (cr *CommentRepository) GetCommentsOfPost(postID string) ([]*CommentItem, e
 	}
 
 	return comments, nil
-}
-
-// Update a comment in the database
-func (cr *CommentRepository) UpdateComment(comment *Comment) error {
-	_, err := cr.db.Exec("UPDATE comment SET text = ?, authorID = ?, postID = ?, parentID = ?, createDate = ?, modifiedDate = ? WHERE id = ?",
-		comment.Text, comment.AuthorID, comment.PostID, comment.ParentID, comment.CreateDate, comment.ModifiedDate, comment.ID)
-	return err
-}
-
-// Delete a comment from the database
-func (cr *CommentRepository) DeleteComment(commentID string) error {
-	_, err := cr.db.Exec("DELETE FROM comment WHERE id = ?", commentID)
-	return err
 }

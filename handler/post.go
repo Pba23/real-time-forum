@@ -62,98 +62,6 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func EditPost(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/edit-post/*", http.MethodPost) {
-		isLogin := models.ValidSession(req)
-		path := req.URL.Path
-		pathPart := strings.Split(path, "/")
-		if len(pathPart) == 3 && pathPart[1] == "edit-post" && pathPart[2] != "" {
-			postID := pathPart[2]
-			userInSession := models.GetUserFromSession(req)
-			post, err := models.PostRepo.GetPostByID(postID)
-			if err != nil {
-				lib.HandleError(res, http.StatusNotFound, "post not found")
-				return
-			}
-			if isLogin {
-				if post.AuthorID != userInSession.ID {
-					var postInfo models.Post
-					if err := json.NewDecoder(req.Body).Decode(&postInfo); err != nil {
-						lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
-						return
-					}
-					if err := validateUpdatePostInput(postInfo); err != nil {
-						lib.HandleError(res, http.StatusBadRequest, err.Error())
-						return
-					}
-
-					if postInfo.Title != "" {
-						postInfo.Slug = lib.Slugify(postInfo.Title)
-					} else {
-						postInfo.Title = post.Title
-					}
-
-					if postInfo.Description == "" {
-						postInfo.Description = post.Description
-					}
-
-					if postInfo.ImageURL == "" {
-						postInfo.ImageURL = post.ImageURL
-					}
-
-					EditedPost := models.Post{
-						ID:          postID,
-						Title:       postInfo.Title,
-						Slug:        postInfo.Slug,
-						Description: postInfo.Description,
-						ImageURL:    postInfo.ImageURL,
-					}
-					err := models.PostRepo.UpdatePost(&EditedPost)
-					if err != nil {
-						lib.HandleError(res, http.StatusInternalServerError, "Error updating post : "+err.Error())
-					}
-					lib.SendJSONResponse(res, http.StatusOK, map[string]string{"message": "post edited successfully"})
-				} else {
-					lib.HandleError(res, http.StatusUnauthorized, "you are not the author of this post")
-				}
-			} else {
-				lib.HandleError(res, http.StatusUnauthorized, "not connected")
-			}
-		} else {
-			lib.HandleError(res, http.StatusNotFound, "post not found")
-		}
-	}
-}
-
-func DeletePost(res http.ResponseWriter, req *http.Request) {
-	if lib.ValidateRequest(req, res, "/delete-post/*", http.MethodGet) {
-		isLogin := models.ValidSession(req)
-		path := req.URL.Path
-		pathPart := strings.Split(path, "/")
-		if len(pathPart) == 3 && pathPart[1] == "edit-post" && pathPart[2] != "" {
-			postID := pathPart[2]
-			post, err := models.PostRepo.GetPostByID(postID)
-			userInSession := models.GetUserFromSession(req)
-			if err != nil {
-				lib.HandleError(res, http.StatusNotFound, "post not found")
-				return
-			}
-			if isLogin {
-				if post.AuthorID == userInSession.ID {
-					models.PostRepo.DeletePost(postID)
-					lib.SendJSONResponse(res, http.StatusOK, map[string]string{"message": "post deleted successfully"})
-				} else {
-					lib.HandleError(res, http.StatusUnauthorized, "you are not the author of this post")
-				}
-			} else {
-				lib.HandleError(res, http.StatusUnauthorized, "not connected")
-			}
-		}else {
-			lib.HandleError(res, http.StatusNotFound, "post not found")
-		}
-	}
-}
-
 func GetPost(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/post/*", http.MethodGet) {
 		path := req.URL.Path
@@ -189,18 +97,17 @@ func GetAllPosts(res http.ResponseWriter, req *http.Request) {
 }
 
 func validatePostInput(post *models.PostCreation) error {
-	if post.Title == "" || post.ImageURL == "" || post.Description == "" || len(post.Categories) == 0 {
+	if post.Title == "" || post.Description == "" || len(post.Categories) == 0 {
 		return ErrMissingRequiredFields
 	}
 	post.Title = html.EscapeString(post.Title)
 	post.Description = html.EscapeString(post.Description)
-	post.ImageURL = html.EscapeString(post.ImageURL)
 	return nil
 }
 
 func validateUpdatePostInput(post models.Post) error {
 	// Add any validation rules as needed
-	if post.Title == "" && post.ImageURL == "" && post.Description == "" {
+	if post.Title == "" && post.Description == "" {
 		return ErrMissingRequiredFields
 	}
 	return nil

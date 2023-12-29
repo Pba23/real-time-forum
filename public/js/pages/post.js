@@ -145,7 +145,7 @@ export default class Post extends HTMLElement {
             this.innerHTML = /* html */`<div class="l-grid__item">
             <div class="card f-height">
                 <div class="card__header justify--space-between">
-                    <h3>${this.post.title} at <span class="text--primary"> ${this.post.modifiedDate}</span></h3>
+                    <h3>${this.post.title} at <span class="text--primary"> ${this.post.createDate}</span></h3>
                 </div>
                 <div class="card__body">
                     <div class="outer-wrap">

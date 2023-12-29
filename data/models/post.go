@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"real-time-forum/lib"
 	"strings"
@@ -16,8 +15,7 @@ type PostItem struct {
 	Title            string   `json:"title"`
 	Slug             string   `json:"slug"`
 	AuthorName       string   `json:"authorName"`
-	ImageURL         string   `json:"imageURL"`
-	ModifiedDate     string   `json:"modifiedDate"`
+	CreateDate       string   `json:"createDate"`
 	NumberOfComments int      `json:"numberOfComments"`
 	ListOfCategories []string `json:"listOfCategories"`
 }
@@ -28,27 +26,22 @@ type CompletePost struct {
 }
 
 type Post struct {
-	ID           string `json:"id"`
-	Title        string `json:"title"`
-	Slug         string `json:"slug"`
-	Description  string `json:"description"`
-	ImageURL     string `json:"imageURL"`
-	AuthorID     string `json:"authorID"`
-	IsEdited     bool   `json:"isEdited"`
-	CreateDate   string `json:"createDate"`
-	ModifiedDate string `json:"modifiedDate"`
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Slug        string `json:"slug"`
+	Description string `json:"description"`
+	AuthorID    string `json:"authorID"`
+	CreateDate  string `json:"createDate"`
 }
 
 type PostCreation struct {
-	ID           string   `json:"id"`
-	Title        string   `json:"title"`
-	Slug         string   `json:"slug"`
-	Description  string   `json:"description"`
-	AuthorID     string   `json:"authorID"`
-	ImageURL     string   `json:"imageURL"`
-	Categories   []string `json:"categories"`
-	CreateDate   string   `json:"createDate"`
-	ModifiedDate string   `json:"modifiedDate"`
+	ID          string   `json:"id"`
+	Title       string   `json:"title"`
+	Slug        string   `json:"slug"`
+	Description string   `json:"description"`
+	AuthorID    string   `json:"authorID"`
+	Categories  []string `json:"categories"`
+	CreateDate  string   `json:"createDate"`
 }
 
 type PostRepository struct {
@@ -68,16 +61,16 @@ func (pr *PostRepository) CreatePost(post *PostCreation) error {
 		log.Printf("❌ Failed to generate UUID: %v", err)
 	}
 	post.ID = ID.String()
-	_, err = pr.db.Exec("INSERT INTO post (id, title, slug, description, imageURL, authorID) VALUES (?, ?, ?, ?, ?, ?)",
-		post.ID, post.Title, post.Slug, post.Description, post.ImageURL, post.AuthorID)
+	_, err = pr.db.Exec("INSERT INTO post (id, title, slug, description, authorID) VALUES (?, ?, ?, ?, ?)",
+		post.ID, post.Title, post.Slug, post.Description, post.AuthorID)
 	return err
 }
 
 // Get a post by ID from the database
 func (pr *PostRepository) GetPostByID(postID string) (*CompletePost, error) {
 	var post CompletePost
-	row := pr.db.QueryRow("SELECT id, title, slug, description, imageURL, authorID, isEdited, createDate, modifiedDate FROM post WHERE id = ?", postID)
-	err := row.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.ImageURL, &post.AuthorID, &post.IsEdited, &post.CreateDate, &post.ModifiedDate)
+	row := pr.db.QueryRow("SELECT id, title, slug, description,authorID, createDate FROM post WHERE id = ?", postID)
+	err := row.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.AuthorID, &post.CreateDate)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, err // Post not found
@@ -92,7 +85,7 @@ func (pr *PostRepository) GetUserOwnPosts(userId, nickName string) ([]PostItem, 
 	var numberComments []int
 
 	rows, err := pr.db.Query(`
-	SELECT p.id AS id, title, slug, description, imageURL, p.authorID AS authorID, isEdited, p.createDate AS createDate , p.modifiedDate AS modifiedDate, COUNT(*) AS numberComment FROM post p
+	SELECT p.id AS id, title, slug, description, p.authorID AS authorID, p.createDate AS createDate, COUNT(*) AS numberComment FROM post p
 	LEFT JOIN comment c ON c.postID = p.ID
 	WHERE p.authorID = ? 
 	GROUP BY p.ID ;
@@ -105,7 +98,7 @@ func (pr *PostRepository) GetUserOwnPosts(userId, nickName string) ([]PostItem, 
 	for rows.Next() {
 		var post Post
 		var nbComment int
-		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.ImageURL, &post.AuthorID, &post.IsEdited, &post.CreateDate, &post.ModifiedDate, &nbComment)
+		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.AuthorID, &post.CreateDate, &nbComment)
 		if err != nil {
 			return nil, err
 		}
@@ -119,16 +112,14 @@ func (pr *PostRepository) GetUserOwnPosts(userId, nickName string) ([]PostItem, 
 	tabPostItem := []PostItem{}
 
 	for i := 0; i < len(posts); i++ {
-		lastModificationDate := strings.ReplaceAll(posts[i].ModifiedDate, "T", " ")
+		lastModificationDate := strings.ReplaceAll(posts[i].CreateDate, "T", " ")
 		lastModificationDate = strings.ReplaceAll(lastModificationDate, "Z", "")
-		urlImage := strings.ReplaceAll(posts[i].ImageURL, "jpg", "jpg")
 		postItem := PostItem{
 			ID:               posts[i].ID,
 			Title:            posts[i].Title,
 			Slug:             posts[i].Slug,
 			AuthorName:       nickName,
-			ImageURL:         urlImage,
-			ModifiedDate:     lib.TimeSinceCreation(lastModificationDate),
+			CreateDate:       lib.TimeSinceCreation(lastModificationDate),
 			NumberOfComments: numberComments[i],
 			ListOfCategories: []string{},
 		}
@@ -142,17 +133,17 @@ func (pr *PostRepository) GetUserOwnPosts(userId, nickName string) ([]PostItem, 
 // Get a post by TITLE from the database
 func (pr *PostRepository) GetPostBySlug(slug string) (*CompletePost, error) {
 	var post CompletePost
-	row := pr.db.QueryRow("SELECT id, title, slug, description, imageURL, authorID, isEdited, createDate, modifiedDate FROM post WHERE slug = ?", slug)
-	err := row.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.ImageURL, &post.AuthorID, &post.IsEdited, &post.CreateDate, &post.ModifiedDate)
+	row := pr.db.QueryRow("SELECT id, title, slug, description, authorID, createDate FROM post WHERE slug = ?", slug)
+	err := row.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.AuthorID, &post.CreateDate)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, err // Post not found
 		}
 		return nil, err
 	}
-	post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "T", " ")
-	post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "Z", "")
-	post.ModifiedDate = lib.TimeSinceCreation(post.ModifiedDate)
+	post.CreateDate = strings.ReplaceAll(post.CreateDate, "T", " ")
+	post.CreateDate = strings.ReplaceAll(post.CreateDate, "Z", "")
+	post.CreateDate = lib.TimeSinceCreation(post.CreateDate)
 	return &post, nil
 }
 
@@ -163,8 +154,7 @@ func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
 		SELECT 
 			p.id, p.title, p.slug,
 			u.nickname AS authorName,
-			p.imageURL,
-			p.modifiedDate AS lastEditionDate,
+			p.createDate AS lastEditionDate,
 			COUNT(c.id) AS numberOfComments,
 			COALESCE(GROUP_CONCAT(c.name, ', '), '') AS listOfCategories
 		FROM post p
@@ -172,7 +162,7 @@ func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
 		LEFT JOIN post_category pc ON p.id = pc.postID
 		LEFT JOIN category c ON pc.categoryID = c.id
 		GROUP BY p.id
-		ORDER BY p.modifiedDate DESC
+		ORDER BY p.createDate DESC
 	`
 	rows, err := pr.db.Query(request)
 	if err != nil {
@@ -188,8 +178,7 @@ func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
 			&post.Title,
 			&post.Slug,
 			&post.AuthorName,
-			&post.ImageURL,
-			&post.ModifiedDate,
+			&post.CreateDate,
 			&post.NumberOfComments,
 			&ListOfCategories,
 		)
@@ -197,9 +186,9 @@ func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
 			return nil, err
 		}
 
-		post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "T", " ")
-		post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "Z", "")
-		post.ModifiedDate = lib.TimeSinceCreation(post.ModifiedDate)
+		post.CreateDate = strings.ReplaceAll(post.CreateDate, "T", " ")
+		post.CreateDate = strings.ReplaceAll(post.CreateDate, "Z", "")
+		post.CreateDate = lib.TimeSinceCreation(post.CreateDate)
 		post.ListOfCategories = strings.Split(ListOfCategories, ", ")
 		postItems = append(postItems, &post)
 	}
@@ -217,8 +206,7 @@ func (pr *PostRepository) GetPostItemByID(postID string) (PostItem, error) {
 		SELECT 
 			p.id, p.title, p.slug,
 			u.nickname AS authorName,
-			p.imageURL,
-			p.modifiedDate AS lastEditionDate,
+			p.createDate AS lastEditionDate,
 			COUNT(c.id) AS numberOfComments,
 			COALESCE(GROUP_CONCAT(c.name, ', '), '') AS listOfCategories
 		FROM post p
@@ -227,7 +215,7 @@ func (pr *PostRepository) GetPostItemByID(postID string) (PostItem, error) {
 		LEFT JOIN category c ON pc.categoryID = c.id
 		WHERE p.id = ?
 		GROUP BY p.id
-		ORDER BY p.modifiedDate DESC
+		ORDER BY p.createDate DESC
 	`
 	row := pr.db.QueryRow(request, postID)
 
@@ -238,8 +226,7 @@ func (pr *PostRepository) GetPostItemByID(postID string) (PostItem, error) {
 		&post.Title,
 		&post.Slug,
 		&post.AuthorName,
-		&post.ImageURL,
-		&post.ModifiedDate,
+		&post.CreateDate,
 		&post.NumberOfComments,
 		&ListOfCategories,
 	)
@@ -247,50 +234,12 @@ func (pr *PostRepository) GetPostItemByID(postID string) (PostItem, error) {
 		return post, err
 	}
 
-	post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "T", " ")
-	post.ModifiedDate = strings.ReplaceAll(post.ModifiedDate, "Z", "")
-	post.ModifiedDate = lib.TimeSinceCreation(post.ModifiedDate)
+	post.CreateDate = strings.ReplaceAll(post.CreateDate, "T", " ")
+	post.CreateDate = strings.ReplaceAll(post.CreateDate, "Z", "")
+	post.CreateDate = lib.TimeSinceCreation(post.CreateDate)
 	post.ListOfCategories = strings.Split(ListOfCategories, ", ")
 
 	return post, nil
-}
-
-// Get user's comment by post
-func (pr *PostRepository) GetUserReaction(userID string) (map[Post][]Comment, error) {
-	commentMap := make(map[Post][]Comment)
-	// var posts []Post
-	// var comments []Comment
-	rows, err := pr.db.Query("SELECT p.*, c.* FROM post p JOIN comment c ON p.id = c.postID JOIN user u ON c.authorID = u.id WHERE u.id = ? ORDER BY c.modifieddate DESC", userID)
-	if err != nil {
-		fmt.Println("1", err)
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var post Post
-		var comment Comment
-		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &post.Description, &post.ImageURL, &post.AuthorID, &post.IsEdited, &post.CreateDate, &post.ModifiedDate, &comment.ID, &comment.Text, &comment.AuthorID, &comment.PostID, &comment.ParentID, &comment.CreateDate, &comment.ModifiedDate)
-		if err != nil {
-			fmt.Println("2", err)
-			return nil, err
-		}
-		pos, err := UserRepo.GetUserByID(post.AuthorID)
-		if err != nil {
-			return nil, err
-		}
-		post.AuthorID = pos.Nickname
-
-		comment.ModifiedDate = lib.FormatDateDB(comment.ModifiedDate)
-		post.ModifiedDate = lib.FormatDateDB(post.ModifiedDate)
-		commentMap[post] = append(commentMap[post], comment)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return commentMap, nil
 }
 
 // Get the number of posts in the database
@@ -303,17 +252,4 @@ func (pr *PostRepository) GetNumberOfPosts() int {
 		return 0
 	}
 	return numberOfPosts
-}
-
-// Update a post in the database
-func (pr *PostRepository) UpdatePost(post *Post) error {
-	_, err := pr.db.Exec("UPDATE post SET title = ?, slug = ?, description = ?, imageURL = ?, authorID = ?, createDate = ?, modifiedDate = ? WHERE id = ?",
-		post.Title, post.Slug, post.Description, post.ImageURL, post.AuthorID, post.CreateDate, post.ModifiedDate, post.ID)
-	return err
-}
-
-// Delete a post from the databaseNbrDislike
-func (pr *PostRepository) DeletePost(postID string) error {
-	_, err := pr.db.Exec("DELETE FROM post WHERE id = ?", postID)
-	return err
 }

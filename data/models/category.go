@@ -9,10 +9,9 @@ import (
 )
 
 type Category struct {
-	ID           string
-	Name         string
-	CreateDate   string
-	ModifiedDate string
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	CreateDate   string `json:"createDate"`
 }
 
 type CategoryRepository struct {
@@ -40,8 +39,8 @@ func (cr *CategoryRepository) CreateCategory(category *Category) error {
 // Get a category by ID from the database
 func (cr *CategoryRepository) GetCategoryByID(categoryID string) (*Category, error) {
 	var category Category
-	row := cr.db.QueryRow("SELECT id, name, createDate, modifiedDate FROM category WHERE id = ?", categoryID)
-	err := row.Scan(&category.ID, &category.Name, &category.CreateDate, &category.ModifiedDate)
+	row := cr.db.QueryRow("SELECT id, name, createDate FROM category WHERE id = ?", categoryID)
+	err := row.Scan(&category.ID, &category.Name, &category.CreateDate)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Category not found
@@ -54,8 +53,8 @@ func (cr *CategoryRepository) GetCategoryByID(categoryID string) (*Category, err
 // Get a category by ID from the database
 func (cr *CategoryRepository) GetCategoryByName(name string) (*Category, error) {
 	var category Category
-	row := cr.db.QueryRow("SELECT id, name, createDate, modifiedDate FROM category WHERE name = ?", name)
-	err := row.Scan(&category.ID, &category.Name, &category.CreateDate, &category.ModifiedDate)
+	row := cr.db.QueryRow("SELECT id, name, createDate FROM category WHERE name = ?", name)
+	err := row.Scan(&category.ID, &category.Name, &category.CreateDate)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Category not found
@@ -77,7 +76,7 @@ func (pr *CategoryRepository) GetAllCategory() ([]*Category, error) {
 
 	for rows.Next() {
 		var category Category
-		err := rows.Scan(&category.ID, &category.Name, &category.CreateDate, &category.ModifiedDate)
+		err := rows.Scan(&category.ID, &category.Name, &category.CreateDate)
 		if err != nil {
 			return nil, err
 		}
@@ -88,17 +87,4 @@ func (pr *CategoryRepository) GetAllCategory() ([]*Category, error) {
 		return nil, err
 	}
 	return categories, nil
-}
-
-// Update a category in the database
-func (cr *CategoryRepository) UpdateCategory(category *Category) error {
-	_, err := cr.db.Exec("UPDATE category SET name = ?, createDate = ?, modifiedDate = ? WHERE id = ?",
-		category.Name, category.CreateDate, category.ModifiedDate, category.ID)
-	return err
-}
-
-// Delete a category from the database
-func (cr *CategoryRepository) DeleteCategory(categoryID string) error {
-	_, err := cr.db.Exec("DELETE FROM category WHERE id = ?", categoryID)
-	return err
 }

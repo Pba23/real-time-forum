@@ -45,7 +45,7 @@
     slug: string,
     authorName: string,
     imageURL: string,
-    modifiedDate: string,
+    createDate: string,
     numberOfComments: int,
     listOfCategories: string[]
  }} PostItem
@@ -73,7 +73,7 @@
     slug: string,
     authorName: string,
     imageURL: string,
-    modifiedDate: string,
+    createDate: string,
     numberOfComments: int,
     listOfCategories: string[]
  }} EntirePost
@@ -90,8 +90,7 @@
       authorID: string,
       authorName: string,
       authorAvatar: string,
-      parentID: string,
-      lastModifiedDate: string,
+      lastCreateDate: string,
       nbrLikesComment: int,
       nbrDislikesComment: int,
    }} CommentItem
@@ -107,7 +106,7 @@
       senderName: string,
       senderAvatar: string,
       receiverID: string,
-      lastModifiedDate: string,
+      lastCreateDate: string,
    }} MessageItem
 */
 /**

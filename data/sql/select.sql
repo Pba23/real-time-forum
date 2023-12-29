@@ -2,7 +2,7 @@ SELECT p.id AS ID,
     p.title AS Title,
     u.nickname AS AuthorName,
     p.imageURL AS ImageURL,
-    p.modifiedDate AS LastEditionDate,
+    p.createDate AS LastEditionDate,
     COALESCE(cmt_counts.comment_count, 0) AS NumberOfComments,
     COALESCE(cmt.commentators, '') AS ListOfCommentator
 FROM "post" p

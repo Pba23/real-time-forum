@@ -1,3 +1,13 @@
++ [x] Refactor models
+  + [x] Removing unused fields
++ [ ] Refactoring handlers
+  + [ ] Returning an error
+  + [ ] Handling errors in the UI
++ [ ] Refactoring controllers
++ [ ] Refactor widgets
++ [ ] Refactoring pages
+
++ [ ] Add filter post by category
 + [ ] Add avatar URL
 + [ ] Add a post image
 + [ ] Separate incoming and outgoing messages
@@ -14,10 +24,5 @@
 + [ ] Sidebar should always be displayed when a chat is open even if the page is refreshed
 + [ ] Implement "input" features
 + [ ] Check overflow texts
-+ [ ] Refactor models
-+ [ ] Refactoring handlers
-+ [ ] Refactoring controllers
-+ [ ] Refactor widgets
-+ [ ] Refactoring pages
 + [ ] Remove all unused log
 + [ ] Add server logs

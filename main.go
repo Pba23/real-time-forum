@@ -39,7 +39,6 @@ func main() {
 	http.Handle("/post", rateLimiter.Wrap("api", http.HandlerFunc(handler.CreatePost)))
 	http.Handle("/post/", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetPost)))
 	http.Handle("/posts", rateLimiter.Wrap("api", http.HandlerFunc(handler.GetAllPosts)))
-	http.Handle("/edit-post/", rateLimiter.Wrap("api", http.HandlerFunc(handler.EditPost)))
 
 	// Comment Handlers
 	http.Handle("/comment/", rateLimiter.Wrap("api", http.HandlerFunc(handler.CreateComment)))

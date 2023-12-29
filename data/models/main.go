@@ -8,8 +8,6 @@ import (
 )
 
 var (
-	ViewRepo         *ViewRepository
-	CommentRateRepo  *CommentRateRepository
 	UserRepo         *UserRepository
 	PostRepo         *PostRepository
 	CommentRepo      *CommentRepository
@@ -49,8 +47,6 @@ func init() {
 
 	// Set up repository instances
 	UserRepo = NewUserRepository(db)
-	CommentRateRepo = NewCommentRateRepository(db)
-	ViewRepo = NewViewRepository(db)
 	PostRepo = NewPostRepository(db)
 	CommentRepo = NewCommentRepository(db)
 	CategoryRepo = NewCategoryRepository(db)

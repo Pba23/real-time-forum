@@ -14,7 +14,6 @@ type Message struct {
 	ReceiverID   string `json:"receiverID"`
 	Content      string `json:"text"`
 	CreateDate   string `json:"createDate"`
-	ModifiedDate string `json:"modifiedDate"`
 }
 
 type MessageRepository struct {
@@ -48,10 +47,10 @@ func (rr *MessageRepository) GetDiscussionsBetweenUsers(user1ID, user2ID string)
 	var discussions []*Message
 
 	rows, err := rr.db.Query(`
-		SELECT id, senderID, receiverID, content, createDate, modifiedDate
+		SELECT id, senderID, receiverID, content, createDate
 		FROM message
 		WHERE (senderID = ? AND receiverID = ?) OR (senderID = ? AND receiverID = ?)
-		ORDER BY modifiedDate DESC
+		ORDER BY createDate DESC
 	`, user1ID, user2ID, user2ID, user1ID)
 
 	if err != nil {
@@ -63,7 +62,7 @@ func (rr *MessageRepository) GetDiscussionsBetweenUsers(user1ID, user2ID string)
 
 	for rows.Next() {
 		var message Message
-		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate, &message.ModifiedDate)
+		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate)
 		if err != nil {
 			return nil, err
 		}
@@ -79,7 +78,7 @@ func (rr *MessageRepository) GetDiscussionsBetweenUsers(user1ID, user2ID string)
 
 func (mr *MessageRepository) GetAllMessages() ([]Message, error) {
 	var messageList []Message
-	rows, err := mr.db.Query("SELECT id, senderID, receiverID, content, createDate, modifiedDate FROM message ORDER BY modifiedDate DESC")
+	rows, err := mr.db.Query("SELECT id, senderID, receiverID, content, createDate FROM message ORDER BY createDate DESC")
 
 	if err != nil {
 		log.Printf("❌ Failed to get messages from the database: %v", err)
@@ -89,7 +88,7 @@ func (mr *MessageRepository) GetAllMessages() ([]Message, error) {
 
 	for rows.Next() {
 		var message Message
-		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate, &message.ModifiedDate)
+		err := rows.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate)
 
 		if err != nil {
 			log.Printf("❌ Failed to scan message rows: %v", err)
@@ -105,8 +104,8 @@ func (mr *MessageRepository) GetAllMessages() ([]Message, error) {
 // Get a message by ID from the database
 func (rr *MessageRepository) GetMessageByID(messageID string) (*Message, error) {
 	var message Message
-	row := rr.db.QueryRow("SELECT id, senderID, receiverID, content, createDate, modifiedDate FROM message WHERE id = ?", messageID)
-	err := row.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate, &message.ModifiedDate)
+	row := rr.db.QueryRow("SELECT id, senderID, receiverID, content, createDate FROM message WHERE id = ?", messageID)
+	err := row.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Message not found
@@ -114,17 +113,4 @@ func (rr *MessageRepository) GetMessageByID(messageID string) (*Message, error) 
 		return nil, err
 	}
 	return &message, nil
-}
-
-// Update a message in the database
-func (rr *MessageRepository) UpdateMessage(message *Message) error {
-	_, err := rr.db.Exec("UPDATE message SET senderID = ?, receiverID = ?, text = ?, createDate = ?, modifiedDate = ? WHERE id = ?",
-		message.SenderID, message.ReceiverID, message.Content, message.CreateDate, message.ModifiedDate, message.ID)
-	return err
-}
-
-// Delete a message from the database
-func (rr *MessageRepository) DeleteMessage(messageID string) error {
-	_, err := rr.db.Exec("DELETE FROM message WHERE id = ?", messageID)
-	return err
 }
