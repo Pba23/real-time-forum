@@ -11,7 +11,10 @@
 class EnvironmentClass {
   constructor() {
     this._fetchBaseUrl = 'http://localhost:8085'
-
+    document.addEventListener('DOMContentLoaded', () => {
+      // Retrieve the ToastList element
+    });
+    this.toastWidget = document.querySelector('toast-list');
   }
 
   /**

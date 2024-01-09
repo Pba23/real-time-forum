@@ -32,6 +32,7 @@
 */
 
 import { Environment } from '../lib/environment.js'
+import { dispatchCustomEvent } from '../lib/utils.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
@@ -70,26 +71,11 @@ export default class Chat extends HTMLElement {
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('chat-load', {
-                /** @type {ChatEventDetail} */
-                detail: {
-                    slug,
-                    fetch: fetch(url, {
-                        signal: this.abortController.signal,
-                        credentials: "include",
-                        ...Environment.fetchHeaders
-                    }).then(response => {
-                        if (response.status >= 200 && response.status <= 299) return response.json()
-                        throw new Error(response.statusText)
-                        // @ts-ignore
-                    }).then(data => {
-                        return data
-                    })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'chat-load', url, {
+                signal: this.abortController.signal,
+                credentials: "include",
+                ...Environment.fetchHeaders
+            })
         }
 
         /**
@@ -104,25 +90,12 @@ export default class Chat extends HTMLElement {
             if (this.abortControllerList) this.abortControllerList.abort()
             this.abortControllerList = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('list-chatting-users', {
-                /** @type {ListChatsEventDetail} */
-                detail: {
-                    fetch: fetch(url, {
-                        signal: this.abortControllerList.signal,
-                        credentials: "include",
-                        ...Environment.fetchHeaders
-                    }).then(response => {
-                        if (response.status >= 200 && response.status <= 299) return response.json()
-                        throw new Error(response.statusText)
-                        // @ts-ignore
-                    }).then(data => {
-                        return data.users
-                    })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'list-chatting-users', url, {
+                signal: this.abortControllerList.signal,
+                credentials: "include",
+                ...Environment.fetchHeaders
+            }, data => data.users)
+
         }
     }
 

@@ -389,6 +389,58 @@ footer span.heart {
     }
 }
 
+/* Add these styles to your CSS file or style tag */
+
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.toast {
+    position: relative;
+    display: inline-block;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: var(--darkest);
+    border-left: 2px solid white;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transform: translateY(100%);
+    opacity: 0;
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Info Toast */
+.toast.info {
+    border-color: #3498db;
+}
+
+/* Success Toast */
+.toast.success {
+    border-color: #2ecc71;
+}
+
+/* Error Toast */
+.toast.error {
+    border-color: #e74c3c;
+}
+
+/* Warning Toast */
+.toast.warning {
+    border-color: #f1c40f;
+}
+
 .logo {
     display: inline-block;
     width: 100%;

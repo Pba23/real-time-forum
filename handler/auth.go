@@ -3,12 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"html"
-	"log"
 	"net/http"
 	"real-time-forum/data/models"
 	"real-time-forum/lib"
+
+	"github.com/mattn/go-sqlite3"
 )
 
 // SignUp handles the registration of a new user.
@@ -16,7 +16,6 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/sign-up", http.MethodPost) {
 		var user models.User
 		if err := json.NewDecoder(req.Body).Decode(&user); err != nil {
-			fmt.Print(err)
 			lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
 			return
 		}
@@ -37,8 +36,11 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 
 		// Save the user to the database
 		if err := models.UserRepo.CreateUser(&user); err != nil {
-			log.Println(err.Error())
-			lib.HandleError(res, http.StatusInternalServerError, "Error creating user")
+			if sqliteErr, ok := err.(sqlite3.Error); ok && sqliteErr.Code == sqlite3.ErrConstraint {
+				lib.HandleError(res, http.StatusConflict, "Nickname or Email already exists")
+				return
+			}
+			lib.HandleError(res, http.StatusInternalServerError, "Error while creating user")
 			return
 		}
 

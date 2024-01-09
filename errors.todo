@@ -1,8 +1,8 @@
 + [x] Refactor models
   + [x] Removing unused fields
-+ [ ] Refactoring handlers
-  + [ ] Returning an error
-  + [ ] Handling errors in the UI
++ [x] Refactoring handlers
+  + [x] Returning an error
+  + [x] Handling errors in the UI
 + [x] Refactoring controllers
 + [ ] Refactor widgets
 + [ ] Refactoring pages

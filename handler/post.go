@@ -106,11 +106,3 @@ func validatePostInput(post *models.PostCreation) error {
 	post.Description = html.EscapeString(post.Description)
 	return nil
 }
-
-func validateUpdatePostInput(post models.Post) error {
-	// Add any validation rules as needed
-	if post.Title == "" && post.Description == "" {
-		return ErrMissingRequiredFields
-	}
-	return nil
-}

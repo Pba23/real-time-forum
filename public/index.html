@@ -25,6 +25,7 @@
                                 <l-router></l-router>
                             </main>
                             <l-footer></l-footer>
+                            <toast-list></toast-list>
                         </c-post>
                     </c-comment>
                 </c-chat>
@@ -39,6 +40,7 @@
             import('/js/layouts/header.js').then(module => ['l-header', module.default]),
             import('/js/layouts/footer.js').then(module => ['l-footer', module.default]),
             import('/js/layouts/aside.js').then(module => ['l-aside', module.default]),
+            import('/js/widgets/toast-list.js').then(module => ['toast-list', module.default]),
             // Router
             import('/js/lib/router.js').then(module => ['l-router', module.default]),
             // Controllers

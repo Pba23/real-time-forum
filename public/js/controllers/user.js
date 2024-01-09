@@ -19,6 +19,7 @@
  */
 
 import { Environment } from '../lib/environment.js'
+import { dispatchCustomEvent } from '../lib/utils.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
@@ -51,40 +52,28 @@ export default class User extends HTMLElement {
             this.abortController = new AbortController()
 
             const url = `${Environment.fetchBaseUrl}/sign-up`
+            const finishCallback = data => {
+                if (data.errors) throw data.errors
+                if (data.user) {
+                    this.user = data.user
+                    Environment.auth = data.user;
+                    document.dispatchEvent(new CustomEvent('ok-login', {
+                        detail: {},
+                        bubbles: true,
+                        cancelable: true,
+                        composed: true
+                    }))
+                }
+                return data.user
+            }
             // answer with event
-            this.dispatchEvent(new CustomEvent('user', {
-                /** @type {UserEventDetail} */
-                detail: {
-                    fetch: fetch(url,
-                        {
-                            method: 'POST',
-                            ...Environment.fetchHeaders,
-                            body: JSON.stringify(event.detail.user),
-                            signal: this.abortController.signal
-                        })
-                        .then(response => {
-                            if (response.status >= 200 && response.status <= 299) return response.json()
-                            throw new Error(response.statusText)
-                        })
-                        .then(data => {
-                            if (data.errors) throw data.errors
-                            if (data.user) {
-                                this.user = data.user
-                                Environment.auth = data.user;
-                                this.dispatchEvent(new CustomEvent('ok-login', {
-                                    detail: {},
-                                    bubbles: true,
-                                    cancelable: true,
-                                    composed: true
-                                }))
-                            }
-                            return data.user
-                        })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'user', url,
+                {
+                    method: 'POST',
+                    ...Environment.fetchHeaders,
+                    body: JSON.stringify(event.detail.user),
+                    signal: this.abortController.signal
+                }, finishCallback)
         }
 
         this.loginUserListener = event => {
@@ -94,40 +83,28 @@ export default class User extends HTMLElement {
             this.abortController = new AbortController()
 
             const url = `${Environment.fetchBaseUrl}/sign-in`
+            const finishCallback = data => {
+                if (data.errors) throw data.errors
+                if (data.user) {
+                    this.user = data.user
+                    Environment.auth = data.user;
+                    document.dispatchEvent(new CustomEvent('ok-login', {
+                        detail: {},
+                        bubbles: true,
+                        cancelable: true,
+                        composed: true
+                    }))
+                }
+                return data.user
+            }
             // answer with event
-            this.dispatchEvent(new CustomEvent('user', {
-                /** @type {UserEventDetail} */
-                detail: {
-                    fetch: fetch(url,
-                        {
-                            method: 'POST',
-                            ...Environment.fetchHeaders,
-                            body: JSON.stringify(event.detail.user),
-                            signal: this.abortController.signal
-                        })
-                        .then(response => {
-                            if (response.status >= 200 && response.status <= 299) return response.json()
-                            throw new Error(response.statusText)
-                        })
-                        .then(data => {
-                            if (data.errors) throw data.errors
-                            if (data.user) {
-                                this.user = data.user
-                                Environment.auth = data.user;
-                                this.dispatchEvent(new CustomEvent('ok-login', {
-                                    detail: {},
-                                    bubbles: true,
-                                    cancelable: true,
-                                    composed: true
-                                }))
-                            }
-                            return data.user
-                        })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'user', url,
+                {
+                    method: 'POST',
+                    ...Environment.fetchHeaders,
+                    body: JSON.stringify(event.detail.user),
+                    signal: this.abortController.signal
+                }, finishCallback)
         }
 
         this.getUserListener = event => {
@@ -135,37 +112,39 @@ export default class User extends HTMLElement {
             this.abortController = new AbortController()
 
             const url = `${Environment.fetchBaseUrl}/me`
-            // answer with event
-            this.dispatchEvent(new CustomEvent('user', {
-                /** @type {UserEventDetail} */
-                detail: {
-                    fetch: this.user ? Promise.resolve(this.user) : Environment.auth ? fetch(url,
-                        {
-                            method: 'GET',
-                            credentials: 'include',
-                            ...Environment.fetchHeaders,
-                            signal: this.abortController.signal
-                        })
-                        .then(response => {
-                            if (response.status >= 200 && response.status <= 299) return response.json()
-                            throw new Error(response.statusText)
-                        })
-                        .then(data => {
-                            if (data.user) {
-                                this.user = data.user
-                                Environment.auth = data.user
-                            }
-                            return data.user
-                        })
-                        .catch(error => {
-                            if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = null
-                            console.log(`Error@UserFetch: ${error}`)
-                        }) : Promise.reject(new Error('No token found'))
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            const finishCallback = data => {
+                if (data.user) {
+                    this.user = data.user
+                    Environment.auth = data.user
+                }
+                return data.user
+            }
+            const errorCallback = error => {
+                if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = null
+                console.log(`Error@UserFetch: ${error}`)
+            }
+
+            if (this.user) {
+                this.dispatchEvent(new CustomEvent('user', {
+                    detail: {
+                        fetch: Promise.resolve(this.user)
+                    },
+                    bubbles: true,
+                    cancelable: true,
+                    composed: true,
+                }))
+            } else if (Environment.auth) {
+                // answer with event
+                dispatchCustomEvent(this, 'user', url,
+                    {
+                        method: 'GET',
+                        credentials: 'include',
+                        ...Environment.fetchHeaders,
+                        signal: this.abortController.signal
+                    }, finishCallback, errorCallback)
+            } else {
+                Promise.reject(new Error('No token found'))
+            }
         }
 
         this.logoutUserListener = event => {
@@ -173,40 +152,27 @@ export default class User extends HTMLElement {
             this.abortController = new AbortController()
 
             const url = `${Environment.fetchBaseUrl}/logout`
+            const finishCallback = (data) => {
+                this.dispatchEvent(new CustomEvent('ok-logout', {
+                    detail: {},
+                    bubbles: true,
+                    cancelable: true,
+                    composed: true
+                }))
+                this.user = undefined
+            }
+            const errorCallback = error => {
+                if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = null
+                console.log(`Error@UserFetch: ${error}`)
+            }
             // answer with event
-            this.dispatchEvent(new CustomEvent('user', {
-                /** @type {UserEventDetail} */
-                detail: {
-                    fetch: fetch(url,
-                        {
-                            method: 'DELETE',
-                            credentials: 'include',
-                            ...Environment.fetchHeaders,
-                            signal: this.abortController.signal
-                        })
-                        .then(response => {
-                            if (response.status >= 200 && response.status <= 299) return response.json()
-                            throw new Error(response.statusText)
-                        })
-                        .then(data => {
-                            this.dispatchEvent(new CustomEvent('ok-logout', {
-                                detail: {},
-                                bubbles: true,
-                                cancelable: true,
-                                composed: true
-                            }))
-                            this.user = undefined
-                            return data.user
-                        })
-                        .catch(error => {
-                            if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = null
-                            console.log(`Error@UserFetch: ${error}`)
-                        })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'user', url,
+                {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    ...Environment.fetchHeaders,
+                    signal: this.abortController.signal
+                }, finishCallback, errorCallback)
         }
     }
 

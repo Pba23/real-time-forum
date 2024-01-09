@@ -35,6 +35,7 @@
  */
 
 import { Environment } from '../lib/environment.js'
+import { dispatchCustomEvent } from '../lib/utils.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
@@ -70,25 +71,13 @@ export default class Comments extends HTMLElement {
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('comment', {
-                /** @type {CommentEventDetail} */
-                detail: {
-                    fetch: fetch(url, {
-                        method: 'POST',
-                        body: JSON.stringify(event.detail.comment),
-                        signal: this.abortController.signal,
-                        credentials: 'include',
-                        ...Environment.fetchHeaders
-                    }).then(response => {
-                        if (response.status >= 200 && response.status <= 299) return response.json()
-                        throw new Error(response.statusText)
-                        // @ts-ignore
-                    })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'comment', url, {
+                method: 'POST',
+                body: JSON.stringify(event.detail.comment),
+                signal: this.abortController.signal,
+                credentials: 'include',
+                ...Environment.fetchHeaders
+            })
         }
 
         /**
@@ -104,25 +93,11 @@ export default class Comments extends HTMLElement {
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('list-comments', {
-                /** @type {CommentsEventDetail} */
-                detail: {
-                    fetch: fetch(url, {
-                        signal: this.abortController.signal,
-                        credentials: 'include',
-                        ...Environment.fetchHeaders
-                    }).then(response => {
-                        if (response.status >= 200 && response.status <= 299) return response.json()
-                        throw new Error(response.statusText)
-                        // @ts-ignore
-                    }).then(data => {
-                        return data
-                    })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'list-comments', url, {
+                signal: this.abortController.signal,
+                credentials: 'include',
+                ...Environment.fetchHeaders
+            })
         }
     }
 

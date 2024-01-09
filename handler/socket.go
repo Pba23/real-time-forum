@@ -37,6 +37,11 @@ type NewStatusEvent struct {
 	Online bool   `json:"online"`
 }
 
+type TokenExpiredEvent struct {
+	Type   string `json:"type"`
+	UserID string `json:"userID"`
+}
+
 type NewMessageEvent struct {
 	Type    string         `json:"type"`
 	Message models.Message `json:"message"`
@@ -112,6 +117,20 @@ func SendStatus(userID string, online bool) {
 	UserConnections.Range(func(key, value interface{}) bool {
 		if value.(string) != "" && value.(string) != userID {
 			log.Println(data.Online, value)
+			key.(*websocket.Conn).WriteMessage(websocket.TextMessage, output)
+		}
+		return true
+	})
+}
+
+func SendTokenExpired(userID string) {
+	data := TokenExpiredEvent{"token-expired", userID}
+	output, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+	}
+	UserConnections.Range(func(key, value interface{}) bool {
+		if value.(string) != "" && value.(string) != userID {
 			key.(*websocket.Conn).WriteMessage(websocket.TextMessage, output)
 		}
 		return true

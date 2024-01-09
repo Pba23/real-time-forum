@@ -32,6 +32,7 @@
 */
 
 import { Environment } from '../lib/environment.js'
+import { dispatchCustomEvent } from '../lib/utils.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
@@ -63,30 +64,18 @@ export default class Post extends HTMLElement {
             this.abortController = new AbortController()
 
             // answer with event
-            this.dispatchEvent(new CustomEvent('post-published', {
-                detail: {
-                    fetch: fetch(url,
-                        {
-                            method: 'POST',
-                            ...Environment.fetchHeaders,
-                            body: JSON.stringify(event.detail),
-                            credentials: "include",
-                            signal: this.abortController.signal
-                        })
-                        .then(response => {
-                            if (response.status >= 200 && response.status <= 299) return response.json()
-                            throw new Error(response.statusText)
-                        })
-                        .then(data => {
-                            if (data.errors) throw data.errors
-                            self.location.hash = `#/posts/${data.post.slug}`
-                            return data
-                        })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'post-published', url,
+                {
+                    method: 'POST',
+                    ...Environment.fetchHeaders,
+                    body: JSON.stringify(event.detail),
+                    credentials: "include",
+                    signal: this.abortController.signal
+                }, data => {
+                    if (data.errors) throw data.errors
+                    self.location.hash = `#/posts/${data.post.slug}`
+                    return data
+                })
         }
 
         /**
@@ -102,25 +91,10 @@ export default class Post extends HTMLElement {
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('get-post', {
-                /** @type {PostEventDetail} */
-                detail: {
-                    slug,
-                    fetch: fetch(url, {
-                        signal: this.abortController.signal,
-                        ...Environment.fetchHeaders
-                    }).then(response => {
-                        if (response.status >= 200 && response.status <= 299) return response.json()
-                        throw new Error(response.statusText)
-                        // @ts-ignore
-                    }).then(data => {
-                        return data.post
-                    })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'get-post', url, {
+                signal: this.abortController.signal,
+                ...Environment.fetchHeaders
+            }, data => data.post)
         }
 
         /**
@@ -135,24 +109,10 @@ export default class Post extends HTMLElement {
             if (this.abortControllerList) this.abortControllerList.abort()
             this.abortControllerList = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('list-posts', {
-                /** @type {ListPostsEventDetail} */
-                detail: {
-                    fetch: fetch(url, {
-                        signal: this.abortControllerList.signal,
-                        ...Environment.fetchHeaders
-                    }).then(response => {
-                        if (response.status >= 200 && response.status <= 299) return response.json()
-                        throw new Error(response.statusText)
-                        // @ts-ignore
-                    }).then(data => {
-                        return data.posts
-                    })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'list-posts', url, {
+                signal: this.abortControllerList.signal,
+                ...Environment.fetchHeaders
+            }, data => data.posts)
         }
     }
 

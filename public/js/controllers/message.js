@@ -35,6 +35,7 @@
  */
 
 import { Environment } from '../lib/environment.js'
+import { dispatchCustomEvent } from '../lib/utils.js'
 
 /**
  * As a controller, this component becomes a store and organizes events
@@ -69,25 +70,13 @@ export default class Messages extends HTMLElement {
             if (this.abortController) this.abortController.abort()
             this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('message', {
-                /** @type {MessageEventDetail} */
-                detail: {
-                    fetch: fetch(url, {
-                        method: 'POST',
-                        body: JSON.stringify(event.detail.message),
-                        signal: this.abortController.signal,
-                        credentials: 'include',
-                        ...Environment.fetchHeaders
-                    }).then(response => {
-                        if (response.status >= 200 && response.status <= 299) return response.json()
-                        throw new Error(response.statusText)
-                        // @ts-ignore
-                    })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'message', url, {
+                method: 'POST',
+                body: JSON.stringify(event.detail.message),
+                signal: this.abortController.signal,
+                credentials: 'include',
+                ...Environment.fetchHeaders
+            })
         }
 
         /**
@@ -104,25 +93,11 @@ export default class Messages extends HTMLElement {
             // if (this.abortController) this.abortController.abort()
             // this.abortController = new AbortController()
             // answer with event
-            this.dispatchEvent(new CustomEvent('list-messages', {
-                /** @type {MessagesEventDetail} */
-                detail: {
-                    fetch: fetch(url, {
-                        // signal: this.abortController.signal,
-                        credentials: 'include',
-                        ...Environment.fetchHeaders
-                    }).then(response => {
-                        if (response.status >= 200 && response.status <= 299) return response.json()
-                        throw new Error(response.statusText)
-                        // @ts-ignore
-                    }).then(data => {
-                        return data
-                    })
-                },
-                bubbles: true,
-                cancelable: true,
-                composed: true
-            }))
+            dispatchCustomEvent(this, 'list-messages', url, {
+                // signal: this.abortController.signal,
+                credentials: 'include',
+                ...Environment.fetchHeaders
+            })
         }
     }
 
