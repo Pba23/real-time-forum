@@ -37,7 +37,19 @@ export default class Home extends HTMLElement {
         this.innerHTML = /* html */`
         <div class="l-grid__item">
             <div class="card f-height">
-                <h1>Welcome</div>
+                <div class="card__body">
+                    <h1>Welcome ${Environment.auth?.nickname} to the ThunderForum! 👋</h1>
+                    <p>
+                        Connect with like-minded individuals, participate in discussions, and experience real-time chat
+                        with other members.
+                    </p>
+                    <h2 class="mt--32 mb--24">Why join us?</h2>
+                    <ul>
+                        <li>🎤 Engage in meaningful discussions on various topics.</li>
+                        <li>🗨️ Experience real-time chat for instant communication.</li>
+                        <li>📰 Stay updated with the latest posts and comments.</li>
+                    </ul>
+                </div>
             </div>
         </div>
       `

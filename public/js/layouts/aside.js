@@ -61,7 +61,7 @@ export default class Aside extends HTMLElement {
         <div class="l-grid__item aside f-height">
             <div class="card f-height mb--0">
                 <div class="card__body p--32 text--center">
-                    <h2 class="mb--24">🚀 Join the Real-Time Forum Community!</h2>
+                    <h2 class="mb--24">🚀 Join the ThunderForum Community!</h2>
                     <p>
                         Connect with like-minded individuals, participate in discussions, and experience real-time chat
                         with other members.
