@@ -1,3 +1,66 @@
+.spe {
+    height: 100%;
+}
+
+.spe::before {
+    content: "";
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    display: block;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    z-index: 0;
+    background-color: var(--primary);
+}
+
+.spe::after {
+    content: "";
+    position: absolute;
+    bottom: -20%;
+    right: -10%;
+    display: block;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    z-index: 0;
+    background-color: var(--darkest);
+}
+
+.spe>* {
+    z-index: 1;
+}
+
+.spe>h1 {
+    font-size: 3.75rem;
+    font-weight: bold;
+    --x-offset: -0.0625em;
+    --y-offset: 0.0625em;
+    --stroke: 0.025em;
+    --background-color: white;
+    --stroke-color: var(--primary);
+
+    text-shadow:
+        var(--x-offset) var(--y-offset) 0px var(--background-color),
+
+        calc(var(--x-offset) - var(--stroke)) calc(var(--y-offset) + var(--stroke)) 0px var(--stroke-color);
+}
+
+.spe>h1::before {
+    content: "";
+    position: absolute;
+    bottom: 5%;
+    left: 10%;
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    background-color: var(--light);
+}
+
 .btn.light,
 button.light {
     background: var(--lightest) !important;
@@ -139,6 +202,12 @@ button.light-gradient {
 
 .text--light-gradient {
     color: linear-gradient(to top, var(--light), var(--lightest)) !important;
+}
+
+.flex--center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .display--flex {

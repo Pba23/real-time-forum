@@ -37,11 +37,11 @@ export default class Home extends HTMLElement {
         this.innerHTML = /* html */`
         <div class="l-grid__item">
             <div class="card f-height">
-                <div class="card__body">
-                    <h1>Welcome ${Environment.auth?.nickname} to the ThunderForum! 👋</h1>
+                <div class="card__body flex--center flex--col spe">
+                    <h1 class="mb--32">Welcome ${Environment.auth?.nickname}, <br/> to the ThunderForum! 👋</h1>
                     <p>
-                        Connect with like-minded individuals, participate in discussions, and experience real-time chat
-                        with other members.
+                        Connect with like-minded individuals, participate in discussions, <br/>
+                        and experience real-time chat with other members.
                     </p>
                     <h2 class="mt--32 mb--24">Why join us?</h2>
                     <ul>
