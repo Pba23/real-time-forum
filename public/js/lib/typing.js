@@ -100,14 +100,12 @@
 * MessageItem
 *
 * @typedef {{
-      id: string,
-      text: string,
-      senderID: string,
-      senderName: string,
-      senderAvatar: string,
-      receiverID: string,
-      lastCreateDate: string,
-   }} MessageItem
+   id: string
+   authorID: string
+   receiverID: string
+   text: string
+   createDate: string
+}} MessageItem
 */
 /**
 * AddComment

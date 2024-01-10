@@ -50,7 +50,6 @@ func (rr *MessageRepository) GetDiscussionsBetweenUsers(user1ID, user2ID string)
 		SELECT id, senderID, receiverID, content, createDate
 		FROM message
 		WHERE (senderID = ? AND receiverID = ?) OR (senderID = ? AND receiverID = ?)
-		ORDER BY createDate DESC
 	`, user1ID, user2ID, user2ID, user1ID)
 
 	if err != nil {

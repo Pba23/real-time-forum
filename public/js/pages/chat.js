@@ -166,7 +166,7 @@ export default class Chat extends HTMLElement {
                     <h3>Talk with ${this.chat.talker ? this.chat.talker.nickname : `...`}</h3>
                 </div>
                 <div class="card__body">
-                    <message-list chat-id="${this.chat.talker.id}"></message-list>
+                    <message-list chat='${JSON.stringify(this.chat)}'></message-list>
                 </div>
                 <div class="card__footer">
                     <form class="send">

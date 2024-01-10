@@ -1,5 +1,7 @@
 // @ts-check
 
+import { Environment } from "../lib/environment.js"
+
 /* global CustomEvent */
 /* global HTMLElement */
 
@@ -12,12 +14,12 @@
 export default class MessageList extends HTMLElement {
     constructor() {
         super()
-        this.chatID = null
+        this.chat = null
         /**
-     * Listens to the event name/typeArg: 'message'
-     *
-     * @param {CustomEvent & {detail: import("../controllers/message.js").MessagesEventDetail}} event
-     */
+         * Listens to the event name/typeArg: 'message'
+         *
+         * @param {CustomEvent & {detail: import("../controllers/message.js").MessagesEventDetail}} event
+         */
         this.messageListener = event => event.detail.fetch.then((data) => {
             const message = data.message
             this.addNewMessage(message)
@@ -52,7 +54,7 @@ export default class MessageList extends HTMLElement {
 
     scrollToEnd() {
         if (this.lastCard) {
-            this.lastCard.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'end' });
+            this.lastCard.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
         }
     }
 
@@ -64,19 +66,22 @@ export default class MessageList extends HTMLElement {
         document.body.addEventListener('new-message', this.newMessage)
         // @ts-ignore
         document.body.addEventListener('list-messages', this.messagesListener)
-        this.chatID = this.getAttribute("chat-id");
-        const eventName = 'message-' + this.chatID
-        document.body.addEventListener(eventName, this.newMessage)
+        const chat = this.getAttribute("chat")
+        if (chat) {
+            this.chat = JSON.parse(chat);
+            const eventName = 'message-' + this.chat.talker.id
+            document.body.addEventListener(eventName, this.newMessage)
 
-        // on every connect it will attempt to get newest messages
-        this.dispatchEvent(new CustomEvent('get-messages', {
-            detail: {
-                chatID: this.chatID
-            },
-            bubbles: true,
-            cancelable: true,
-            composed: true
-        }))
+            // on every connect it will attempt to get newest messages
+            this.dispatchEvent(new CustomEvent('get-messages', {
+                detail: {
+                    chatID: this.chat.talker.id
+                },
+                bubbles: true,
+                cancelable: true,
+                composed: true
+            }))
+        }
     }
 
     disconnectedCallback() {
@@ -119,18 +124,21 @@ export default class MessageList extends HTMLElement {
      * @return {Node | string}
      */
     createMessage(message, text = true) {
+        const outgoing = message.authorID == Environment.auth?.id
+        const avatar = outgoing ? Environment.auth?.nickname.toUpperCase() : this.chat.talker.nickname.toUpperCase()
         const card = /* html */`
-        <div class="message active">
-            <div class="profile-picture">
-                <img src="${message.senderAvatar ? '' : `https://ui-avatars.com/api/?name=John+Doe&background=random`}" alt="Profile Picture">
-            </div>
-            <div class="speech-bubble">
-                <p>${message.text}</p>
+        <div class="wrap ${outgoing ? 'outgoing' : ''}">
+            <div class="message active">
+                <div class="profile-picture">
+                    <img src="https://ui-avatars.com/api/?name=${avatar}&background=random" alt="Profile Picture">
+                </div>
+                <div class="speech-bubble">
+                    <p>${message.text}</p>
+                </div>
             </div>
         </div>`
         if (text) return card
         const div = document.createElement('div')
-        div.classList.add("wrap", "outgoing")
         div.innerHTML = card
         return div.children[0]
     }
@@ -142,6 +150,6 @@ export default class MessageList extends HTMLElement {
    * @return {HTMLElement | null}
    */
     get lastCard() {
-        return this.querySelector('.message:last-child')
+        return this.querySelector('.wrap:last-child>.message>.speech-bubble')
     }
 }

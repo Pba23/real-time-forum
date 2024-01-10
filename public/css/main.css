@@ -348,6 +348,8 @@ footer span.heart {
 
 .card__body,
 .card__header {
+    position: relative;
+    overflow: hidden;
     padding: 2rem;
 }
 
