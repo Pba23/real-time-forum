@@ -3,17 +3,18 @@ package models
 import (
 	"database/sql"
 	"log"
+	"real-time-forum/lib"
 
 	uuid "github.com/gofrs/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type Message struct {
-	ID           string `json:"id"`
-	SenderID     string `json:"authorID"`
-	ReceiverID   string `json:"receiverID"`
-	Content      string `json:"text"`
-	CreateDate   string `json:"createDate"`
+	ID         string `json:"id"`
+	SenderID   string `json:"authorID"`
+	ReceiverID string `json:"receiverID"`
+	Content    string `json:"text"`
+	CreateDate string `json:"createDate"`
 }
 
 type MessageRepository struct {
@@ -65,6 +66,7 @@ func (rr *MessageRepository) GetDiscussionsBetweenUsers(user1ID, user2ID string)
 		if err != nil {
 			return nil, err
 		}
+		message.CreateDate = lib.FormatDateDB(message.CreateDate)
 		discussions = append(discussions, &message)
 	}
 
@@ -94,6 +96,7 @@ func (mr *MessageRepository) GetAllMessages() ([]Message, error) {
 			return nil, err
 		}
 
+		message.CreateDate = lib.FormatDateDB(message.CreateDate)
 		messageList = append(messageList, message)
 	}
 

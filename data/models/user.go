@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"log"
+	"real-time-forum/lib"
 	"strings"
 
 	uuid "github.com/gofrs/uuid"
@@ -166,6 +167,10 @@ func (ur *UserRepository) SelectAllUsers(userID string) ([]UserItem, error) {
 			Nickname:        nickname,
 			LastMessage:     lastMessage,
 			LastMessageTime: lastMessageTime,
+		}
+
+		if user.LastMessageTime != "" {
+			user.LastMessageTime = lib.FormatDateDB(user.LastMessageTime)
 		}
 
 		users = append(users, user)

@@ -133,6 +133,7 @@ export default class MessageList extends HTMLElement {
                 </div>
                 <div class="speech-bubble">
                     <p>${message.text}</p>
+                    <span class="time">${message.createDate}</span>
                 </div>
             </div>
         </div>`

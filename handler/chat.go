@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"real-time-forum/data/models"
 	"real-time-forum/lib"
@@ -45,8 +44,6 @@ func GetMessages(res http.ResponseWriter, req *http.Request) {
 				return
 			}
 			talker, err := models.UserRepo.GetUserByID(idReceiver)
-			log.Println(idReceiver)
-			log.Println(talker)
 			if err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error getting talker : "+err.Error())
 				return
@@ -84,17 +81,22 @@ func NewMessage(res http.ResponseWriter, req *http.Request) {
 		isLogin := models.ValidSession(req)
 		if isLogin {
 			_ = models.GetUserFromSession(req)
-			var message models.Message
-			if err := json.NewDecoder(req.Body).Decode(&message); err != nil {
+			var _message models.Message
+			if err := json.NewDecoder(req.Body).Decode(&_message); err != nil {
 				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
 				return
 			}
-			err := models.MessageRepo.CreateMessage(&message)
+			err := models.MessageRepo.CreateMessage(&_message)
 			if err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error creating message : "+err.Error())
 			}
+			message, err := models.MessageRepo.GetMessageByID(_message.ID)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, "Error creating message : "+err.Error())
+			}
+			message.CreateDate = lib.FormatDateDB(message.CreateDate)
 			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": message})
-			SendMessage(message)
+			SendMessage(*message)
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "No active session")
 		}

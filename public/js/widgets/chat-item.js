@@ -29,6 +29,7 @@ export default class ChatPreview extends HTMLElement {
 
         this.updateLastMessage = (event) => {
             this.chat.last_message = event.detail.text
+            this.chat.last_message_time = event.detail.createDate
             this.render(this.chat)
         }
     }

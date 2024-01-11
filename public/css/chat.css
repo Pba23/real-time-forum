@@ -112,6 +112,15 @@
     margin-right: 60px;
 }
 
+.speech-bubble span {
+    border-radius: 5rem;
+    font-size: 1.125rem;
+    font-weight: bold;
+    padding: 0.2rem;
+    background-color: white;
+    color: var(--darkest);
+}
+
 .profile-picture {
     display: flex;
     align-items: center;
