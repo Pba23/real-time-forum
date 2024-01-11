@@ -52,7 +52,7 @@ export default class User extends HTMLElement {
             this.abortController = new AbortController()
 
             const url = `${Environment.fetchBaseUrl}/sign-up`
-            const finishCallback = data => {
+            let finishCallback = data => {
                 if (data.errors) throw data.errors
                 if (data.user) {
                     this.user = data.user
@@ -66,6 +66,8 @@ export default class User extends HTMLElement {
                 }
                 return data.user
             }
+
+            finishCallback = finishCallback.bind(this)
             // answer with event
             dispatchCustomEvent(this, 'user', url,
                 {
@@ -83,12 +85,12 @@ export default class User extends HTMLElement {
             this.abortController = new AbortController()
 
             const url = `${Environment.fetchBaseUrl}/sign-in`
-            const finishCallback = data => {
+            let finishCallback = data => {
                 if (data.errors) throw data.errors
                 if (data.user) {
                     this.user = data.user
                     Environment.auth = data.user;
-                    document.dispatchEvent(new CustomEvent('ok-login', {
+                    this.dispatchEvent(new CustomEvent('ok-login', {
                         detail: {},
                         bubbles: true,
                         cancelable: true,
@@ -97,6 +99,8 @@ export default class User extends HTMLElement {
                 }
                 return data.user
             }
+
+            finishCallback = finishCallback.bind(this)
             // answer with event
             dispatchCustomEvent(this, 'user', url,
                 {
@@ -112,13 +116,15 @@ export default class User extends HTMLElement {
             this.abortController = new AbortController()
 
             const url = `${Environment.fetchBaseUrl}/me`
-            const finishCallback = data => {
+            let finishCallback = data => {
                 if (data.user) {
                     this.user = data.user
                     Environment.auth = data.user
                 }
                 return data.user
             }
+
+            finishCallback = finishCallback.bind(this)
             const errorCallback = error => {
                 if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = null
                 console.log(`Error@UserFetch: ${error}`)
@@ -152,7 +158,7 @@ export default class User extends HTMLElement {
             this.abortController = new AbortController()
 
             const url = `${Environment.fetchBaseUrl}/logout`
-            const finishCallback = (data) => {
+            let finishCallback = data => {
                 this.dispatchEvent(new CustomEvent('ok-logout', {
                     detail: {},
                     bubbles: true,
@@ -165,6 +171,8 @@ export default class User extends HTMLElement {
                 if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = null
                 console.log(`Error@UserFetch: ${error}`)
             }
+
+            finishCallback = finishCallback.bind(this)
             // answer with event
             dispatchCustomEvent(this, 'user', url,
                 {

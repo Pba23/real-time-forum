@@ -35,10 +35,10 @@
 .spe>h1 {
     font-size: 3.75rem;
     font-weight: bold;
-    --x-offset: -0.0625em;
-    --y-offset: 0.0625em;
+    --x-offset: -0.08em;
+    --y-offset: 0.08em;
     --stroke: 0.025em;
-    --background-color: white;
+    --background-color: var(--darker);
     --stroke-color: var(--primary);
 
     text-shadow:

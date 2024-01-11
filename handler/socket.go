@@ -70,9 +70,10 @@ func HandleWebSocket(res http.ResponseWriter, req *http.Request) {
 		}
 		switch data.Type {
 		case "login":
+			log.Println(data.Data["userID"])
 			UserConnections.Store(conn, data.Data["userID"])
 			SendStatus(data.Data["userID"].(string), true)
-			defer SendStatus(data.Data["userID"].(string), false)
+			// defer SendStatus(data.Data["userID"].(string), false)
 		case "logout":
 			UserConnections.Store(conn, "")
 			SendStatus(data.Data["userID"].(string), false)
