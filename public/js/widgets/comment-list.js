@@ -1,5 +1,7 @@
 // @ts-check
 
+import { Environment } from "../lib/environment.js"
+
 /* global CustomEvent */
 /* global HTMLElement */
 
@@ -28,13 +30,9 @@ export default class CommentList extends HTMLElement {
          *
          * @param {CustomEvent & {detail: import("../controllers/comment.js").CommentEventDetail}} event
          */
-        this.commentsListener = event => {
-            this.render(event.detail.fetch)
-        }
+        this.commentsListener = event => this.render(event.detail.fetch)
 
-        this.newComment = event => {
-            this.addNewComment(event.detail)
-        }
+        this.newComment = event => this.addNewComment(event.detail)
     }
 
     addNewComment(comment) {
@@ -104,20 +102,22 @@ export default class CommentList extends HTMLElement {
      * @return {Node | string}
      */
     createComment(comment, text = true) {
+        const outgoing = comment.authorID == Environment.auth?.id
+        const avatar = outgoing ? Environment.auth?.nickname.toUpperCase() : comment.authorName// this.chat.talker.nickname.toUpperCase()
         const card = /* html */`
-        <div class="message active">
-            <div class="profile-picture">
-                <img src="${comment.authorAvatar}" alt="Profile Picture">
-            </div>
-            <div class="speech-bubble">
-                <p>${comment.text}</p>
+        <div class="wrap ${outgoing ? 'outgoing' : ''}">
+            <div class="message active">
+                <div class="profile-picture">
+                    <img src="https://ui-avatars.com/api/?name=${avatar}&background=random" alt="Profile Picture">
+                </div>
+                <div class="speech-bubble">
+                    <p>${comment.text}</p>
+                </div>
             </div>
         </div>`
         if (text) return card
         const div = document.createElement('div')
-        div.classList.add("wrap", "outgoing")
         div.innerHTML = card
-        console.log(div);
         return div.children[0]
     }
 
@@ -128,6 +128,6 @@ export default class CommentList extends HTMLElement {
    * @return {HTMLElement | null}
    */
     get firstCard() {
-        return this.querySelector('.message:nth-child(1)')
+        return this.querySelector('.wrap:nth-child(1)')
     }
 }

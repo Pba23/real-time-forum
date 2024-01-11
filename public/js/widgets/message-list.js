@@ -36,7 +36,6 @@ export default class MessageList extends HTMLElement {
         }
 
         this.newMessage = event => {
-            console.log(event);
             this.addNewMessage(event.detail)
         }
     }
