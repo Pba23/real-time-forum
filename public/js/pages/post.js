@@ -58,9 +58,8 @@ export default class Post extends HTMLElement {
         }
 
         this.submitListener = (e) => {
-            e.preventDefault();
+            if (e) e.preventDefault();
             if (this.commentForm?.checkValidity()) {
-                console.log("Listen");
                 this.dispatchEvent(new CustomEvent('add-comment', {
                     detail: {
                         /** @type {import("../lib/typing.js").AddComment} */
@@ -76,6 +75,21 @@ export default class Post extends HTMLElement {
                 }))
             }
         }
+
+        this.textAreaKeyDownListener = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.submitListener();
+            }
+        };
+
+        this.textAreaKeyUpListener = (e) => {
+            if (e.key === 'Enter' && e.shiftKey && this.textField) {
+                e.preventDefault();
+                // Add a new line without submitting the message
+                this.textField.value += '\n';
+            }
+        };
     }
 
     connectedCallback() {
@@ -116,6 +130,8 @@ export default class Post extends HTMLElement {
         // @ts-ignore
         document.body.removeEventListener('user', this.userListener)
         // looks nicer when cleared
+        this.commentForm?.removeEventListener('keydown', this.textAreaKeyDownListener);
+        this.commentForm?.removeEventListener('keyup', this.textAreaKeyUpListener);
         this.innerHTML = ''
     }
 
@@ -156,7 +172,6 @@ export default class Post extends HTMLElement {
                                 <div class="speech-bubble bg--teal text--dark m--0">
                                     <p>
                                         ${this.post.description}
-                                        
                                     </p>
                                 </div>
                             </div>
@@ -172,6 +187,9 @@ export default class Post extends HTMLElement {
                 </div>
             </div>
         </div>`
+
+        this.commentForm?.addEventListener('keydown', this.textAreaKeyDownListener);
+        this.commentForm?.addEventListener('keyup', this.textAreaKeyUpListener);
         }
     }
 

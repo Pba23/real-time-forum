@@ -22,7 +22,6 @@ export default class Chat extends HTMLElement {
      * @param {CustomEvent & {detail: import("../controllers/message.js").MessagesEventDetail}} event
      */
         this.messageListener = event => event.detail.fetch.then((data) => {
-            console.log(data);
             if (this.textField) {
                 this.textField.value = ''
             }
@@ -60,7 +59,6 @@ export default class Chat extends HTMLElement {
 
         this.submitListener = (e) => {
             if (e) e.preventDefault();
-
             if (this.messageForm?.checkValidity()) {
                 const message = {
                     text: (this.textField) ? this.textField.value : "",
