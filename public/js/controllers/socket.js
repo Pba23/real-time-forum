@@ -42,7 +42,8 @@ export default class SocketHandler extends HTMLElement {
           }))
           break;
         case 'message':
-          const messageEventName = `message-${data.message.authorID}`
+          const chatID = Environment.auth.id === data.message.authorID ? data.message.receiverID : data.message.authorID
+          const messageEventName = `message-${chatID}-${Environment.auth.id}`
           this.dispatchEvent(new CustomEvent(messageEventName, {
             detail: data.message,
             bubbles: true,

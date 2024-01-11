@@ -1,5 +1,7 @@
 // @ts-check
 
+import { Environment } from "../lib/environment.js"
+
 /* global customElements */
 /* global HTMLElement */
 
@@ -24,12 +26,19 @@ export default class ChatPreview extends HTMLElement {
             this.chat.is_connected = event.detail
             this.render(this.chat)
         }
+
+        this.updateLastMessage = (event) => {
+            this.chat.last_message = event.detail.text
+            this.render(this.chat)
+        }
     }
 
     connectedCallback() {
         if (this.shouldComponentRender()) this.render(this.chat)
-        const eventName = 'status-' + this.chat.id
-        document.body.addEventListener(eventName, this.updateStatus)
+        const statusEventName = 'status-' + this.chat.id
+        document.body.addEventListener(statusEventName, this.updateStatus)
+        const messageEventName = 'message-' + this.chat.id + '-' + Environment.auth?.id
+        document.body.addEventListener(messageEventName, this.updateLastMessage)
     }
 
     /**

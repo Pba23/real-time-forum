@@ -68,7 +68,7 @@ export default class MessageList extends HTMLElement {
         const chat = this.getAttribute("chat")
         if (chat) {
             this.chat = JSON.parse(chat);
-            const eventName = 'message-' + this.chat.talker.id
+            const eventName = 'message-' + this.chat.talker.id + '-' + Environment.auth?.id
             document.body.addEventListener(eventName, this.newMessage)
 
             // on every connect it will attempt to get newest messages
