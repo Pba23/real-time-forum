@@ -15,7 +15,7 @@
 + [x] Enter key to send message
 + [x] Scroll down when new message
   + [x] Scroll completely
-+ [ ] Show message ago time
++ [x] Show message ago time
 + [ ] Handle message loading while scrolling
 + [ ] Add notifications (unread messages)
 + [ ] Send an image as a comment and message

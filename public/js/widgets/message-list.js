@@ -21,8 +21,8 @@ export default class MessageList extends HTMLElement {
          * @param {CustomEvent & {detail: import("../controllers/message.js").MessagesEventDetail}} event
          */
         this.messageListener = event => event.detail.fetch.then((data) => {
-            const message = data.message
-            this.addNewMessage(message)
+            // const message = data.message
+            // this.addNewMessage(message)
         })
 
         /**
@@ -41,6 +41,7 @@ export default class MessageList extends HTMLElement {
     }
 
     addNewMessage(message, scroll = true) {
+        console.log(message);
         if (this.lastCard) {
             // @ts-ignore
             this.appendChild(this.createMessage(message, false))
