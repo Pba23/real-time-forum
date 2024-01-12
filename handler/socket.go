@@ -147,10 +147,10 @@ func SendMessage(message models.Message) {
 	UserConnections.Range(func(key, value interface{}) bool {
 		if value.(string) == message.SenderID || value.(string) == message.ReceiverID {
 			key.(*websocket.Conn).WriteMessage(websocket.TextMessage, output)
-		}
-		if message.SenderID == message.ReceiverID {
-			log.Println("🚨 Sender and receiver are the same")
-			return false
+			if message.SenderID == message.ReceiverID {
+				log.Println("🚨 Sender and receiver are the same")
+				return false
+			}
 		}
 		return true
 	})

@@ -169,7 +169,7 @@ export default class Chat extends HTMLElement {
                 <div class="card__footer">
                     <form class="send">
                         <button type="submit" class="primary">🚀</button>
-                        <textarea name="msg" id="msg" rows="1" placeholder="Enter your message"></textarea>
+                        <textarea name="msg" id="msg" rows="1" placeholder="Enter your message" required></textarea>
                     </form>
                 </div>
             </div>

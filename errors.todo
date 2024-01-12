@@ -27,6 +27,7 @@
 + [ ] Allow messages to be formatted (italic, bold, strikethrough, etc.)
 + [ ] Sidebar should always be displayed when a chat is open even if the page is refreshed
 + [ ] Implement "input" features
++ [x] Block empty message
 + [ ] Check overflow texts
 + [ ] Remove all unused log
 + [ ] Add server logs
