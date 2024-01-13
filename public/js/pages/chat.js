@@ -40,23 +40,6 @@ export default class Chat extends HTMLElement {
             })
         }
 
-        /**
-         * Listens to the event name/typeArg: 'user'
-        *
-        * @param {CustomEvent & {detail: import("../controllers/user.js").UserEventDetail}} event
-        */
-        this.userListener = event => {
-            event.detail.fetch.then(user => {
-                this.render(user)
-                this.messageForm?.addEventListener('submit', this.submitListener)
-            }).catch(error => {
-                // @ts-ignore
-                this.render(null)
-                this.messageForm?.addEventListener('submit', this.submitListener)
-                console.log(`Error@UserFetch: ${error}`)
-            })
-        }
-
         this.submitListener = (e) => {
             if (e) e.preventDefault();
             if (this.messageForm?.checkValidity()) {
@@ -97,8 +80,8 @@ export default class Chat extends HTMLElement {
         if (!Environment.auth) {
             self.location.hash = '#/login'
         }
+        this.chat = null;
         this.user = Environment.auth
-        this.fetchSingleChat = undefined
         this.loadChildComponents()
 
         // listen for chats
@@ -110,13 +93,6 @@ export default class Chat extends HTMLElement {
         this.dispatchEvent(new CustomEvent('request-chat-infos', {
             /** @type {import("../controllers/chat.js").RequestChatEventDetail} */
             detail: {}, // slug gets decided at Chat.js controller, could also be done by request event to router
-            bubbles: true,
-            cancelable: true,
-            composed: true
-        }))
-        // @ts-ignore
-        document.body.addEventListener('user', this.userListener)
-        this.dispatchEvent(new CustomEvent('get-user', {
             bubbles: true,
             cancelable: true,
             composed: true
@@ -139,10 +115,9 @@ export default class Chat extends HTMLElement {
     /**
      * evaluates if a render is necessary
      *
-     * @param {import("../lib/typing.js").AuthUser} [user = this.user]
      * @return {boolean}
      */
-    shouldComponentRender(user = this.user) {
+    shouldComponentRender() {
         return !this.innerHTML
     }
 
@@ -155,7 +130,7 @@ export default class Chat extends HTMLElement {
     // @ts-ignore
     render(user = this.user) {
         if (user !== undefined) this.user = user
-        if (!this.chat) return
+        if (!this.chat || !this.user) return
 
         this.innerHTML = /* html */`
         <div class="l-grid__item">

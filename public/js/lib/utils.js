@@ -16,7 +16,6 @@ export function dispatchCustomEvent(self, eventName, url, details, finishCallbac
         detail: {
             fetch: fetch(url, details)
                 .catch(error => {
-                    console.log(errorCallback);
                     if (errorCallback) return errorCallback(error)
                     throw error
                 })

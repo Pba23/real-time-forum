@@ -17,16 +17,7 @@ export default class MessageList extends HTMLElement {
         super()
         this.chat = null;
         this.page = 1; // Initial offset for pagination
-
-        /**
-         * Listens to the event name/typeArg: 'message'
-         *
-         * @param {CustomEvent & {detail: import("../controllers/message.js").MessagesEventDetail}} event
-         */
-        this.messageListener = event => event.detail.fetch.then((data) => {
-            // const message = data.message
-            // this.addNewMessage(message)
-        })
+        this.firstScroll = false;
 
         /**
          * Listens to the event name/typeArg: 'list-messages'
@@ -47,7 +38,7 @@ export default class MessageList extends HTMLElement {
                         console.log(i * 30);
                         const messageElement = this.createMessage(message, false);
                         if (typeof messageElement !== 'string') this.insertBefore(messageElement, this.firstCard)
-                    }, i * 100))
+                    }, i * 150))
                 }
             })
         }
@@ -69,6 +60,10 @@ export default class MessageList extends HTMLElement {
     }
 
     scrollToEnd() {
+        if (!this.firstScroll) {
+            const chatElement = document.getElementById("chat")
+            if (chatElement) chatElement.addEventListener("scroll", this.handleScroll.bind(this))
+        }
         if (this.lastCard) {
             this.lastCard.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
         }
@@ -76,10 +71,6 @@ export default class MessageList extends HTMLElement {
 
     connectedCallback() {
         // listen for messages
-        // @ts-ignore
-        document.body.addEventListener('message', this.messageListener)
-        // @ts-ignore
-        document.body.addEventListener('new-message', this.newMessage)
         // @ts-ignore
         document.body.addEventListener('list-messages', this.messagesListener)
         // @ts-ignore
@@ -106,6 +97,8 @@ export default class MessageList extends HTMLElement {
         // @ts-ignore
         document.body.removeEventListener('list-messages', this.messagesListener);
         document.body.removeEventListener('load-more-messages', this.loadMoreMessageListener);
+        const eventName = 'message-' + this.chat.talker.id + '-' + Environment.auth?.id
+        document.body.removeEventListener(eventName, this.newMessage)
         // @ts-ignore
         const chatElement = document.getElementById("chat")
         if (chatElement) chatElement.removeEventListener("scroll", this.handleScroll.bind(this))
@@ -115,6 +108,10 @@ export default class MessageList extends HTMLElement {
      * Handle scroll events.
      */
     handleScroll(e) {
+        if (!this.firstScroll) {
+            this.firstScroll = true
+            return
+        }
         const chatElement = document.getElementById("chat");
         if (chatElement) {
             throttle(() => {
@@ -151,23 +148,19 @@ export default class MessageList extends HTMLElement {
     /**
      * renders each received message
      *
-     * @param {Promise<import("../lib/typing.js").MultipleMessages> | null} fetchMessages
+     * @param {Promise<import("../lib/typing.js").MultipleMessages>} fetchMessages
      * @return {void}
      */
     render(fetchMessages) {
         this.innerHTML = ""
-        fetchMessages && fetchMessages.then((data) => {
-            const messages = data.messages.reverse();
-            if (!messages) {
+        fetchMessages.then((data) => {
+            if (!data.messages) {
                 this.innerHTML = /* html */`Start the discussion`
                 return
             }
+            const messages = data.messages.reverse();
 
             messages.forEach((message, i, arr) => setTimeout(() => this.addNewMessage(message, i === arr.length - 1), i * 30))
-            setTimeout(() => {
-                const chatElement = document.getElementById("chat")
-                if (chatElement) chatElement.addEventListener("scroll", this.handleScroll.bind(this))
-            }, (messages.length * 30) + 30);
         });
     }
 

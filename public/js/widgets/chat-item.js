@@ -1,5 +1,4 @@
 // @ts-check
-
 import { Environment } from "../lib/environment.js"
 
 /* global customElements */

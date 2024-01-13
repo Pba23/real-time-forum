@@ -17,14 +17,14 @@
   + [x] Scroll completely
 + [x] Show message ago time
 + [x] Handle message loading while scrolling
-  + [ ] Sometimes messages are in the opposite order
+  + [x] Sometimes messages are in the opposite order
 + [x] Add notifications (unread messages)
 + [ ] Send an image as a comment and message
 + [ ] Manage disconnection issues
   + [ ] Check if session still exists on page refresh
   + [ ] Delete session if expired
   + [ ] The server sends a kill event to kill the session
-+ [ ] Protect all API endpoints
++ [x] Protect all API endpoints
 + [ ] Sidebar should always be displayed when a chat is open even if the page is refreshed
 + [ ] Implement "input" features
   + [ ] Allow messages to be formatted (italic, bold, strikethrough, etc.)

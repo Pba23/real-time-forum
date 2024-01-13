@@ -46,7 +46,6 @@ func (rr *MessageRepository) CreateMessage(message *Message) error {
 
 // GetDiscussionsBetweenUsersWithPagination retrieves discussions between two users with pagination.
 func (rr *MessageRepository) GetDiscussionsBetweenUsersWithPagination(user1ID, user2ID string, offset, limit int) ([]*Message, error) {
-	log.Println("Offset", offset, limit)
 	var discussions []*Message
 
 	rows, err := rr.db.Query(`

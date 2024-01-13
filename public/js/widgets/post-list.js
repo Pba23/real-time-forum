@@ -22,7 +22,6 @@ export default class PostList extends HTMLElement {
     this.listPostsListener = event => this.render(event.detail.fetch)
 
     this.postListener = event => event.detail.fetch.then(data => {
-      console.log("POST LISTENER");
       const post = data.post
       this.addNewPost(post);
     })
