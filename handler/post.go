@@ -29,7 +29,7 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 			postInfo.Slug = lib.Slugify(postInfo.Title)
 			listOfCategories := postInfo.Categories
 			categories := strings.Split(listOfCategories, "#")
-			
+
 			postInfo.AuthorID = userInSession.ID
 			if err := models.PostRepo.CreatePost(&postInfo); err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error creating post : "+err.Error())
@@ -66,35 +66,43 @@ func CreatePost(res http.ResponseWriter, req *http.Request) {
 
 func GetPost(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/post/*", http.MethodGet) {
-		path := req.URL.Path
-		pathPart := strings.Split(path, "/")
-		slug := pathPart[2]
-		post, err := models.PostRepo.GetPostBySlug(slug)
-		if err != nil {
-			lib.HandleError(res, http.StatusInternalServerError, err.Error())
-			return
+		if models.ValidSession(req) {
+			path := req.URL.Path
+			pathPart := strings.Split(path, "/")
+			slug := pathPart[2]
+			post, err := models.PostRepo.GetPostBySlug(slug)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			comments, err := models.CommentRepo.GetCommentsOfPost(post.ID)
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			post.Comments = comments
+
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "post retrieved successfully", "post": post})
+		} else {
+			lib.HandleError(res, http.StatusUnauthorized, "No active session")
 		}
-
-		comments, err := models.CommentRepo.GetCommentsOfPost(post.ID)
-		if err != nil {
-			lib.HandleError(res, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		post.Comments = comments
-
-		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "post retrieved successfully", "post": post})
 	}
 }
 
 func GetAllPosts(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/posts", http.MethodGet) {
-		posts, err := models.PostRepo.GetAllPosts()
-		if err != nil {
-			lib.HandleError(res, http.StatusInternalServerError, err.Error())
-		}
+		if models.ValidSession(req) {
+			posts, err := models.PostRepo.GetAllPosts()
+			if err != nil {
+				lib.HandleError(res, http.StatusInternalServerError, err.Error())
+			}
 
-		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "posts retrieved successfully", "posts": posts})
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "posts retrieved successfully", "posts": posts})
+		} else {
+			lib.HandleError(res, http.StatusUnauthorized, "No active session")
+		}
 	}
 }
 

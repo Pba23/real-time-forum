@@ -8,7 +8,11 @@ import (
 
 func GetUser(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/profile", http.MethodGet) {
-        user := models.GetUserFromSession(req)
-		lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "user retrieved successfully", "user": user})
+		if models.ValidSession(req) {
+			user := models.GetUserFromSession(req)
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": "user retrieved successfully", "user": user})
+		} else {
+			lib.HandleError(res, http.StatusUnauthorized, "No active session")
+		}
 	}
 }

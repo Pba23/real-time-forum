@@ -59,18 +59,22 @@ func CreateComment(res http.ResponseWriter, req *http.Request) {
 
 func GetComments(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/comments/*", http.MethodGet) {
-		path := req.URL.Path
-		pathPart := strings.Split(path, "/")
-		postID := pathPart[2]
-		comments, err := models.CommentRepo.GetCommentsOfPost(postID)
-		if err != nil {
-			lib.HandleError(res, http.StatusNotFound, err.Error())
-			return
+		if models.ValidSession(req) {
+			path := req.URL.Path
+			pathPart := strings.Split(path, "/")
+			postID := pathPart[2]
+			comments, err := models.CommentRepo.GetCommentsOfPost(postID)
+			if err != nil {
+				lib.HandleError(res, http.StatusNotFound, err.Error())
+				return
+			}
+			lib.SendJSONResponse(res, http.StatusOK, map[string]any{
+				"message":  "comment list got successfully",
+				"comments": comments,
+			})
+		} else {
+			lib.HandleError(res, http.StatusUnauthorized, "No active session")
 		}
-		lib.SendJSONResponse(res, http.StatusOK, map[string]any{
-			"message":  "comment list got successfully",
-			"comments": comments,
-		})
 	}
 }
 
