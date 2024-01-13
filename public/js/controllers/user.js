@@ -57,7 +57,7 @@ export default class User extends HTMLElement {
                 if (data.user) {
                     this.user = data.user
                     Environment.auth = data.user;
-                    document.dispatchEvent(new CustomEvent('ok-login', {
+                    this.dispatchEvent(new CustomEvent('ok-login', {
                         detail: {},
                         bubbles: true,
                         cancelable: true,
