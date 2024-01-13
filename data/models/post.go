@@ -35,15 +35,14 @@ type Post struct {
 }
 
 type PostCreation struct {
-	ID           string   `json:"id"`
-	Title        string   `json:"title"`
-	Slug         string   `json:"slug"`
-	Description  string   `json:"description"`
-	AuthorID     string   `json:"authorID"`
-	ImageURL     string   `json:"imageURL"`
-	Categories   string `json:"categories"`
-	CreateDate   string   `json:"createDate"`
-	ModifiedDate string   `json:"modifiedDate"`
+	ID           string     `json:"id"`
+	Title        string     `json:"title"`
+	Slug         string     `json:"slug"`
+	Description  string     `json:"description"`
+	AuthorID     string     `json:"authorID"`
+	ImageURL     string     `json:"imageURL"`
+	Categories   []string   `json:"categories"`
+	CreateDate   string     `json:"createDate"`
 }
 
 type PostRepository struct {
