@@ -87,17 +87,28 @@ export default class Messages extends HTMLElement {
         this.getMessagesListener = event => {
             // if no slug is sent, we grab it here from the location, this logic could also be handle through an event at the router
             const slug = event.detail.chatID || Environment.slug || ''
-            const url = `${Environment.fetchBaseUrl}/chat/messages/${slug}`
+            const limit = event.detail.limit || 10; // Default limit
+            const page = event.detail.page || 1; // Default page
+            const url = `${Environment.fetchBaseUrl}/chat/messages/${slug}?limit=${limit}&page=${page}`;
 
             // reset old AbortController and assign new one
             // if (this.abortController) this.abortController.abort()
             // this.abortController = new AbortController()
             // answer with event
-            dispatchCustomEvent(this, 'list-messages', url, {
-                // signal: this.abortController.signal,
-                credentials: 'include',
-                ...Environment.fetchHeaders
-            })
+            if (page == 1) {
+                dispatchCustomEvent(this, 'list-messages', url, {
+                    // signal: this.abortController.signal,
+                    credentials: 'include',
+                    ...Environment.fetchHeaders
+                })
+            } else {
+                console.log(page, url);
+                dispatchCustomEvent(this, 'load-more-messages', url, {
+                    // signal: this.abortController.signal,
+                    credentials: 'include',
+                    ...Environment.fetchHeaders
+                })
+            }
         }
     }
 

@@ -159,7 +159,7 @@ export default class Chat extends HTMLElement {
 
         this.innerHTML = /* html */`
         <div class="l-grid__item">
-            <div class="card f-height">
+            <div id="chat" class="card f-height">
                 <div class="card__header justify--space-between">
                     <h3>Talk with ${this.chat.talker ? this.chat.talker.nickname : `...`}</h3>
                 </div>

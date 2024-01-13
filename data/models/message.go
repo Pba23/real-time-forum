@@ -43,15 +43,18 @@ func (rr *MessageRepository) CreateMessage(message *Message) error {
 	return err
 }
 
-// GetDiscussionsBetweenUsers retrieves all discussions between two users.
-func (rr *MessageRepository) GetDiscussionsBetweenUsers(user1ID, user2ID string) ([]*Message, error) {
+// GetDiscussionsBetweenUsersWithPagination retrieves discussions between two users with pagination.
+func (rr *MessageRepository) GetDiscussionsBetweenUsersWithPagination(user1ID, user2ID string, offset, limit int) ([]*Message, error) {
+	log.Println("Offset", offset, limit)
 	var discussions []*Message
 
 	rows, err := rr.db.Query(`
 		SELECT id, senderID, receiverID, content, createDate
 		FROM message
 		WHERE (senderID = ? AND receiverID = ?) OR (senderID = ? AND receiverID = ?)
-	`, user1ID, user2ID, user2ID, user1ID)
+		ORDER BY createDate DESC
+		LIMIT ? OFFSET ?
+	`, user1ID, user2ID, user2ID, user1ID, limit, offset)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

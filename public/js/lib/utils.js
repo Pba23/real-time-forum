@@ -36,3 +36,22 @@ export function dispatchCustomEvent(self, eventName, url, details, finishCallbac
         composed: true,
     }));
 }
+
+/**
+ * Throttle function that ensures a function is only called at most once in a specified amount of time.
+ * @param {Function} func - The function to throttle.
+ * @param {number} delay - The delay in milliseconds.
+ * @returns {Function} - The throttled function.
+ */
+export function throttle(func, delay) {
+    let lastCall = 0;
+
+    return function (...args) {
+        const now = Date.now();
+
+        if (now - lastCall >= delay) {
+            func(...args);
+            lastCall = now;
+        }
+    };
+}

@@ -1,6 +1,7 @@
 // @ts-check
 
 import { Environment } from "../lib/environment.js"
+import { throttle } from "../lib/utils.js";
 
 /* global CustomEvent */
 /* global HTMLElement */
@@ -14,7 +15,9 @@ import { Environment } from "../lib/environment.js"
 export default class MessageList extends HTMLElement {
     constructor() {
         super()
-        this.chat = null
+        this.chat = null;
+        this.page = 1; // Initial offset for pagination
+
         /**
          * Listens to the event name/typeArg: 'message'
          *
@@ -35,13 +38,26 @@ export default class MessageList extends HTMLElement {
             this.render(event.detail.fetch)
         }
 
+        this.loadMoreMessageListener = event => {
+            event.detail.fetch.then((data) => {
+                const messages = data.messages
+                if (!messages) return
+                if (this.firstCard) {
+                    messages.forEach((message, i) => setTimeout(() => {
+                        console.log(i * 30);
+                        const messageElement = this.createMessage(message, false);
+                        if (typeof messageElement !== 'string') this.insertBefore(messageElement, this.firstCard)
+                    }, i * 100))
+                }
+            })
+        }
+
         this.newMessage = event => {
             this.addNewMessage(event.detail)
         }
     }
 
     addNewMessage(message, scroll = true) {
-        console.log(message);
         if (this.lastCard) {
             // @ts-ignore
             this.appendChild(this.createMessage(message, false))
@@ -66,6 +82,8 @@ export default class MessageList extends HTMLElement {
         document.body.addEventListener('new-message', this.newMessage)
         // @ts-ignore
         document.body.addEventListener('list-messages', this.messagesListener)
+        // @ts-ignore
+        document.body.addEventListener('load-more-messages', this.loadMoreMessageListener);
         const chat = this.getAttribute("chat")
         if (chat) {
             this.chat = JSON.parse(chat);
@@ -86,7 +104,39 @@ export default class MessageList extends HTMLElement {
 
     disconnectedCallback() {
         // @ts-ignore
-        document.body.removeEventListener('list-messages', this.messagesListener)
+        document.body.removeEventListener('list-messages', this.messagesListener);
+        document.body.removeEventListener('load-more-messages', this.loadMoreMessageListener);
+        // @ts-ignore
+        const chatElement = document.getElementById("chat")
+        if (chatElement) chatElement.removeEventListener("scroll", this.handleScroll.bind(this))
+    }
+
+    /**
+     * Handle scroll events.
+     */
+    handleScroll(e) {
+        const chatElement = document.getElementById("chat");
+        if (chatElement) {
+            throttle(() => {
+                const scrollPosition = chatElement.scrollTop; // Corrected this line
+                // Detect if scrolled to the top
+                if (scrollPosition === 0) {
+                    this.page++;
+                    this.dispatchEvent(
+                        new CustomEvent("get-messages", {
+                            detail: {
+                                chatID: this.chat.talker.id,
+                                limit: 10,
+                                page: this.page,
+                            },
+                            bubbles: true,
+                            cancelable: true,
+                            composed: true,
+                        })
+                    );
+                }
+            }, 300)(e);
+        }
     }
 
     /**
@@ -107,14 +157,18 @@ export default class MessageList extends HTMLElement {
     render(fetchMessages) {
         this.innerHTML = ""
         fetchMessages && fetchMessages.then((data) => {
-            const messages = data.messages
+            const messages = data.messages.reverse();
             if (!messages) {
                 this.innerHTML = /* html */`Start the discussion`
                 return
             }
 
-            messages.forEach((message, i, arr) => setTimeout(() => this.addNewMessage(message, i === arr.length - 1), i * 50), '')
-        })
+            messages.forEach((message, i, arr) => setTimeout(() => this.addNewMessage(message, i === arr.length - 1), i * 30))
+            setTimeout(() => {
+                const chatElement = document.getElementById("chat")
+                if (chatElement) chatElement.addEventListener("scroll", this.handleScroll.bind(this))
+            }, (messages.length * 30) + 30);
+        });
     }
 
     /**
@@ -145,12 +199,22 @@ export default class MessageList extends HTMLElement {
     }
 
     /**
-   * returns the first card element
-   *
-   * @readonly
-   * @return {HTMLElement | null}
-   */
+    * returns the last card element
+    *
+    * @readonly
+    * @return {HTMLElement | null}
+    */
     get lastCard() {
         return this.querySelector('.wrap:last-child>.message>.speech-bubble')
+    }
+
+    /**
+    * returns the first card element
+    *
+    * @readonly
+    * @return {HTMLElement | null}
+    */
+    get firstCard() {
+        return this.querySelector('.wrap:first-child')
     }
 }
