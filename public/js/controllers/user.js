@@ -66,7 +66,6 @@ export default class User extends HTMLElement {
                 }
                 return data.user
             }
-
             finishCallback = finishCallback.bind(this)
             // answer with event
             dispatchCustomEvent(this, 'user', url,
@@ -125,10 +124,16 @@ export default class User extends HTMLElement {
             }
 
             finishCallback = finishCallback.bind(this)
-            const errorCallback = error => {
-                if (error && typeof error.toString === 'function' && !error.toString().includes('aborted')) Environment.auth = null
+            let errorCallback = (error) => {
                 console.log(`Error@UserFetch: ${error}`)
+                this.dispatchEvent(new CustomEvent('logout', {
+                    bubbles: true,
+                    cancelable: true,
+                    composed: true
+                }))
             }
+
+            errorCallback = errorCallback.bind(this)
 
             if (this.user) {
                 this.dispatchEvent(new CustomEvent('user', {

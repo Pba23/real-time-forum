@@ -26,6 +26,11 @@ export default class Header extends HTMLElement {
                 console.log(`Error@UserFetch: ${error}`)
                 // @ts-ignore
                 if (this.shouldComponentRender(null)) this.render(null)
+                this.dispatchEvent(new CustomEvent('ok-logout', {
+                    bubbles: true,
+                    cancelable: true,
+                    composed: true
+                }))
                 this.user = null
             })
         }

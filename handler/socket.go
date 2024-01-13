@@ -53,10 +53,9 @@ func HandleWebSocket(res http.ResponseWriter, req *http.Request) {
 		log.Println("Error upgrading connection", err)
 		return
 	}
-	
+
 	UserConnections.Store(conn, "")
 	defer UserConnections.Delete(conn)
-	defer conn.Close()
 	for {
 		_, incoming, err := conn.ReadMessage()
 		if err != nil {
@@ -70,7 +69,6 @@ func HandleWebSocket(res http.ResponseWriter, req *http.Request) {
 		}
 		switch data.Type {
 		case "login":
-			log.Println(data.Data["userID"])
 			UserConnections.Store(conn, data.Data["userID"])
 			SendStatus(data.Data["userID"].(string), true)
 			// defer SendStatus(data.Data["userID"].(string), false)
@@ -117,7 +115,6 @@ func SendStatus(userID string, online bool) {
 	}
 	UserConnections.Range(func(key, value interface{}) bool {
 		if value.(string) != "" && value.(string) != userID {
-			log.Println(data.Online, value)
 			key.(*websocket.Conn).WriteMessage(websocket.TextMessage, output)
 		}
 		return true
