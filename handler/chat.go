@@ -31,7 +31,6 @@ func GetUsers(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// GetMessages retrieves messages between two users with pagination.
 func GetMessages(res http.ResponseWriter, req *http.Request) {
 	if lib.ValidateRequest(req, res, "/chat/messages/*", http.MethodGet) {
 		isLogin := models.ValidSession(req)

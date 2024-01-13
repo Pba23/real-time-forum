@@ -12,6 +12,7 @@ import (
 type Message struct {
 	ID         string `json:"id"`
 	SenderID   string `json:"authorID"`
+	SenderName string `json:"authorName"`
 	ReceiverID string `json:"receiverID"`
 	Content    string `json:"text"`
 	CreateDate string `json:"createDate"`
@@ -109,8 +110,14 @@ func (mr *MessageRepository) GetAllMessages() ([]Message, error) {
 // Get a message by ID from the database
 func (rr *MessageRepository) GetMessageByID(messageID string) (*Message, error) {
 	var message Message
-	row := rr.db.QueryRow("SELECT id, senderID, receiverID, content, createDate FROM message WHERE id = ?", messageID)
-	err := row.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate)
+	row := rr.db.QueryRow(`
+		SELECT m.id, m.senderID, m.receiverID, m.content, m.createDate, u.nickname as senderName
+		FROM message m
+		JOIN user u ON m.senderID = u.id
+		WHERE m.id = ?
+	`, messageID)
+
+	err := row.Scan(&message.ID, &message.SenderID, &message.ReceiverID, &message.Content, &message.CreateDate, &message.SenderName)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // Message not found

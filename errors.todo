@@ -17,7 +17,8 @@
   + [x] Scroll completely
 + [x] Show message ago time
 + [x] Handle message loading while scrolling
-+ [ ] Add notifications (unread messages)
+  + [ ] Sometimes messages are in the opposite order
++ [x] Add notifications (unread messages)
 + [ ] Send an image as a comment and message
 + [ ] Manage disconnection issues
   + [ ] Check if session still exists on page refresh

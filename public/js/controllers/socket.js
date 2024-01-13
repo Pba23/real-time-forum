@@ -44,6 +44,9 @@ export default class SocketHandler extends HTMLElement {
         case 'message':
           const chatID = Environment.auth.id === data.message.authorID ? data.message.receiverID : data.message.authorID
           const messageEventName = `message-${chatID}-${Environment.auth.id}`
+          if (Environment.auth.id !== data.message.authorID) {
+            Environment.toastWidget.showToast(data.message.authorName+'\n'+data.message.text, 'infos')
+          }
           this.dispatchEvent(new CustomEvent(messageEventName, {
             detail: data.message,
             bubbles: true,
