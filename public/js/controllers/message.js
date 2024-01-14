@@ -103,7 +103,6 @@ export default class Messages extends HTMLElement {
                     ...Environment.fetchHeaders
                 })
             } else {
-                console.log(page, url);
                 dispatchCustomEvent(this, 'load-more-messages', url, {
                     // signal: this.abortController.signal,
                     credentials: 'include',

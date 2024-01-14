@@ -19,6 +19,7 @@
 + [x] Handle message loading while scrolling
   + [x] Sometimes messages are in the opposite order
 + [x] Add notifications (unread messages)
++ [x] Add typing in progress features
 + [ ] Send an image as a comment and message
 + [ ] Manage disconnection issues
   + [ ] Check if session still exists on page refresh

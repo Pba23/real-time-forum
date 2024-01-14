@@ -55,12 +55,30 @@ export default class SocketHandler extends HTMLElement {
           }))
           break;
         case 'typing':
+          const typingEventName = `typing-${data.to}-${data.from}`
+          this.dispatchEvent(new CustomEvent(typingEventName, {
+            detail: data.isTyping,
+            bubbles: true,
+            cancelable: true,
+            composed: true
+          }))
           break
       }
     };
 
     this.login = () => {
       this.socket.send(JSON.stringify({ type: 'login', data: { userID: Environment.auth.id } }));
+    }
+
+    this.typing = (e) => {
+      this.socket.send(JSON.stringify({
+        type: 'typing',
+        data: {
+          isTyping: e.detail.isTyping,
+          to: e.detail.to,
+          from: Environment.auth.id
+        }
+      }));
     }
 
     this.logout = () => {
@@ -72,11 +90,13 @@ export default class SocketHandler extends HTMLElement {
 
 
   connectedCallback() {
+    this.addEventListener('typing', this.typing)
     this.addEventListener('ok-login', this.login)
     this.addEventListener('ok-logout', this.logout)
   }
 
   disconnectedCallback() {
+    this.removeEventListener('typing', this.typing)
     this.removeEventListener('ok-login', this.login)
     this.removeEventListener('ok-logout', this.logout)
   }

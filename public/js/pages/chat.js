@@ -16,6 +16,7 @@ import { Environment } from "../lib/environment.js"
 export default class Chat extends HTMLElement {
     constructor() {
         super()
+        this.typing = false;
         /**
      * Listens to the event name/typeArg: 'message'
      *
@@ -24,6 +25,18 @@ export default class Chat extends HTMLElement {
         this.messageListener = event => event.detail.fetch.then((data) => {
             if (this.textField) {
                 this.textField.value = ''
+                if (this.typing) {
+                    this.typing = false;
+                    this.dispatchEvent(new CustomEvent('typing', {
+                        detail: {
+                            isTyping: this.typing,
+                            to: this.chat.talker.id
+                        }, // slug gets decided at Chat.js controller, could also be done by request event to router
+                        bubbles: true,
+                        cancelable: true,
+                        composed: true
+                    }))
+                }
             }
         })
 
@@ -37,6 +50,8 @@ export default class Chat extends HTMLElement {
                 this.chat = chat
                 this.render()
                 this.messageForm?.addEventListener('submit', this.submitListener)
+                const eventName = 'typing-' + Environment.auth?.id + "-" + this.chat.talker.id
+                document.body.addEventListener(eventName, this.displayTypingIndicator)
             })
         }
 
@@ -74,6 +89,47 @@ export default class Chat extends HTMLElement {
                 this.textField.value += '\n';
             }
         };
+
+        // Event listener for typing start
+        this.inputListener = () => {
+            if (!this.typing) {
+                this.typing = true;
+                this.dispatchEvent(new CustomEvent('typing', {
+                    detail: {
+                        isTyping: this.typing,
+                        to: this.chat.talker.id
+                    }, // slug gets decided at Chat.js controller, could also be done by request event to router
+                    bubbles: true,
+                    cancelable: true,
+                    composed: true
+                }))
+            }
+        };
+
+        // Event listener for typing start
+        this.blurListener = () => {
+            if (this.typing) {
+                this.typing = false;
+                this.dispatchEvent(new CustomEvent('typing', {
+                    detail: {
+                        isTyping: this.typing,
+                        to: this.chat.talker.id
+                    }, // slug gets decided at Chat.js controller, could also be done by request event to router
+                    bubbles: true,
+                    cancelable: true,
+                    composed: true
+                }))
+            }
+        };
+
+        this.displayTypingIndicator = (e) => {
+            const talker = document.getElementById("talker");
+            if (e.detail) {
+                talker?.classList.add("typing")
+            } else {
+                talker?.classList.remove("typing")
+            }
+        }
     }
 
     connectedCallback() {
@@ -109,6 +165,8 @@ export default class Chat extends HTMLElement {
         // looks nicer when cleared
         this.messageForm?.removeEventListener('keydown', this.textAreaKeyDownListener);
         this.messageForm?.removeEventListener('keyup', this.textAreaKeyUpListener);
+        this.messageForm?.removeEventListener('input', this.inputListener);
+        this.messageForm?.removeEventListener('blur', this.blurListener);
         this.innerHTML = ''
     }
 
@@ -136,7 +194,7 @@ export default class Chat extends HTMLElement {
         <div class="l-grid__item">
             <div id="chat" class="card f-height">
                 <div class="card__header justify--space-between">
-                    <h3>Talk with ${this.chat.talker ? this.chat.talker.nickname : `...`}</h3>
+                    <h3 id="talker">Talk with ${this.chat.talker ? this.chat.talker.nickname : `...`} <span>is typing</span></h3>
                 </div>
                 <div class="card__body">
                     <message-list chat='${JSON.stringify(this.chat)}'></message-list>
@@ -150,6 +208,8 @@ export default class Chat extends HTMLElement {
             </div>
         </div>`
 
+        this.messageForm?.addEventListener('input', this.inputListener);
+        this.textField?.addEventListener('blur', this.blurListener);
         this.messageForm?.addEventListener('keydown', this.textAreaKeyDownListener);
         this.messageForm?.addEventListener('keyup', this.textAreaKeyUpListener);
     }

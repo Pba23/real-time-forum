@@ -8,9 +8,9 @@
    -    [x] User
    -    [x] Category
    -    [x] Comment
-5.  [ ] Implement websocket for chat.
+5.  [x] Implement websocket for chat.
    -    [x] Implement sending and receiving messages.
-   -    [ ] Implement notifications.
+   -    [x] Implement notifications.
    -    [x] Implement  user online/offline status.
 6.  [x] Implement user registration and login functionality.
    -    [x] Validate and store user credentials in the database.
@@ -29,8 +29,8 @@
    -    [x] Listing posts.
    -    [ ] Filtering by created posts.
    -    [ ] Filtering by created category.
-9.  [ ] Implement chat functionality
-   -    [ ] List online/offline users.
-   -    [ ] Send Receive message to user.
-   -    [ ] Load past message
+9.  [x] Implement chat functionality
+   -    [x] List online/offline users.
+   -    [x] Send Receive message to user.
+   -    [x] Load past message
 10. [ ] Handle website errors and HTTP status.

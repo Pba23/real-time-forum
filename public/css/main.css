@@ -199,6 +199,38 @@ form>input {
     margin-bottom: 1rem !important;
 }
 
+#chat h3 {
+    display: flex;
+}
+
+#chat h3 span {
+    margin-left: 1rem;
+    display: block;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+h3.typing span {
+    animation: typing 2s steps(9) infinite alternate, blink .75s step-end infinite alternate;
+    border-right: 3px solid;
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 9ch;
+    }
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent
+    }
+}
+
 .radio {
     margin-top: 2rem;
 }
@@ -332,14 +364,6 @@ footer span.heart {
     box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.12);
 }
 
-.card__header {
-    background-color: var(--darkest);
-    position: sticky;
-    top: 0;
-    width: 100%;
-    z-index: 5;
-}
-
 .card__footer {
     position: sticky;
     width: 100%;
@@ -357,6 +381,14 @@ footer span.heart {
 .card.item .card__header {
     padding: 1rem;
     cursor: pointer;
+}
+
+.card__header {
+    background-color: var(--darkest);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 5;
 }
 
 @media screen and (max-width: 700px) {

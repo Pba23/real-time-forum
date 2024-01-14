@@ -37,6 +37,13 @@ type NewStatusEvent struct {
 	Online bool   `json:"online"`
 }
 
+type TypingEvent struct {
+	Type     string `json:"type"`
+	From     string `json:"from"`
+	To       string `json:"to"`
+	IsTyping bool   `json:"isTyping"`
+}
+
 type TokenExpiredEvent struct {
 	Type   string `json:"type"`
 	UserID string `json:"userID"`
@@ -75,8 +82,24 @@ func HandleWebSocket(res http.ResponseWriter, req *http.Request) {
 		case "logout":
 			UserConnections.Store(conn, "")
 			SendStatus(data.Data["userID"].(string), false)
+		case "typing":
+			SendTyping(data.Data["from"].(string), data.Data["to"].(string), data.Data["isTyping"].(bool))
 		}
 	}
+}
+
+func SendTyping(from string, to string, isTyping bool) {
+	data := TypingEvent{"typing", from, to, isTyping}
+	output, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+	}
+	UserConnections.Range(func(key, value interface{}) bool {
+		if value.(string) != "" && value.(string) != from && value.(string) == to {
+			key.(*websocket.Conn).WriteMessage(websocket.TextMessage, output)
+		}
+		return true
+	})
 }
 
 func SendPost(post models.PostItem) {
