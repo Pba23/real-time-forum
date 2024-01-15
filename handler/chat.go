@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"real-time-forum/data/models"
 	"real-time-forum/lib"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -25,14 +24,6 @@ func GetUsers(res http.ResponseWriter, req *http.Request) {
 					users[i].IsConnected = true
 				}
 			}
-			sort.Slice(users, func(i, j int) bool {
-				// Online users are moved to the top
-				if users[i].IsConnected && !users[j].IsConnected {
-					return true
-				}
-				// Sort by nickname if both online or both offline
-				return users[i].Nickname < users[j].Nickname
-			})
 			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"users": users})
 		} else {
 			lib.HandleError(res, http.StatusUnauthorized, "No active session")
@@ -123,7 +114,7 @@ func NewMessage(res http.ResponseWriter, req *http.Request) {
 			if err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error creating message : "+err.Error())
 			}
-			message.CreateDate = lib.FormatDateDB(message.CreateDate)
+			// message.CreateDate = lib.FormatDateDB(message.CreateDate)
 			lib.SendJSONResponse(res, http.StatusOK, map[string]any{"message": message})
 			SendMessage(*message)
 		} else {

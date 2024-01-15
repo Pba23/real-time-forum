@@ -74,10 +74,10 @@ export default class ChatList extends HTMLElement {
         this.innerHTML = '<div class="Chat-preview">No Chats are here... yet.</div>'
       } else {
         this.innerHTML = ''
-        chats.forEach(c => {
+        chats.forEach((c, i) => {
           /** @type {import("./chat-item.js").default & any} */
           // @ts-ignore
-          const ChatItem = new children[0][1](c)
+          const ChatItem = new children[0][1](c, i)
           this.appendChild(ChatItem)
         })
         if (!this.getAttribute('no-scroll')) this.scrollToEl(this)

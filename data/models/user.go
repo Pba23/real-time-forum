@@ -147,7 +147,7 @@ func (ur *UserRepository) SelectAllUsers(userID string) ([]UserItem, error) {
 		GROUP BY otherUserID
 	) latestMessages ON u.ID = latestMessages.otherUserID
 	LEFT JOIN message m ON (latestMessages.otherUserID = m.senderID OR latestMessages.otherUserID = m.receiverID) AND latestMessages.maxCreateDate = m.createDate
-	ORDER BY u.nickname
+	ORDER BY last_message_time DESC, u.nickname 
 	`, userID, userID, userID, userID)
 	if err != nil {
 		log.Fatal(err)

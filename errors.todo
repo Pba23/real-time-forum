@@ -34,3 +34,6 @@
 + [x] Check overflow texts
 + [ ] Remove all unused log
 + [ ] Add server logs
++ [x] Are the chat users organized by last message sent (just like discord)?
++ [x] Try and register a new user that does not have chat messages.
++ [x] Are the chat users organized in alphabetic order?

@@ -34,6 +34,11 @@
     font-weight: 500;
 } */
 
+chat-list {
+    display: flex;
+    flex-direction: column;
+}
+
 .wrap+.wrap {
     margin-top: 20px;
 }
