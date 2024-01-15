@@ -11,6 +11,10 @@ export default class SocketHandler extends HTMLElement {
       }
     }
 
+    this.socket.onclose = () => {
+      this.socket.send(JSON.stringify({ type: 'logout', data: { userID: Environment.auth.id } }));
+    }
+
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       switch (data.type) {
