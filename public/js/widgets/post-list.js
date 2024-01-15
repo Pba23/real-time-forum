@@ -23,7 +23,7 @@ export default class PostList extends HTMLElement {
 
     this.postListener = event => event.detail.fetch.then(data => {
       const post = data.post
-      this.addNewPost(post);
+      // this.addNewPost(post);
     })
   }
 
