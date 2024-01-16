@@ -35,10 +35,6 @@ export default class ChatPreview extends HTMLElement {
         this.style.order = this.index
         this.cardItems.forEach(cardItem => {
           // @ts-ignore
-          console.log(cardItem.style.order);
-          // @ts-ignore
-          console.log(parseInt(cardItem.style.order) + 1);
-          // @ts-ignore
           cardItem.style.order = `${parseInt(cardItem.style.order) + 1}`
         })
         this.cardItemLastMessage.innerText = this.chat.last_message

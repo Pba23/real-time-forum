@@ -30,7 +30,7 @@ export default class Footer extends HTMLElement {
     render() {
         this.innerHTML = /* html */`
         <footer>
-            Copyright make with <span class="heart">❤️</span> and ☕
+            Copyright made with <span class="heart">❤️</span> and ☕
         </footer>
     `
     }
