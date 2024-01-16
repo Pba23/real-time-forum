@@ -3,6 +3,7 @@
 /** @typedef {{
       name: string,
       path: string,
+      title: string,
       regExp: RegExp,
       authPage?: boolean
       component?: HTMLElement
@@ -30,17 +31,20 @@ export default class Router extends HTMLElement {
             {
                 name: 'p-home',
                 path: '../pages/home.js',
+                title: "ThunderForum 💜 | Connect, Discuss, Chat",
                 regExp: new RegExp(/^#\/$/),
             },
             // Sign in/Sign up pages (URL: /#/login, /#/register )
             {
                 name: 'p-login',
                 path: '../pages/login.js',
+                title: "Login | ThunderForum 💜",
                 regExp: new RegExp(/^#\/login$/),
                 authPage: true,
             },
             {
                 name: 'p-register',
+                title: "Register | ThunderForum 💜",
                 path: '../pages/register.js',
                 regExp: new RegExp(/^#\/register$/),
                 authPage: true,
@@ -49,23 +53,27 @@ export default class Router extends HTMLElement {
             {
                 name: 'p-post',
                 path: '../pages/post.js',
+                title: "ThunderForum 💜 | Connect, Discuss, Chat",
                 regExp: new RegExp(/^#\/post/)
             },
             {
                 name: 'p-add-post',
                 path: '../pages/add-post.js',
+                title: "Add post | ThunderForum 💜",
                 regExp: new RegExp(/^#\/add-post$/)
             },
             // Chat pages (URL: /#/chat/talker-id )
             {
                 name: 'p-chat',
                 path: '../pages/chat.js',
+                title: "ThunderForum 💜 | Connect, Discuss, Chat",
                 regExp: new RegExp(/^#\/chat/)
             },
             // 404 Page not found
             {
                 name: 'p-404',
                 path: '../pages/404.js',
+                title: "404 page not found | ThunderForum 💜",
                 regExp: new RegExp(/^#\/404$/),
                 authPage: true,
             },
@@ -135,7 +143,10 @@ export default class Router extends HTMLElement {
                 // save it to route object for reuse. grab child if it already exists.
                 return (route.component = this.children && this.children[0] && this.children[0].tagName === route.name.toUpperCase() ? this.children[0] : document.createElement(route.name))
             })).then(component => {
-                if (this.shouldComponentRender(route.name, isUrlEqual)) this.render(component)
+                if (this.shouldComponentRender(route.name, isUrlEqual)) {
+                    document.title = route.title
+                    this.render(component)
+                }
                 // @ts-ignore
             }).catch(error => console.warn('Router did not find:', route) || error)
         } else {

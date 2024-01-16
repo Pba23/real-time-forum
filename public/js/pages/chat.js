@@ -190,6 +190,9 @@ export default class Chat extends HTMLElement {
         if (user !== undefined) this.user = user
         if (!this.chat || !this.user) return
 
+        if (!this.chat.talker) self.location.hash = '#/404';
+
+        document.title = `Talk with ${this.chat.talker.nickname} | ThunderForum 💜`
         this.innerHTML = /* html */`
         <div class="l-grid__item">
             <div id="chat" class="card f-height">

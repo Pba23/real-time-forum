@@ -158,6 +158,7 @@ export default class Post extends HTMLElement {
         if (!this.post) {
             this.innerHTML = /* html */`<div class="l-grid__item"><div class="card f-height"><div class="card__body">No Post is here... yet.</div></div></div>`
         } else {
+            document.title = `${this.post.title} | ThunderForum 💜`
             this.innerHTML = /* html */`<div class="l-grid__item">
             <div class="card f-height">
                 <div class="card__header justify--space-between">
