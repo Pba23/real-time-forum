@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"real-time-forum/lib"
-	"strings"
 
 	uuid "github.com/gofrs/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -58,9 +57,7 @@ func (cr *CommentRepository) GetCommentByID(id string) (CommentItem, error) {
 	if err != nil {
 		return comment, err
 	}
-	comment.LastCreateDate = strings.ReplaceAll(comment.LastCreateDate, "T", " ")
-	comment.LastCreateDate = strings.ReplaceAll(comment.LastCreateDate, "Z", "")
-	comment.LastCreateDate = lib.TimeSinceCreation(comment.LastCreateDate)
+	comment.LastCreateDate = lib.FormatDateDB(comment.LastCreateDate)
 
 	return comment, nil
 }
@@ -80,9 +77,7 @@ func (cr *CommentRepository) GetCommentsOfPost(postID string) ([]*CommentItem, e
 		if err != nil {
 			return nil, err
 		}
-		comment.LastCreateDate = strings.ReplaceAll(comment.LastCreateDate, "T", " ")
-		comment.LastCreateDate = strings.ReplaceAll(comment.LastCreateDate, "Z", "")
-		comment.LastCreateDate = lib.TimeSinceCreation(comment.LastCreateDate)
+		comment.LastCreateDate = lib.FormatDateDB(comment.LastCreateDate)
 		comments = append(comments, &comment)
 	}
 

@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 	"log"
-	"real-time-forum/lib"
+	"strings"
 
 	uuid "github.com/gofrs/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -69,7 +69,7 @@ func (rr *MessageRepository) GetDiscussionsBetweenUsersWithPagination(user1ID, u
 		if err != nil {
 			return nil, err
 		}
-		message.CreateDate = lib.FormatDateDB(message.CreateDate)
+		// message.CreateDate = lib.FormatDateDB(message.CreateDate)
 		discussions = append(discussions, &message)
 	}
 
@@ -99,7 +99,9 @@ func (mr *MessageRepository) GetAllMessages() ([]Message, error) {
 			return nil, err
 		}
 
-		message.CreateDate = lib.FormatDateDB(message.CreateDate)
+		// message.CreateDate = lib.FormatDateDB(message.CreateDate)
+		message.CreateDate = strings.ReplaceAll(message.CreateDate, "T", " ")
+		message.CreateDate = strings.ReplaceAll(message.CreateDate, "Z", "")
 		messageList = append(messageList, message)
 	}
 

@@ -35,14 +35,14 @@ type Post struct {
 }
 
 type PostCreation struct {
-	ID           string     `json:"id"`
-	Title        string     `json:"title"`
-	Slug         string     `json:"slug"`
-	Description  string     `json:"description"`
-	AuthorID     string     `json:"authorID"`
-	ImageURL     string     `json:"imageURL"`
-	Categories   []string   `json:"categories"`
-	CreateDate   string     `json:"createDate"`
+	ID          string   `json:"id"`
+	Title       string   `json:"title"`
+	Slug        string   `json:"slug"`
+	Description string   `json:"description"`
+	AuthorID    string   `json:"authorID"`
+	ImageURL    string   `json:"imageURL"`
+	Categories  []string `json:"categories"`
+	CreateDate  string   `json:"createDate"`
 }
 
 type PostRepository struct {
@@ -120,7 +120,7 @@ func (pr *PostRepository) GetUserOwnPosts(userId, nickName string) ([]PostItem, 
 			Title:            posts[i].Title,
 			Slug:             posts[i].Slug,
 			AuthorName:       nickName,
-			CreateDate:       lib.TimeSinceCreation(lastModificationDate),
+			CreateDate:       lib.FormatDateDB(lastModificationDate),
 			NumberOfComments: numberComments[i],
 			ListOfCategories: []string{},
 		}
@@ -142,9 +142,7 @@ func (pr *PostRepository) GetPostBySlug(slug string) (*CompletePost, error) {
 		}
 		return nil, err
 	}
-	post.CreateDate = strings.ReplaceAll(post.CreateDate, "T", " ")
-	post.CreateDate = strings.ReplaceAll(post.CreateDate, "Z", "")
-	post.CreateDate = lib.TimeSinceCreation(post.CreateDate)
+	post.CreateDate = lib.FormatDateDB(post.CreateDate)
 	return &post, nil
 }
 
@@ -187,9 +185,7 @@ func (pr *PostRepository) GetAllPosts() ([]*PostItem, error) {
 			return nil, err
 		}
 
-		post.CreateDate = strings.ReplaceAll(post.CreateDate, "T", " ")
-		post.CreateDate = strings.ReplaceAll(post.CreateDate, "Z", "")
-		post.CreateDate = lib.TimeSinceCreation(post.CreateDate)
+		post.CreateDate = lib.FormatDateDB(post.CreateDate)
 		post.ListOfCategories = strings.Split(ListOfCategories, ", ")
 		postItems = append(postItems, &post)
 	}
@@ -235,9 +231,7 @@ func (pr *PostRepository) GetPostItemByID(postID string) (PostItem, error) {
 		return post, err
 	}
 
-	post.CreateDate = strings.ReplaceAll(post.CreateDate, "T", " ")
-	post.CreateDate = strings.ReplaceAll(post.CreateDate, "Z", "")
-	post.CreateDate = lib.TimeSinceCreation(post.CreateDate)
+	post.CreateDate = lib.FormatDateDB(post.CreateDate)
 	post.ListOfCategories = strings.Split(ListOfCategories, ", ")
 
 	return post, nil
