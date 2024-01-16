@@ -70,6 +70,8 @@ func (rr *MessageRepository) GetDiscussionsBetweenUsersWithPagination(user1ID, u
 			return nil, err
 		}
 		// message.CreateDate = lib.FormatDateDB(message.CreateDate)
+		message.CreateDate = strings.ReplaceAll(message.CreateDate, "T", " ")
+		message.CreateDate = strings.ReplaceAll(message.CreateDate, "Z", "")
 		discussions = append(discussions, &message)
 	}
 
