@@ -61,6 +61,26 @@
     background-color: var(--light);
 }
 
+.spe .logo {
+    position: relative;
+    max-width: 150px;
+    height: 150px;
+}
+
+.spe .logo::before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 200px;
+    height: 200px;
+    background-color: white;
+    border-radius: 200px;
+}
+
+.big {
+    font-size: 15rem !important;
+}
+
 .btn.light,
 button.light {
     background: var(--lightest) !important;

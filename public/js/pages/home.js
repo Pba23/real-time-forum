@@ -15,7 +15,6 @@ export default class Home extends HTMLElement {
         if (!Environment.auth) {
             self.location.hash = '#/login'
         }
-        this.loadChildComponents()
         this.render()
     }
 
@@ -44,22 +43,5 @@ export default class Home extends HTMLElement {
             </div>
         </div>
       `
-    }
-
-    /**
-   * fetch children when first needed
-   *
-   * @returns {Promise<[string, CustomElementConstructor][]>}
-   */
-    loadChildComponents() {
-        return this.childComponentsPromise || (this.childComponentsPromise = Promise.all([
-        ]).then(elements => {
-            elements.forEach(element => {
-                // don't define already existing customElements
-                // @ts-ignore
-                if (!customElements.get(element[0])) customElements.define(...element)
-            })
-            return elements
-        }))
     }
 }

@@ -36,16 +36,16 @@ export default class Router extends HTMLElement {
             {
                 name: 'p-login',
                 path: '../pages/login.js',
-                regExp: new RegExp(/^#\/login/),
+                regExp: new RegExp(/^#\/login$/),
                 authPage: true,
             },
             {
                 name: 'p-register',
                 path: '../pages/register.js',
-                regExp: new RegExp(/^#\/register/),
+                regExp: new RegExp(/^#\/register$/),
                 authPage: true,
             },
-            // Post page (URL: /#/post/post-slug-here )
+            // Post pages (URL: /#/post/post-slug-here )
             {
                 name: 'p-post',
                 path: '../pages/post.js',
@@ -54,17 +54,20 @@ export default class Router extends HTMLElement {
             {
                 name: 'p-add-post',
                 path: '../pages/add-post.js',
-                regExp: new RegExp(/^#\/add-post/)
+                regExp: new RegExp(/^#\/add-post$/)
             },
+            // Chat pages (URL: /#/chat/talker-id )
             {
                 name: 'p-chat',
                 path: '../pages/chat.js',
                 regExp: new RegExp(/^#\/chat/)
             },
+            // 404 Page not found
             {
-                name: 'p-chat',
-                path: '../pages/chat.js',
-                regExp: new RegExp(/^#\/chat/)
+                name: 'p-404',
+                path: '../pages/404.js',
+                regExp: new RegExp(/^#\/404$/),
+                authPage: true,
             },
         ]
 
@@ -135,6 +138,9 @@ export default class Router extends HTMLElement {
                 if (this.shouldComponentRender(route.name, isUrlEqual)) this.render(component)
                 // @ts-ignore
             }).catch(error => console.warn('Router did not find:', route) || error)
+        } else {
+            console.log("Not Found");
+            self.location.hash = '#/404'
         }
 
         return route ? route : this.previousRoute
