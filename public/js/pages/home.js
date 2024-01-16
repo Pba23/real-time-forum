@@ -16,16 +16,7 @@ export default class Home extends HTMLElement {
             self.location.hash = '#/login'
         }
         this.loadChildComponents()
-        if (this.shouldComponentRender()) this.render()
-    }
-
-    /**
-     * evaluates if a render is necessary
-     *
-     * @return {boolean}
-     */
-    shouldComponentRender() {
-        return !this.innerHTML
+        this.render()
     }
 
     /**

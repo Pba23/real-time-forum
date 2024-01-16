@@ -24,6 +24,7 @@ export default class Header extends HTMLElement {
                 this.user = user
             }).catch(error => {
                 console.log(`Error@UserFetch: ${error}`)
+                this.user = null
                 // @ts-ignore
                 if (this.shouldComponentRender(null)) this.render(null)
                 this.dispatchEvent(new CustomEvent('ok-logout', {
@@ -31,7 +32,6 @@ export default class Header extends HTMLElement {
                     cancelable: true,
                     composed: true
                 }))
-                this.user = null
             })
         }
 
