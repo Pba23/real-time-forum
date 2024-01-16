@@ -106,6 +106,8 @@ func GetAllPosts(res http.ResponseWriter, req *http.Request) {
 }
 
 func validatePostInput(post *models.PostCreation) error {
+	post.Title = strings.Trim(post.Title, " ")
+	post.Description = strings.Trim(post.Description, " ")
 	if post.Title == "" || post.Description == "" || len(post.Categories) == 0 {
 		return ErrMissingRequiredFields
 	}

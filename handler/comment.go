@@ -80,6 +80,7 @@ func GetComments(res http.ResponseWriter, req *http.Request) {
 
 func validateCommentInput(comment *models.Comment) error {
 	// Add any validation rules as needed
+	comment.Text = strings.Trim(comment.Text, " ")
 	if comment.Text == "" {
 		return ErrMissingRequiredFields
 	}

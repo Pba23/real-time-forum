@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"html"
 	"net/http"
 	"real-time-forum/data/models"
 	"real-time-forum/lib"
@@ -106,6 +107,10 @@ func NewMessage(res http.ResponseWriter, req *http.Request) {
 				lib.HandleError(res, http.StatusBadRequest, "Invalid JSON format")
 				return
 			}
+			if err := validateMessageInput(&_message); err != nil {
+				lib.HandleError(res, http.StatusBadRequest, err.Error())
+				return
+			}
 			err := models.MessageRepo.CreateMessage(&_message)
 			if err != nil {
 				lib.HandleError(res, http.StatusInternalServerError, "Error creating message : "+err.Error())
@@ -121,4 +126,14 @@ func NewMessage(res http.ResponseWriter, req *http.Request) {
 			lib.HandleError(res, http.StatusUnauthorized, "No active session")
 		}
 	}
+}
+
+func validateMessageInput(message *models.Message) error {
+	// Add any validation rules as needed
+	message.Content = strings.Trim(message.Content, " ")
+	if message.Content == "" {
+		return ErrMissingRequiredFields
+	}
+	message.Content = html.EscapeString(message.Content)
+	return nil
 }
