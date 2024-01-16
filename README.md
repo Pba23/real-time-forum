@@ -4,7 +4,7 @@
 
 This is an upgraded forum application designed to provide a seamless user experience with features such as user registration and login, posting, commenting, private messaging, and real-time interactions. The application is structured as a Single Page Application (SPA) and incorporates WebSockets for real-time communication.
 
-![Forum Application](./assets/img/community.webp)
+![Forum Application](./screenshot.png)
 
 ## INSTRUCTIONS
 
